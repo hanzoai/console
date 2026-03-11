@@ -1,5 +1,5 @@
 import { type z } from "zod/v4";
-import { type ChatMlMessageSchema } from "@hanzo/shared";
+import { type ChatMlMessageSchema } from "@hanzo/console";
 import {
   ChatMessageRole,
   ChatMessageType,
@@ -7,7 +7,7 @@ import {
   isOpenAIImageContentPart,
   type ChatMessage,
   type PlaceholderMessage,
-} from "@hanzo/shared";
+} from "@hanzo/console";
 
 type ChatMlMessage = z.infer<typeof ChatMlMessageSchema>;
 

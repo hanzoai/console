@@ -20,7 +20,7 @@ import {
   LLMAdapter,
   type supportedModels,
   type UIModelParams,
-} from "@hanzo/shared";
+} from "@hanzo/console";
 import { InfoIcon, Settings2 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/src/components/ui/tooltip";
@@ -146,22 +146,21 @@ export const ModelParameters: React.FC<ModelParamsContext> = ({
             tooltip="An alternative to sampling with temperature, called nucleus sampling, where the model considers the results of the tokens with top_p probability mass. So 0.1 means only the tokens comprising the top 10% probability mass are considered. We generally recommend altering this or temperature but not both."
             updateModelParam={updateModelParamValue}
           />
-          {modelParams.adapter.value === LLMAdapter.VertexAI &&
-            modelParams.maxReasoningTokens && (
-              <ModelParamsSlider
-                title="Max. Reasoning Tokens"
-                modelParamsKey="maxReasoningTokens"
-                formDisabled={formDisabled}
-                enabled={modelParams.maxReasoningTokens.enabled}
-                setModelParamEnabled={setModelParamEnabled}
-                value={modelParams.maxReasoningTokens.value}
-                min={0}
-                max={24576}
-                step={1}
-                tooltip="Maximum tokens for model thinking/reasoning. Set to 0 to disable. Only supported on Gemini 2.5+ models."
-                updateModelParam={updateModelParamValue}
-              />
-            )}
+          {modelParams.adapter.value === LLMAdapter.VertexAI && modelParams.maxReasoningTokens && (
+            <ModelParamsSlider
+              title="Max. Reasoning Tokens"
+              modelParamsKey="maxReasoningTokens"
+              formDisabled={formDisabled}
+              enabled={modelParams.maxReasoningTokens.enabled}
+              setModelParamEnabled={setModelParamEnabled}
+              value={modelParams.maxReasoningTokens.value}
+              min={0}
+              max={24576}
+              step={1}
+              tooltip="Maximum tokens for model thinking/reasoning. Set to 0 to disable. Only supported on Gemini 2.5+ models."
+              updateModelParam={updateModelParamValue}
+            />
+          )}
           <ProviderOptionsInput
             value={modelParams.providerOptions.value}
             formDisabled={formDisabled}

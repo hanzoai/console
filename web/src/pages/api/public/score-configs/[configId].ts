@@ -12,9 +12,9 @@ import {
   InvalidRequestError,
   ConsoleNotFoundError,
   validateDbScoreConfigSafe,
-} from "@hanzo/shared";
-import { prisma } from "@hanzo/shared/src/db";
-import { traceException } from "@hanzo/shared/src/server";
+} from "@hanzo/console";
+import { prisma } from "@hanzo/console-core/src/db";
+import { traceException } from "@hanzo/console-core/src/server";
 
 export default withMiddlewares({
   GET: createAuthedProjectAPIRoute({

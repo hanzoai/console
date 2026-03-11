@@ -1,12 +1,12 @@
-import { logger, traceException } from "@hanzo/shared/src/server";
-import { prisma } from "@hanzo/shared/src/db";
-import { createManyDatasetItems } from "@hanzo/shared/src/server";
+import { logger, traceException } from "@hanzo/console-core/src/server";
+import { prisma } from "@hanzo/console-core/src/db";
+import { createManyDatasetItems } from "@hanzo/console-core/src/server";
 import {
   applyFullMapping,
   BatchActionStatus,
   type ObservationAddToDatasetConfig,
   type MappingError,
-} from "@hanzo/shared";
+} from "@hanzo/console-core";
 
 // Chunk size for batch processing. Smaller than the default 1000 because:
 // 1. Each observation requires JSON path evaluation and mapping transformation

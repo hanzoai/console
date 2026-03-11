@@ -2,7 +2,7 @@
 
 import { makeZodVerifiedAPICall, pruneDatabase } from "@/src/__tests__/test-utils";
 import { PostTracesV1Response } from "@/src/features/public-api/types/traces";
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 
 describe("Create and get sessions", () => {
   beforeEach(async () => await pruneDatabase());

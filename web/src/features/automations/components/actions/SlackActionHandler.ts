@@ -2,7 +2,7 @@ import React from "react";
 import { type UseFormReturn } from "react-hook-form";
 import { type BaseActionHandler } from "./BaseActionHandler";
 import { SlackActionForm } from "./SlackActionForm";
-import { type AutomationDomain, type SlackActionConfig, type ActionCreate, type ActionDomain } from "@hanzo/shared";
+import { type AutomationDomain, type SlackActionConfig, type ActionCreate, type ActionDomain } from "@hanzo/console";
 import { z } from "zod/v4";
 
 // Define the form schema for Slack actions

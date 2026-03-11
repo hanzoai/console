@@ -1,15 +1,15 @@
 import { expect, test, describe, beforeEach, vi, afterEach } from "vitest";
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 import { randomUUID } from "crypto";
 import { pruneDatabase } from "./utils";
-import { LLMAdapter } from "@hanzo/shared";
-import { encrypt } from "@hanzo/shared/encryption";
+import { LLMAdapter } from "@hanzo/console-core";
+import { encrypt } from "@hanzo/console-core/encryption";
 import { createExperimentJobDatastore } from "../features/experiments/experimentServiceDatastore";
-import { createDatasetItem, logger } from "@hanzo/shared/src/server";
+import { createDatasetItem, logger } from "@hanzo/console-core/src/server";
 
 // Mock the logger to capture log calls
-vi.mock("@hanzo/shared/src/server", async () => {
-  const actual = await vi.importActual("@hanzo/shared/src/server");
+vi.mock("@hanzo/console-core/src/server", async () => {
+  const actual = await vi.importActual("@hanzo/console-core/src/server");
   return {
     ...actual,
     fetchLLMCompletion: vi.fn().mockResolvedValue({ id: "test-id" }),

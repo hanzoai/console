@@ -12,7 +12,7 @@
  */
 
 import { createContext, useContext, useMemo, type ReactNode } from "react";
-import { type ObservationLevelType, ObservationLevel } from "@hanzo/shared";
+import { type ObservationLevelType, ObservationLevel } from "@hanzo/console";
 import useLocalStorage from "@/src/components/useLocalStorage";
 
 /** Log view ordering mode */

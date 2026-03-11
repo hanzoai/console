@@ -13,8 +13,8 @@ import { FeedbackButtonWrapper } from "@/src/features/feedback/component/Feedbac
 import { BarChart2 } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { PopoverFilterBuilder } from "@/src/features/filters/components/filter-builder";
-import { type FilterState } from "@hanzo/shared";
-import { type ColumnDefinition } from "@hanzo/shared";
+import { type FilterState } from "@hanzo/console";
+import { type ColumnDefinition } from "@hanzo/console";
 import { useQueryFilterState } from "@/src/features/filters/hooks/useFilterState";
 import { LatencyTables } from "@/src/features/dashboard/components/LatencyTables";
 import { useMemo } from "react";
@@ -32,10 +32,7 @@ import { useUiCustomization } from "@/src/features/ui-customization/useUiCustomi
 import { useEntitlementLimit } from "@/src/features/entitlements/hooks";
 import Page from "@/src/components/layouts/page";
 import { MultiSelect } from "@/src/features/filters/components/multi-select";
-import {
-  convertSelectedEnvironmentsToFilter,
-  useEnvironmentFilter,
-} from "@/src/hooks/use-environment-filter";
+import { convertSelectedEnvironmentsToFilter, useEnvironmentFilter } from "@/src/hooks/use-environment-filter";
 import { useV4Beta } from "@/src/features/events/hooks/useV4Beta";
 import { type ViewVersion } from "@/src/features/query";
 
@@ -46,10 +43,7 @@ export default function Dashboard() {
   const { isBetaEnabled } = useV4Beta();
   const metricsVersion: ViewVersion = isBetaEnabled ? "v2" : "v1";
 
-  const absoluteTimeRange = useMemo(
-    () => toAbsoluteTimeRange(timeRange),
-    [timeRange],
-  );
+  const absoluteTimeRange = useMemo(() => toAbsoluteTimeRange(timeRange), [timeRange]);
 
   const uiCustomization = useUiCustomization();
 

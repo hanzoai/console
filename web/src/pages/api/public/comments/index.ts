@@ -6,11 +6,11 @@ import {
   PostCommentsV1Body,
   PostCommentsV1Response,
 } from "@/src/features/public-api/types/comments";
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 import { v4 } from "uuid";
 import { validateCommentReferenceObject } from "@/src/features/comments/validateCommentReferenceObject";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
-import { ConsoleNotFoundError } from "@hanzo/shared";
+import { ConsoleNotFoundError } from "@hanzo/console";
 
 export default withMiddlewares({
   POST: createAuthedProjectAPIRoute({

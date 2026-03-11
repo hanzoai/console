@@ -1,5 +1,5 @@
 import { Job } from "@hanzo/mq";
-import { logger, QueueName, TQueueJobTypes } from "@hanzo/shared/src/server";
+import { logger, QueueName, TQueueJobTypes } from "@hanzo/console-core/src/server";
 import { entityChangeWorker } from "../features/entityChange/entityChangeWorker";
 
 export const entityChangeQueueProcessor = async (job: Job<TQueueJobTypes[QueueName.EntityChangeQueue]>) => {

@@ -1,10 +1,10 @@
 /** @jest-environment node */
 
 import type { Session } from "next-auth";
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 import { appRouter } from "@/src/server/api/root";
 import { createInnerTRPCContext } from "@/src/server/api/trpc";
-import { createObservation, createObservationsCh, createTrace, createTracesCh } from "@hanzo/shared/src/server";
+import { createObservation, createObservationsCh, createTrace, createTracesCh } from "@hanzo/console-core/src/server";
 import { randomUUID } from "crypto";
 
 describe("traces trpc", () => {

@@ -1,6 +1,6 @@
-import { logger } from "@hanzo/shared/src/server";
+import { logger } from "@hanzo/console-core/src/server";
 import { z } from "zod/v4";
-import { LATEST_PROMPT_LABEL } from "@hanzo/shared";
+import { LATEST_PROMPT_LABEL } from "@hanzo/console";
 
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";

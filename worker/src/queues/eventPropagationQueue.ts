@@ -1,5 +1,5 @@
 import { Processor } from "@hanzo/mq";
-import { logger, QueueJobs, instrumentAsync } from "@hanzo/shared/src/server";
+import { logger, QueueJobs, instrumentAsync } from "@hanzo/console-core/src/server";
 import { handleEventPropagationJob } from "../features/eventPropagation/handleEventPropagationJob";
 import { runExperimentBackfill } from "../features/eventPropagation/handleExperimentBackfill";
 import { SpanKind } from "@opentelemetry/api";

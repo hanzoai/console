@@ -6,8 +6,8 @@ import {
   getDaysToLookBack,
   startOfDayUTC,
   endOfDayUTC,
-} from "@hanzo/shared/src/server";
-import { type Organization } from "@hanzo/shared";
+} from "@hanzo/console-core/src/server";
+import { type Organization } from "@hanzo/console";
 
 describe("getBillingCycleAnchor", () => {
   it("returns cloudBillingCycleAnchor when set", () => {
@@ -331,7 +331,7 @@ describe("endOfDayUTC", () => {
 
 describe("Organization cloudBillingCycleAnchor persistence", () => {
   it("should preserve startOfDayUTC when creating and reading organization", async () => {
-    const { prisma } = await import("@hanzo/shared/src/db");
+    const { prisma } = await import("@hanzo/console-core/src/db");
 
     const inputDate = new Date("2024-09-30T14:30:45.123Z");
     const expectedDate = startOfDayUTC(inputDate); // 2024-09-30T00:00:00.000Z
@@ -358,7 +358,7 @@ describe("Organization cloudBillingCycleAnchor persistence", () => {
   });
 
   it("should preserve endOfDayUTC when creating and reading organization", async () => {
-    const { prisma } = await import("@hanzo/shared/src/db");
+    const { prisma } = await import("@hanzo/console-core/src/db");
 
     const inputDate = new Date("2024-09-30T14:30:45.123Z");
     const expectedDate = endOfDayUTC(inputDate); // 2024-09-30T23:59:59.999Z
@@ -385,7 +385,7 @@ describe("Organization cloudBillingCycleAnchor persistence", () => {
   });
 
   it("should preserve random time in UTC when creating and reading organization", async () => {
-    const { prisma } = await import("@hanzo/shared/src/db");
+    const { prisma } = await import("@hanzo/console-core/src/db");
 
     // Random time in the middle of the day
     const randomDate = new Date("2024-09-30T14:37:22.456Z");
@@ -412,7 +412,7 @@ describe("Organization cloudBillingCycleAnchor persistence", () => {
   });
 
   it("should handle null cloudBillingCycleAnchor correctly", async () => {
-    const { prisma } = await import("@hanzo/shared/src/db");
+    const { prisma } = await import("@hanzo/console-core/src/db");
 
     // Create organization without billing cycle anchor
     const org = await prisma.organization.create({
@@ -435,7 +435,7 @@ describe("Organization cloudBillingCycleAnchor persistence", () => {
   });
 
   it("should correctly normalize different timezone inputs to UTC", async () => {
-    const { prisma } = await import("@hanzo/shared/src/db");
+    const { prisma } = await import("@hanzo/console-core/src/db");
 
     // Date created with timezone offset (Berlin time, +02:00)
     const berlinTime = new Date("2024-09-30T14:30:00+02:00"); // 12:30 UTC

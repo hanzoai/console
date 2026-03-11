@@ -1,5 +1,5 @@
 import { env } from "@/src/env.mjs";
-import { type StorageService, StorageServiceFactory } from "@hanzo/shared/src/server";
+import { type StorageService, StorageServiceFactory } from "@hanzo/console-core/src/server";
 
 let s3StorageServiceClient: StorageService;
 

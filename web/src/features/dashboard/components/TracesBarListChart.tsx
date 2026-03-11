@@ -1,5 +1,5 @@
 import { api } from "@/src/utils/api";
-import { type FilterState } from "@hanzo/shared";
+import { type FilterState } from "@hanzo/console";
 import { ExpandListButton } from "@/src/features/dashboard/components/cards/ChevronButton";
 import { useState } from "react";
 import { DashboardCard } from "@/src/features/dashboard/components/cards/DashboardCard";
@@ -95,9 +95,7 @@ export const TracesBarListChart = ({
   const transformedTraces =
     traces.data?.map((item: any) => {
       return {
-        name: item[traceNameField]
-          ? (item[traceNameField] as string)
-          : "Unknown",
+        name: item[traceNameField] ? (item[traceNameField] as string) : "Unknown",
         value: Number(item[countField]),
       };
     }) ?? [];
@@ -122,9 +120,7 @@ export const TracesBarListChart = ({
       <>
         <TotalMetric
           metric={compactNumberFormatter(
-            totalTraces.data?.[0]?.[countField]
-              ? Number(totalTraces.data[0][countField])
-              : 0,
+            totalTraces.data?.[0]?.[countField] ? Number(totalTraces.data[0][countField]) : 0,
           )}
           description={"Total traces tracked"}
         />
@@ -133,10 +129,7 @@ export const TracesBarListChart = ({
             className="mt-4 w-full"
             style={{
               minHeight: 200,
-              height: Math.max(
-                200,
-                adjustedData.length * BAR_ROW_HEIGHT + CHART_AXIS_PADDING,
-              ),
+              height: Math.max(200, adjustedData.length * BAR_ROW_HEIGHT + CHART_AXIS_PADDING),
             }}
           >
             <Chart

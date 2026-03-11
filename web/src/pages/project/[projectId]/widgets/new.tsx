@@ -4,7 +4,7 @@ import { api } from "@/src/utils/api";
 import { type WidgetChartConfig, WidgetForm } from "@/src/features/widgets";
 import { showSuccessToast } from "@/src/features/notifications/showSuccessToast";
 import { showErrorToast } from "@/src/features/notifications/showErrorToast";
-import { type DashboardWidgetChartType } from "@hanzo/shared/src/db";
+import { type DashboardWidgetChartType } from "@hanzo/console-core/src/db";
 import { type views, type metricAggregations } from "@/src/features/query/types";
 import { type z } from "zod/v4";
 import { SelectDashboardDialog } from "@/src/features/dashboard/components/SelectDashboardDialog";

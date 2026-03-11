@@ -7,8 +7,14 @@ import {
   QueueName,
   TQueueJobTypes,
   traceDeletionProcessor,
-} from "@hanzo/shared/src/server";
-import { BatchActionType, BatchActionStatus, BatchTableNames, FilterCondition, EvalTargetObject } from "@hanzo/shared";
+} from "@hanzo/console-core/src/server";
+import {
+  BatchActionType,
+  BatchActionStatus,
+  BatchTableNames,
+  FilterCondition,
+  EvalTargetObject,
+} from "@hanzo/console-core";
 import Decimal from "decimal.js";
 import {
   getDatabaseReadStreamPaginated,
@@ -17,13 +23,13 @@ import {
 import { env } from "../../env";
 import { Job } from "@hanzo/mq";
 import { processAddObservationsToQueue, processAddSessionsToQueue, processAddTracesToQueue } from "./processAddToQueue";
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 import { randomUUID } from "node:crypto";
 import { processDatastoreScoreDelete } from "../scores/processDatastoreScoreDelete";
 import { getObservationStream } from "../database-read-stream/observation-stream";
 import { getEventsStreamForEval, getEventsStreamForDataset } from "../database-read-stream/event-stream";
 import { processAddObservationsToDataset } from "./processAddObservationsToDataset";
-import { ObservationAddToDatasetConfigSchema } from "@hanzo/shared";
+import { ObservationAddToDatasetConfigSchema } from "@hanzo/console-core";
 import { processBatchedObservationEval } from "./processBatchedObservationEval";
 
 const CHUNK_SIZE = 1000;

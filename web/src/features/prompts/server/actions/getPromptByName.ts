@@ -1,6 +1,6 @@
-import { InvalidRequestError, PRODUCTION_LABEL, type Prompt } from "@hanzo/shared";
-import { PromptService, redis, recordIncrement } from "@hanzo/shared/src/server";
-import { prisma } from "@hanzo/shared/src/db";
+import { InvalidRequestError, PRODUCTION_LABEL, type Prompt } from "@hanzo/console";
+import { PromptService, redis, recordIncrement } from "@hanzo/console-core/src/server";
+import { prisma } from "@hanzo/console-core/src/db";
 
 type GetPromptByNameParams = {
   promptName: string;

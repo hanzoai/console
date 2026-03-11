@@ -1,4 +1,4 @@
-import { AnalyticsIntegrationExportSource } from "@hanzo/shared";
+import { AnalyticsIntegrationExportSource } from "@hanzo/console";
 import { z } from "zod/v4";
 
 export const MIXPANEL_REGIONS = [
@@ -28,7 +28,5 @@ export const mixpanelIntegrationFormSchema = z.object({
       "Mixpanel Project Token is required. You can find it in your Mixpanel project settings.",
     ),
   enabled: z.boolean(),
-  exportSource: z
-    .enum(AnalyticsIntegrationExportSource)
-    .default(AnalyticsIntegrationExportSource.TRACES_OBSERVATIONS),
+  exportSource: z.enum(AnalyticsIntegrationExportSource).default(AnalyticsIntegrationExportSource.TRACES_OBSERVATIONS),
 });

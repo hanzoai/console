@@ -1,1 +1,1 @@
-export { genericAdapter } from "@hanzo/shared";
+export { genericAdapter } from "@hanzo/console";

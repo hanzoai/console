@@ -1,5 +1,11 @@
 import { z } from "zod/v4";
-import { LLMAdapter, LLMJSONSchema, LLMToolDefinitionSchema, ChatMessageSchema, JSONObjectSchema } from "@hanzo/shared";
+import {
+  LLMAdapter,
+  LLMJSONSchema,
+  LLMToolDefinitionSchema,
+  ChatMessageSchema,
+  JSONObjectSchema,
+} from "@hanzo/console";
 
 const ModelParamsSchema = z.object({
   provider: z.string(),

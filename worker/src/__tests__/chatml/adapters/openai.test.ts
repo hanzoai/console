@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { openAIAdapter, normalizeInput, normalizeOutput } from "@hanzo/shared";
+import { openAIAdapter, normalizeInput, normalizeOutput } from "@hanzo/console-core";
 
 describe("OpenAI Adapter", () => {
   describe("detection", () => {

@@ -3,11 +3,11 @@ import { z } from "zod/v4";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
 import { throwIfNoProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { createTRPCRouter, protectedProjectProcedure } from "@/src/server/api/trpc";
-import { decrypt, encrypt } from "@hanzo/shared/encryption";
+import { decrypt, encrypt } from "@hanzo/console-core/encryption";
 import { insightsIntegrationFormSchema } from "@/src/features/insights-integration/types";
 import { TRPCError } from "@trpc/server";
 import { env } from "@/src/env.mjs";
-import { validateWebhookURL } from "@hanzo/shared/src/server";
+import { validateWebhookURL } from "@hanzo/console-core/src/server";
 
 export const insightsIntegrationRouter = createTRPCRouter({
   get: protectedProjectProcedure.input(z.object({ projectId: z.string() })).query(async ({ input, ctx }) => {

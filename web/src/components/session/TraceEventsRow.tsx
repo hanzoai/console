@@ -9,7 +9,7 @@ import { AnnotateDrawer } from "@/src/features/scores/components/AnnotateDrawer"
 import { CommentDrawerButton } from "@/src/features/comments/CommentDrawerButton";
 import { ItemBadge } from "@/src/components/ItemBadge";
 import { NewDatasetItemFromTraceId } from "@/src/components/session/NewDatasetItemFromTrace";
-import { AnnotationQueueObjectType, type FilterState } from "@hanzo/shared";
+import { AnnotationQueueObjectType, type FilterState } from "@hanzo/console";
 import { CreateNewAnnotationQueueItem } from "@/src/features/annotation-queues/components/CreateNewAnnotationQueueItem";
 import { IOPreview } from "@/src/components/trace2/components/IOPreview/IOPreview";
 import { api } from "@/src/utils/api";
@@ -42,20 +42,19 @@ export const TraceEventsRow = React.memo(
     showCorrections: boolean;
     filterState: FilterState;
   }) => {
-    const observationsQuery =
-      api.sessions.observationsForTraceFromEvents.useQuery(
-        {
-          projectId,
-          sessionId,
-          traceId: trace.id,
-          filter: filterState,
-        },
-        {
-          enabled: typeof trace.id === "string",
-          trpc: { context: { skipBatch: true } },
-          staleTime: 60 * 1000,
-        },
-      );
+    const observationsQuery = api.sessions.observationsForTraceFromEvents.useQuery(
+      {
+        projectId,
+        sessionId,
+        traceId: trace.id,
+        filter: filterState,
+      },
+      {
+        enabled: typeof trace.id === "string",
+        trpc: { context: { skipBatch: true } },
+        staleTime: 60 * 1000,
+      },
+    );
 
     return (
       <Card className="border-border shadow-none">
@@ -71,11 +70,7 @@ export const TraceEventsRow = React.memo(
                       <span>{observation.name ?? "Observation"}</span>
                       <span className="-mr-1">•</span>
                       <span className="inline-flex items-center gap-1">
-                        <ItemBadge
-                          type={observation.type ?? "EVENT"}
-                          isSmall
-                          className="h-3 w-3"
-                        />
+                        <ItemBadge type={observation.type ?? "EVENT"} isSmall className="h-3 w-3" />
                         <span>
                           {String(observation.type ?? "EVENT")
                             .toLowerCase()
@@ -94,20 +89,14 @@ export const TraceEventsRow = React.memo(
                       projectId={projectId}
                       traceId={trace.id}
                       observationId={observation.id}
-                      environment={
-                        observation.environment ??
-                        trace.environment ??
-                        undefined
-                      }
+                      environment={observation.environment ?? trace.environment ?? undefined}
                       showCorrections={showCorrections}
                     />
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="p-2 text-xs text-muted-foreground">
-                No observations match the current filter.
-              </div>
+              <div className="p-2 text-xs text-muted-foreground">No observations match the current filter.</div>
             )}
           </div>
           <div className="hidden bg-border md:block"></div>
@@ -128,9 +117,7 @@ export const TraceEventsRow = React.memo(
                   <span className="text-xs font-medium">
                     {trace.name ?? "Trace"} ({trace.id})&nbsp;↗
                   </span>
-                  <span className="text-xs text-muted-foreground">
-                    {trace.timestamp.toLocaleString()}
-                  </span>
+                  <span className="text-xs text-muted-foreground">{trace.timestamp.toLocaleString()}</span>
                 </div>
               </Link>
               <div className="flex flex-wrap gap-2">

@@ -1,5 +1,5 @@
 import { projectRoleAccessRights, type ProjectScope } from "@/src/features/rbac/constants/projectAccessRights";
-import { type Role } from "@hanzo/shared/src/db";
+import { type Role } from "@hanzo/console-core/src/db";
 import { TRPCError } from "@trpc/server";
 import { type Session } from "next-auth";
 import { useSession } from "next-auth/react";

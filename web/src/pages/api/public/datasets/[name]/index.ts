@@ -1,4 +1,4 @@
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
 import {
@@ -7,8 +7,8 @@ import {
   transformDbDatasetItemDomainToAPIDatasetItem,
   transformDbDatasetToAPIDataset,
 } from "@/src/features/public-api/types/datasets";
-import { createDatasetItemFilterState, getDatasetItems } from "@hanzo/shared/src/server";
-import { ConsoleNotFoundError } from "@hanzo/shared";
+import { createDatasetItemFilterState, getDatasetItems } from "@hanzo/console-core/src/server";
+import { ConsoleNotFoundError } from "@hanzo/console";
 
 export default withMiddlewares({
   GET: createAuthedProjectAPIRoute({

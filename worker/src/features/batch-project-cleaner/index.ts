@@ -1,5 +1,11 @@
-import { logger, queryDatastore, commandDatastore, traceException, recordIncrement } from "@hanzo/shared/src/server";
-import { prisma } from "@hanzo/shared/src/db";
+import {
+  logger,
+  queryDatastore,
+  commandDatastore,
+  traceException,
+  recordIncrement,
+} from "@hanzo/console-core/src/server";
+import { prisma } from "@hanzo/console-core/src/db";
 
 export const BATCH_DELETION_TABLES = [
   "traces",

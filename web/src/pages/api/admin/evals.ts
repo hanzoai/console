@@ -1,9 +1,9 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { z } from "zod/v4";
 import { v4 as uuidv4 } from "uuid";
-import { logger, QueueName, getQueue, QueueJobs } from "@hanzo/shared/src/server";
+import { logger, QueueName, getQueue, QueueJobs } from "@hanzo/console-core/src/server";
 import { AdminApiAuthService } from "@/src/features/admin-api/server/adminApiAuth";
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 
 const ManageEvalBody = z.discriminatedUnion("action", [
   z.object({

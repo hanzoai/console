@@ -1,5 +1,5 @@
 import { calculateNumericDiff } from "@/src/features/datasets/lib/calculateBaselineDiff";
-import { type EnrichedDatasetRunItem } from "@hanzo/shared/src/server";
+import { type EnrichedDatasetRunItem } from "@hanzo/console-core/src/server";
 
 const getLatency = (runItem: EnrichedDatasetRunItem) => {
   return runItem.observation?.latency ?? runItem.trace.duration;

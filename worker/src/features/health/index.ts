@@ -1,5 +1,5 @@
-import { prisma } from "@hanzo/shared/src/db";
-import { logger, redis } from "@hanzo/shared/src/server";
+import { prisma } from "@hanzo/console-core/src/db";
+import { logger, redis } from "@hanzo/console-core/src/server";
 import { Response } from "express";
 
 /**

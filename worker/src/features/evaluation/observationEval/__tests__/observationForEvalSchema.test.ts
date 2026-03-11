@@ -5,7 +5,7 @@ import {
   observationEvalFilterColumns,
   observationEvalVariableColumns,
   eventsEvalFilterColumns,
-} from "@hanzo/shared";
+} from "@hanzo/console-core";
 
 describe("observationForEvalSchema", () => {
   describe("schema field validation", () => {
@@ -162,9 +162,7 @@ describe("observationForEvalSchema", () => {
         metadata: {},
       };
 
-      const result = observationForEvalSchema.parse(
-        observationWithEmptyObjects,
-      );
+      const result = observationForEvalSchema.parse(observationWithEmptyObjects);
       expect(result.tool_definitions).toEqual({});
       expect(result.metadata).toEqual({});
     });
@@ -175,9 +173,7 @@ describe("observationForEvalSchema", () => {
         // Missing other required fields
       };
 
-      expect(() =>
-        observationForEvalSchema.parse(invalidObservation),
-      ).toThrow();
+      expect(() => observationForEvalSchema.parse(invalidObservation)).toThrow();
     });
   });
 
@@ -224,9 +220,7 @@ describe("observationForEvalSchema", () => {
     });
 
     it("should include expected variable columns", () => {
-      const columnInternals = observationEvalVariableColumns.map(
-        (c) => c.internal,
-      );
+      const columnInternals = observationEvalVariableColumns.map((c) => c.internal);
 
       // Primary data fields
       expect(columnInternals).toContain("input");

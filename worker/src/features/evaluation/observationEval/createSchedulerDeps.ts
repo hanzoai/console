@@ -1,5 +1,5 @@
-import { prisma } from "@hanzo/shared/src/db";
-import { LLMAsJudgeExecutionQueue, QueueJobs, QueueName } from "@hanzo/shared/src/server";
+import { prisma } from "@hanzo/console-core/src/db";
+import { LLMAsJudgeExecutionQueue, QueueJobs, QueueName } from "@hanzo/console-core/src/server";
 import { env } from "../../../env";
 import { getEvalS3StorageClient } from "../s3StorageClient";
 import { type ObservationEvalSchedulerDeps } from "./types";

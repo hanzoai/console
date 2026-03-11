@@ -1,6 +1,6 @@
-import { createObservation, createObservationsCh } from "@hanzo/shared/src/server";
+import { createObservation, createObservationsCh } from "@hanzo/console-core/src/server";
 import { pruneDatabase } from "@/src/__tests__/test-utils";
-import { getObservationMetricsForPrompts, getObservationsWithPromptName } from "@hanzo/shared/src/server";
+import { getObservationMetricsForPrompts, getObservationsWithPromptName } from "@hanzo/console-core/src/server";
 import { v4 } from "uuid";
 
 const projectId = "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a";

@@ -1,6 +1,6 @@
-import { CommentObjectType, type CreateCommentData } from "@hanzo/shared";
+import { CommentObjectType, type CreateCommentData } from "@hanzo/console";
 import { type z } from "zod/v4";
-import { getObservationById, getTraceById } from "@hanzo/shared/src/server";
+import { getObservationById, getTraceById } from "@hanzo/console-core/src/server";
 
 const isObservationOrTrace = (objectType: CommentObjectType) => {
   return objectType === CommentObjectType.OBSERVATION || objectType === CommentObjectType.TRACE;

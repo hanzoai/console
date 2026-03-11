@@ -4,7 +4,7 @@ import {
   getDisplaySecretKey,
   generateWebhookSignature,
   createSignatureHeader,
-} from "@hanzo/shared/encryption";
+} from "@hanzo/console-core/encryption";
 
 describe("signature.ts", () => {
   describe("generateWebhookSecret", () => {

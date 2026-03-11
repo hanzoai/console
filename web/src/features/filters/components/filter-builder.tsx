@@ -18,8 +18,8 @@ import {
   type ColumnDefinition,
   filterOperators,
   singleFilter,
-} from "@hanzo/shared";
-import { NonEmptyString } from "@hanzo/shared";
+} from "@hanzo/console";
+import { NonEmptyString } from "@hanzo/console";
 import { cn } from "@/src/utils/tailwind";
 import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import {

@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto";
 import { IBackgroundMigration } from "./IBackgroundMigration";
-import { prisma, Prisma } from "@hanzo/shared/src/db";
-import { instrumentAsync, logger } from "@hanzo/shared/src/server";
+import { prisma, Prisma } from "@hanzo/console-core/src/db";
+import { instrumentAsync, logger } from "@hanzo/console-core/src/server";
 
 export class BackgroundMigrationManager {
   private static workerId = randomUUID();

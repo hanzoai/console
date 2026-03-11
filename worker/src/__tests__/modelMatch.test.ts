@@ -1,7 +1,12 @@
 import { expect, describe, it } from "vitest";
-import { prisma } from "@hanzo/shared/src/db";
-import { createOrgProjectAndApiKey, redis } from "@hanzo/shared/src/server";
-import { findModel, findModelInPostgres, getRedisModelKey, clearModelCacheForProject } from "@hanzo/shared/src/server";
+import { prisma } from "@hanzo/console-core/src/db";
+import { createOrgProjectAndApiKey, redis } from "@hanzo/console-core/src/server";
+import {
+  findModel,
+  findModelInPostgres,
+  getRedisModelKey,
+  clearModelCacheForProject,
+} from "@hanzo/console-core/src/server";
 import { v4 as uuidv4 } from "uuid";
 
 describe("modelMatch", () => {

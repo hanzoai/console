@@ -1,4 +1,4 @@
-import { type EvalTemplate } from "@hanzo/shared";
+import { type EvalTemplate } from "@hanzo/console";
 import { InnerEvaluatorForm } from "@/src/features/evals/components/inner-evaluator-form";
 import { type PartialConfig } from "@/src/features/evals/types";
 import { useEvalCapabilities } from "@/src/features/evals/hooks/useEvalCapabilities";
@@ -39,9 +39,7 @@ export const EvaluatorForm = (props: {
           projectId={props.projectId}
           disabled={props.disabled}
           existingEvaluator={props.existingEvaluator}
-          evalTemplate={
-            props.existingEvaluator?.evalTemplate ?? currentTemplate
-          }
+          evalTemplate={props.existingEvaluator?.evalTemplate ?? currentTemplate}
           onFormSuccess={props.onFormSuccess}
           shouldWrapVariables={props.shouldWrapVariables}
           hideTargetSection={props.hideTargetSection}

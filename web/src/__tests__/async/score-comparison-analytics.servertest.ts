@@ -1,7 +1,7 @@
 /** @jest-environment node */
 
 import type { Session } from "next-auth";
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 import { appRouter } from "@/src/server/api/root";
 import { createInnerTRPCContext } from "@/src/server/api/trpc";
 import {
@@ -13,7 +13,7 @@ import {
   createObservationsCh,
   createSessionScore,
   createDatasetRunScore,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import { v4 } from "uuid";
 
 describe("Score Comparison Analytics tRPC", () => {

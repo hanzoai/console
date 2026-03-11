@@ -2,7 +2,7 @@ import { z } from "zod/v4";
 import { throwIfNoProjectAccess, hasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { createTRPCRouter, protectedProjectProcedure } from "@/src/server/api/trpc";
 import { TRPCError } from "@trpc/server";
-import { logger } from "@hanzo/shared/src/server";
+import { logger } from "@hanzo/console-core/src/server";
 
 export const commentReactionsRouter = createTRPCRouter({
   add: protectedProjectProcedure

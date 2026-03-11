@@ -6,7 +6,7 @@ import { useTheme } from "next-themes";
 import { lightTheme } from "@/src/components/editor/light-theme";
 import { darkTheme } from "@/src/components/editor/dark-theme";
 import { cn } from "@/src/utils/tailwind";
-import { evaluateJsonPath } from "@hanzo/shared";
+import { evaluateJsonPath } from "@hanzo/console";
 
 // JSON path language mode for syntax highlighting
 const jsonPathLanguage = StreamLanguage.define({
@@ -161,14 +161,8 @@ export function JsonPathInput({
           className,
         )}
       />
-      {displayError && (
-        <p className="text-xs text-destructive">{displayError}</p>
-      )}
-      {showWarning && (
-        <p className="text-xs text-amber-600 dark:text-amber-500">
-          No match found in source data
-        </p>
-      )}
+      {displayError && <p className="text-xs text-destructive">{displayError}</p>}
+      {showWarning && <p className="text-xs text-amber-600 dark:text-amber-500">No match found in source data</p>}
     </div>
   );
 }

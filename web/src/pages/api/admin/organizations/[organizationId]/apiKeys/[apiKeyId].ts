@@ -1,6 +1,6 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
-import { prisma } from "@hanzo/shared/src/db";
-import { logger } from "@hanzo/shared/src/server";
+import { prisma } from "@hanzo/console-core/src/db";
+import { logger } from "@hanzo/console-core/src/server";
 import { AdminApiAuthService } from "@/src/features/admin-api/server/adminApiAuth";
 import { hasEntitlementBasedOnPlan } from "@/src/features/entitlements/server/hasEntitlement";
 import { getSelfHostedInstancePlanServerSide } from "@/src/features/entitlements/server/getPlan";

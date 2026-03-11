@@ -1,5 +1,5 @@
 import jsf from "json-schema-faker";
-import type { Prisma } from "@hanzo/shared";
+import type { Prisma } from "@hanzo/console";
 
 /**
  * Generate an example object from a JSON Schema using json-schema-faker

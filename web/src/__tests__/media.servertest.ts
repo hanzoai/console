@@ -11,8 +11,8 @@ import {
   type GetMediaUploadUrlResponse,
   GetMediaUploadUrlResponseSchema,
 } from "@/src/features/media/validation";
-import { type Media, type ObservationMedia, prisma, type TraceMedia } from "@hanzo/shared/src/db";
-import { redis } from "@hanzo/shared/src/server";
+import { type Media, type ObservationMedia, prisma, type TraceMedia } from "@hanzo/console-core/src/db";
+import { redis } from "@hanzo/console-core/src/server";
 
 describe("Media Upload API", () => {
   const projectId = "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a";

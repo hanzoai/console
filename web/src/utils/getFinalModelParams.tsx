@@ -1,4 +1,4 @@
-import { type ModelParams, type UIModelParams } from "@hanzo/shared";
+import { type ModelParams, type UIModelParams } from "@hanzo/console";
 
 export function getFinalModelParams(modelParams: UIModelParams): ModelParams {
   return Object.entries(modelParams)

@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { SlackMessageBuilder } from "../features/slack/slackMessageBuilder";
-import type { WebhookInput } from "@hanzo/shared/src/server";
+import type { WebhookInput } from "@hanzo/console-core/src/server";
 
 describe("SlackMessageBuilder", () => {
   const mockPromptPayload: WebhookInput["payload"] = {

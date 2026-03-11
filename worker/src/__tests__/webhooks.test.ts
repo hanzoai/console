@@ -5,11 +5,11 @@ import {
   JobConfigState,
   PromptDomainSchema,
   WebhookActionConfigWithSecrets,
-} from "@hanzo/shared";
-import { WebhookInput, createOrgProjectAndApiKey, getActionByIdWithSecrets } from "@hanzo/shared/src/server";
-import { prisma } from "@hanzo/shared/src/db";
-import { decrypt, encrypt, generateWebhookSignature } from "@hanzo/shared/encryption";
-import { generateWebhookSecret } from "@hanzo/shared/encryption";
+} from "@hanzo/console-core";
+import { WebhookInput, createOrgProjectAndApiKey, getActionByIdWithSecrets } from "@hanzo/console-core/src/server";
+import { prisma } from "@hanzo/console-core/src/db";
+import { decrypt, encrypt, generateWebhookSignature } from "@hanzo/console-core/encryption";
+import { generateWebhookSecret } from "@hanzo/console-core/encryption";
 import { setupServer } from "msw/node";
 import { http, HttpResponse } from "msw";
 import { executeWebhook } from "../queues/webhooks";
@@ -1059,7 +1059,7 @@ describe("Webhook Integration Tests", () => {
       });
 
       // Import the function to test it directly
-      const { getConsecutiveAutomationFailures } = await import("@hanzo/shared/src/server");
+      const { getConsecutiveAutomationFailures } = await import("@hanzo/console-core/src/server");
 
       // Check that consecutive failures is 0 since there are no executions after the lastFailingExecutionId
       const failures = await getConsecutiveAutomationFailures({

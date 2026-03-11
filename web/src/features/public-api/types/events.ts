@@ -1,5 +1,5 @@
 import { z } from "zod/v4";
-import { CreateEventEvent } from "@hanzo/shared/src/server";
+import { CreateEventEvent } from "@hanzo/console-core/src/server";
 
 // POST /events
 export const PostEventsV1Body = CreateEventEvent;

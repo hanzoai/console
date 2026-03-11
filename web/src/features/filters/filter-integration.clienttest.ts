@@ -4,7 +4,7 @@
  * using browser URLSearchParams APIs to simulate real-world usage.
  */
 
-import { type FilterState, tracesTableCols, observationsTableCols } from "@hanzo/shared";
+import { type FilterState, tracesTableCols, observationsTableCols } from "@hanzo/console";
 import { encodeFiltersGeneric, decodeFiltersGeneric } from "./lib/filter-query-encoding";
 import { validateFilters } from "@/src/components/table/table-view-presets/validation";
 import { traceFilterConfig } from "./config/traces-config";

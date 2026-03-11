@@ -1,6 +1,6 @@
-import { EvalTargetObject } from "@hanzo/shared";
-import { prisma } from "@hanzo/shared/src/db";
-import { logger, hasNoEvalConfigsCache, setNoEvalConfigsCache } from "@hanzo/shared/src/server";
+import { EvalTargetObject } from "@hanzo/console-core";
+import { prisma } from "@hanzo/console-core/src/db";
+import { logger, hasNoEvalConfigsCache, setNoEvalConfigsCache } from "@hanzo/console-core/src/server";
 import { type ObservationEvalConfig } from "./types";
 
 /**

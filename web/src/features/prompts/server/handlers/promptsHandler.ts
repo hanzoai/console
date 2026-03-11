@@ -3,10 +3,10 @@ import { type NextApiRequest, type NextApiResponse } from "next";
 import { createPrompt } from "@/src/features/prompts/server/actions/createPrompt";
 import { getPromptsMeta } from "@/src/features/prompts/server/actions/getPromptsMeta";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 import { authorizePromptRequestOrThrow } from "../utils/authorizePromptRequest";
 import { RateLimitService } from "@/src/features/public-api/server/RateLimitService";
-import { CreatePromptSchema, GetPromptsMetaSchema, InvalidRequestError } from "@hanzo/shared";
+import { CreatePromptSchema, GetPromptsMetaSchema, InvalidRequestError } from "@hanzo/console";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
 
 const getPromptsHandler = async (req: NextApiRequest, res: NextApiResponse) => {

@@ -1,4 +1,4 @@
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
 import {
@@ -8,14 +8,14 @@ import {
   PostDatasetItemsV1Response,
   transformDbDatasetItemDomainToAPIDatasetItem,
 } from "@/src/features/public-api/types/datasets";
-import { ConsoleNotFoundError, Prisma } from "@hanzo/shared";
+import { ConsoleNotFoundError, Prisma } from "@hanzo/console";
 import {
   createDatasetItemFilterState,
   getDatasetItems,
   getDatasetItemsCount,
   logger,
   upsertDatasetItem,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
 
 export const config = {

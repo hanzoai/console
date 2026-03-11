@@ -3,14 +3,9 @@ import { api } from "@/src/utils/api";
 import { type views, type metricAggregations, mapLegacyUiTableFilterToView } from "@/src/features/query";
 import { type z } from "zod/v4";
 import { Chart } from "@/src/features/widgets/chart-library/Chart";
-import { type FilterState, type OrderByState } from "@hanzo/shared";
+import { type FilterState, type OrderByState } from "@hanzo/console";
 import { isTimeSeriesChart } from "@/src/features/widgets/chart-library/utils";
-import {
-  PencilIcon,
-  TrashIcon,
-  CopyIcon,
-  GripVerticalIcon,
-} from "lucide-react";
+import { PencilIcon, TrashIcon, CopyIcon, GripVerticalIcon } from "lucide-react";
 import { useRouter } from "next/router";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { showErrorToast } from "@/src/features/notifications/showErrorToast";
@@ -267,11 +262,7 @@ export function DashboardWidget({
           )}
           {/* Download button is available once chart data has loaded */}
           {!queryResult.isPending ? (
-            <DownloadButton
-              data={transformedData}
-              fileName={widget.data.name}
-              className="hidden group-hover:block"
-            />
+            <DownloadButton data={transformedData} fileName={widget.data.name} className="hidden group-hover:block" />
           ) : null}
         </div>
       </div>

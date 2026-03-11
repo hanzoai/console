@@ -6,7 +6,7 @@ import {
   publicApiPaginationZod,
   singleFilter,
   InvalidRequestError,
-} from "@hanzo/shared";
+} from "@hanzo/console";
 
 import {
   reduceUsageOrCostDetails,
@@ -14,7 +14,7 @@ import {
   type ObservationPriceFields,
   OBSERVATION_FIELD_GROUPS,
   type ObservationFieldGroup,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import { z } from "zod/v4";
 import { useEventsTableSchema } from "../../query/types";
 

@@ -1,5 +1,5 @@
-import { FilterState, TraceDomain } from "@hanzo/shared";
-import { tracesTableUiColumnDefinitions } from "@hanzo/shared/src/server";
+import { FilterState, TraceDomain } from "@hanzo/console-core";
+import { tracesTableUiColumnDefinitions } from "@hanzo/console-core/src/server";
 
 // Uses the uiTableId for mapping fields later.
 const evalTraceFilterColumns = [

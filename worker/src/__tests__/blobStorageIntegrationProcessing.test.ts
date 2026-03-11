@@ -13,12 +13,12 @@ import {
   createEventsCh,
   StorageService,
   StorageServiceFactory,
-} from "@hanzo/shared/src/server";
-import { prisma } from "@hanzo/shared/src/db";
+} from "@hanzo/console-core/src/server";
+import { prisma } from "@hanzo/console-core/src/db";
 import { Job } from "@hanzo/mq";
 import { handleBlobStorageIntegrationProjectJob } from "../features/blobstorage/handleBlobStorageIntegrationProjectJob";
-import { BlobStorageIntegrationType, BlobStorageIntegrationFileType } from "@hanzo/shared";
-import { encrypt } from "@hanzo/shared/encryption";
+import { BlobStorageIntegrationType, BlobStorageIntegrationFileType } from "@hanzo/console-core";
+import { encrypt } from "@hanzo/console-core/encryption";
 
 // Skip tests that use Azurite in Azure mode due to known Azurite limitations
 // with multipart uploads. These tests use S3 explicitly or are skipped.

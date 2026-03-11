@@ -9,11 +9,11 @@ import {
   LATEST_PROMPT_LABEL,
   PromptType,
   extractVariables,
-} from "@hanzo/shared";
-import { type PrismaClient } from "@hanzo/shared/src/db";
+} from "@hanzo/console";
+import { type PrismaClient } from "@hanzo/console-core/src/db";
 import { removeLabelsFromPreviousPromptVersions } from "@/src/features/prompts/server/utils/updatePromptLabels";
 import { updatePromptTagsOnAllVersions } from "@/src/features/prompts/server/utils/updatePromptTags";
-import { PromptContentSchema, PromptService, redis, extractPlaceholderNames } from "@hanzo/shared/src/server";
+import { PromptContentSchema, PromptService, redis, extractPlaceholderNames } from "@hanzo/console-core/src/server";
 import { promptChangeEventSourcing } from "@/src/features/prompts/server/promptChangeEventSourcing";
 
 export type CreatePromptParams = CreatePromptTRPCType & {

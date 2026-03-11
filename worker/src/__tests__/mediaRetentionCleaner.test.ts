@@ -4,13 +4,13 @@ import {
   createOrgProjectAndApiKey,
   getS3MediaStorageClient,
   removeIngestionEventsFromS3AndDeleteDatastoreRefsForProject,
-} from "@hanzo/shared/src/server";
-import { prisma } from "@hanzo/shared/src/db";
+} from "@hanzo/console-core/src/server";
+import { prisma } from "@hanzo/console-core/src/db";
 import { MediaRetentionCleaner } from "../features/media-retention-cleaner";
 
 // Mock S3 and blob storage functions
-vi.mock("@hanzo/shared/src/server", async () => {
-  const actual = await vi.importActual("@hanzo/shared/src/server");
+vi.mock("@hanzo/console-core/src/server", async () => {
+  const actual = await vi.importActual("@hanzo/console-core/src/server");
   return {
     ...actual,
     getS3MediaStorageClient: vi.fn(),

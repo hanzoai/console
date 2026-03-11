@@ -2,11 +2,11 @@ import crypto from "node:crypto";
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { type ZodType, type z } from "zod/v4";
 import { ApiAuthService } from "@/src/features/public-api/server/apiAuth";
-import { prisma } from "@hanzo/shared/src/db";
-import { redis, type AuthHeaderValidVerificationResult, traceException, logger } from "@hanzo/shared/src/server";
-import { type RateLimitResource } from "@hanzo/shared";
+import { prisma } from "@hanzo/console-core/src/db";
+import { redis, type AuthHeaderValidVerificationResult, traceException, logger } from "@hanzo/console-core/src/server";
+import { type RateLimitResource } from "@hanzo/console";
 import { RateLimitService } from "@/src/features/public-api/server/RateLimitService";
-import { contextWithHanzoProps } from "@hanzo/shared/src/server";
+import { contextWithHanzoProps } from "@hanzo/console-core/src/server";
 import * as opentelemetry from "@opentelemetry/api";
 import { env } from "@/src/env.mjs";
 

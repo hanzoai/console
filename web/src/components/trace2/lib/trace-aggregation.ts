@@ -6,7 +6,7 @@
  */
 
 import { type ObservationReturnTypeWithMetadata } from "@/src/server/api/routers/traces";
-import { type ObservationType, isGenerationLike } from "@hanzo/shared";
+import { type ObservationType, isGenerationLike } from "@hanzo/console";
 import { type TreeNode } from "./types";
 
 export interface AggregatedTraceMetrics {
@@ -27,9 +27,7 @@ export interface AggregatedTraceMetrics {
  * - usage fields: summed across all generation-like observations
  * - hasGenerationLike: true if any observation is generation-like (for showing usage badge)
  */
-export function aggregateTraceMetrics(
-  observations: ObservationReturnTypeWithMetadata[],
-): AggregatedTraceMetrics {
+export function aggregateTraceMetrics(observations: ObservationReturnTypeWithMetadata[]): AggregatedTraceMetrics {
   let totalCost: number | null = null;
   const costDetails: Record<string, number> = {};
   let totalUsage = 0;
@@ -73,8 +71,7 @@ export function aggregateTraceMetrics(
     totalUsage,
     inputUsage,
     outputUsage,
-    usageDetails:
-      Object.keys(usageDetails).length > 0 ? usageDetails : undefined,
+    usageDetails: Object.keys(usageDetails).length > 0 ? usageDetails : undefined,
     hasGenerationLike,
   };
 }

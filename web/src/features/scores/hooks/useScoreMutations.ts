@@ -1,7 +1,7 @@
 import { api } from "@/src/utils/api";
 import { isSessionScore, isTraceScore } from "@/src/features/scores/lib/helpers";
 import { useScoreCache } from "@/src/features/scores/contexts/ScoreCacheContext";
-import { type ScoreTarget } from "@hanzo/shared";
+import { type ScoreTarget } from "@hanzo/console";
 import { showErrorToast } from "@/src/features/notifications/showErrorToast";
 
 export function useScoreMutations({

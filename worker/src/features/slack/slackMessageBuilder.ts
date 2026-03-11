@@ -1,5 +1,5 @@
-import { logger } from "@hanzo/shared/src/server";
-import type { WebhookInput } from "@hanzo/shared/src/server";
+import { logger } from "@hanzo/console-core/src/server";
+import type { WebhookInput } from "@hanzo/console-core/src/server";
 import { env } from "../../env";
 
 /**

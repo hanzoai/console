@@ -1,7 +1,4 @@
-import {
-  queryDatastore,
-  convertDateToDatastoreDateTime,
-} from "@hanzo/shared/src/server";
+import { queryDatastore, convertDateToDatastoreDateTime } from "@hanzo/console-core/src/server";
 import { buildObjectTypeFilter, buildSamplingExpression } from "./queryHelpers";
 
 /**

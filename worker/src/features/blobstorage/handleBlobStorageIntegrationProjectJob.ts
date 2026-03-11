@@ -1,6 +1,6 @@
 import { pipeline } from "stream";
 import { Job } from "@hanzo/mq";
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 import {
   QueueName,
   TQueueJobTypes,
@@ -16,9 +16,9 @@ import {
   BlobStorageIntegrationProcessingQueue,
   queryDatastore,
   QueueJobs,
-} from "@hanzo/shared/src/server";
-import { BlobStorageIntegrationType, BlobStorageIntegrationFileType, BlobStorageExportMode } from "@hanzo/shared";
-import { decrypt } from "@hanzo/shared/encryption";
+} from "@hanzo/console-core/src/server";
+import { BlobStorageIntegrationType, BlobStorageIntegrationFileType, BlobStorageExportMode } from "@hanzo/console-core";
+import { decrypt } from "@hanzo/console-core/encryption";
 import { randomUUID } from "crypto";
 import { env } from "../../env";
 

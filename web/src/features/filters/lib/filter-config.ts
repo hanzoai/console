@@ -1,5 +1,5 @@
 import type React from "react";
-import type { ColumnDefinition } from "@hanzo/shared";
+import type { ColumnDefinition } from "@hanzo/console";
 
 interface BaseFacet {
   column: string;

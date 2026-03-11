@@ -3,15 +3,11 @@ import { JobExecutionStatus, type Prisma } from "@prisma/client";
 import { randomUUID } from "crypto";
 import { scheduleObservationEvals } from "../scheduleObservationEvals";
 import { processObservationEval } from "../observationEvalProcessor";
-import {
-  createTestObservation,
-  createTestEvalConfig,
-  createFullyMockedEvalPipeline,
-} from "./fixtures";
-import { type ObservationForEval, EvalTargetObject } from "@hanzo/shared";
+import { createTestObservation, createTestEvalConfig, createFullyMockedEvalPipeline } from "./fixtures";
+import { type ObservationForEval, EvalTargetObject } from "@hanzo/console-core";
 
 // Mock prisma for processObservationEval
-vi.mock("@hanzo/shared/src/db", () => ({
+vi.mock("@hanzo/console-core/src/db", () => ({
   prisma: {
     jobExecution: {
       findFirst: vi.fn(),
@@ -29,8 +25,8 @@ vi.mock("../../evalService", () => ({
 }));
 
 // Mock logger
-vi.mock("@hanzo/shared/src/server", async () => {
-  const actual = await vi.importActual("@hanzo/shared/src/server");
+vi.mock("@hanzo/console-core/src/server", async () => {
+  const actual = await vi.importActual("@hanzo/console-core/src/server");
   return {
     ...actual,
     logger: {
@@ -43,7 +39,7 @@ vi.mock("@hanzo/shared/src/server", async () => {
   };
 });
 
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 import { executeLLMAsJudgeEvaluation } from "../../evalService";
 
 describe("Observation Eval E2E Pipeline", () => {
@@ -77,9 +73,7 @@ describe("Observation Eval E2E Pipeline", () => {
             value: ["generation"],
           },
         ],
-        variableMapping: [
-          { templateVariable: "output", selectedColumnId: "output" },
-        ],
+        variableMapping: [{ templateVariable: "output", selectedColumnId: "output" }],
         scoreName: "accuracy",
       });
 
@@ -94,12 +88,10 @@ describe("Observation Eval E2E Pipeline", () => {
 
       // Track job execution ID
       let capturedJobExecutionId: string | undefined;
-      const mockCreateJobExecution = vi
-        .fn()
-        .mockImplementation(async (params) => {
-          capturedJobExecutionId = `job-exec-${randomUUID()}`;
-          return { id: capturedJobExecutionId };
-        });
+      const mockCreateJobExecution = vi.fn().mockImplementation(async (params) => {
+        capturedJobExecutionId = `job-exec-${randomUUID()}`;
+        return { id: capturedJobExecutionId };
+      });
       pipeline.schedulerDeps.upsertJobExecution = mockCreateJobExecution;
 
       // ACT: Schedule the observation eval
@@ -110,13 +102,11 @@ describe("Observation Eval E2E Pipeline", () => {
       });
 
       // ASSERT: Scheduling phase
-      expect(pipeline.schedulerDeps.uploadObservationToS3).toHaveBeenCalledWith(
-        {
-          projectId,
-          observationId: observation.span_id,
-          data: observation,
-        },
-      );
+      expect(pipeline.schedulerDeps.uploadObservationToS3).toHaveBeenCalledWith({
+        projectId,
+        observationId: observation.span_id,
+        data: observation,
+      });
       expect(mockCreateJobExecution).toHaveBeenCalledWith(
         expect.objectContaining({
           projectId,
@@ -129,8 +119,7 @@ describe("Observation Eval E2E Pipeline", () => {
       expect(pipeline.schedulerDeps.enqueueEvalJob).toHaveBeenCalled();
 
       // Get the S3 path that was used
-      const uploadCall = (pipeline.schedulerDeps.uploadObservationToS3 as Mock)
-        .mock.results[0];
+      const uploadCall = (pipeline.schedulerDeps.uploadObservationToS3 as Mock).mock.results[0];
       const observationS3Path = await uploadCall.value;
 
       // ARRANGE: Set up mocks for processing phase
@@ -203,9 +192,7 @@ describe("Observation Eval E2E Pipeline", () => {
       });
 
       // ASSERT: Processing phase
-      expect(
-        pipeline.processorDeps.downloadObservationFromS3,
-      ).toHaveBeenCalledWith(observationS3Path);
+      expect(pipeline.processorDeps.downloadObservationFromS3).toHaveBeenCalledWith(observationS3Path);
       expect(executeLLMAsJudgeEvaluation).toHaveBeenCalledWith(
         expect.objectContaining({
           projectId,
@@ -248,9 +235,7 @@ describe("Observation Eval E2E Pipeline", () => {
       });
 
       // S3 upload only happens if there are matching configs
-      expect(
-        pipeline.schedulerDeps.uploadObservationToS3,
-      ).not.toHaveBeenCalled();
+      expect(pipeline.schedulerDeps.uploadObservationToS3).not.toHaveBeenCalled();
       expect(pipeline.schedulerDeps.upsertJobExecution).not.toHaveBeenCalled();
       expect(pipeline.schedulerDeps.enqueueEvalJob).not.toHaveBeenCalled();
     });
@@ -332,15 +317,11 @@ describe("Observation Eval E2E Pipeline", () => {
       });
 
       // All three configs should match
-      expect(pipeline.schedulerDeps.upsertJobExecution).toHaveBeenCalledTimes(
-        3,
-      );
+      expect(pipeline.schedulerDeps.upsertJobExecution).toHaveBeenCalledTimes(3);
       expect(pipeline.schedulerDeps.enqueueEvalJob).toHaveBeenCalledTimes(3);
 
       // S3 upload should only happen once
-      expect(
-        pipeline.schedulerDeps.uploadObservationToS3,
-      ).toHaveBeenCalledTimes(1);
+      expect(pipeline.schedulerDeps.uploadObservationToS3).toHaveBeenCalledTimes(1);
     });
   });
 

@@ -1,7 +1,7 @@
 import { type ObservationForEval } from "./types";
-import { observationEvalVariableColumns, type ObservationVariableMapping } from "@hanzo/shared";
+import { observationEvalVariableColumns, type ObservationVariableMapping } from "@hanzo/console-core";
 import { JSONPath } from "jsonpath-plus";
-import { logger } from "@hanzo/shared/src/server";
+import { logger } from "@hanzo/console-core/src/server";
 
 /**
  * Extracted variable from observation data for LLM-as-a-judge evaluation.

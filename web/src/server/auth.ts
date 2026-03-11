@@ -1,7 +1,7 @@
 import { type GetServerSidePropsContext } from "next";
 import { getServerSession, type User, type NextAuthOptions, type Session } from "next-auth";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 import { verifyPassword } from "@/src/features/auth-credentials/lib/credentialsServerUtils";
 import { parseFlags } from "@/src/features/feature-flags/utils";
 import { env } from "@/src/env.mjs";
@@ -38,7 +38,7 @@ async function loadSsoProviders(): Promise<[]> {
 }
 import { ENTERPRISE_SSO_REQUIRED_MESSAGE } from "@/src/features/auth/constants";
 import { z } from "zod/v4";
-import { CloudConfigSchema } from "@hanzo/shared";
+import { CloudConfigSchema } from "@hanzo/console";
 import {
   CustomSSOProvider,
   GitHubEnterpriseProvider,
@@ -48,7 +48,7 @@ import {
   instrumentAsync,
   logger,
   resolveProjectRole,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import { IamProvider } from "@hanzo/iam/nextauth";
 import {
   getOrganizationPlanServerSide,

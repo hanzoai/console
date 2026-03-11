@@ -5,8 +5,8 @@
  * These helpers allow direct testing of tool handlers without HTTP overhead.
  */
 
-import { prisma } from "@hanzo/shared/src/db";
-import { createOrgProjectAndApiKey } from "@hanzo/shared/src/server";
+import { prisma } from "@hanzo/console-core/src/db";
+import { createOrgProjectAndApiKey } from "@hanzo/console-core/src/server";
 import type { ServerContext } from "@/src/features/mcp/types";
 
 /**

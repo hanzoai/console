@@ -1,5 +1,5 @@
-import { createObservation, createTrace, createTracesCh, createEvent } from "@hanzo/shared/src/server";
-import { createObservationsCh, createEventsCh } from "@hanzo/shared/src/server";
+import { createObservation, createTrace, createTracesCh, createEvent } from "@hanzo/console-core/src/server";
+import { createObservationsCh, createEventsCh } from "@hanzo/console-core/src/server";
 import { makeAPICall, makeZodVerifiedAPICall } from "@/src/__tests__/test-utils";
 import { GetObservationsV1Response } from "@/src/features/public-api/types/observations";
 import { randomUUID } from "crypto";
@@ -837,18 +837,14 @@ describe("/api/public/observations API Endpoint", () => {
   // parentObservationId filter tests
   describe("parentObservationId filter", () => {
     const runParentObservationIdFilterTestSuite = (useEventsTable: boolean) => {
-      const suiteName = useEventsTable
-        ? "with events table"
-        : "with observations table";
+      const suiteName = useEventsTable ? "with events table" : "with observations table";
       const queryParam = useEventsTable ? "?useEventsTable=true&" : "?";
 
       describe(`${suiteName}`, () => {
         it("should filter for root observations (no parent) using 'is null'", async () => {
           const traceId = randomUUID();
           const timestamp = new Date();
-          const timeValue = useEventsTable
-            ? timestamp.getTime() * 1000
-            : timestamp.getTime();
+          const timeValue = useEventsTable ? timestamp.getTime() * 1000 : timestamp.getTime();
           const timeMultiplier = useEventsTable ? 1000 : 1;
 
           const createdTrace = createTrace({
@@ -938,9 +934,7 @@ describe("/api/public/observations API Endpoint", () => {
         it("should filter for non-root observations (has parent) using 'is not null'", async () => {
           const traceId = randomUUID();
           const timestamp = new Date();
-          const timeValue = useEventsTable
-            ? timestamp.getTime() * 1000
-            : timestamp.getTime();
+          const timeValue = useEventsTable ? timestamp.getTime() * 1000 : timestamp.getTime();
           const timeMultiplier = useEventsTable ? 1000 : 1;
 
           const createdTrace = createTrace({
@@ -1029,9 +1023,7 @@ describe("/api/public/observations API Endpoint", () => {
         it("should filter by specific parent ID using string equals", async () => {
           const traceId = randomUUID();
           const timestamp = new Date();
-          const timeValue = useEventsTable
-            ? timestamp.getTime() * 1000
-            : timestamp.getTime();
+          const timeValue = useEventsTable ? timestamp.getTime() * 1000 : timestamp.getTime();
           const timeMultiplier = useEventsTable ? 1000 : 1;
 
           const createdTrace = createTrace({

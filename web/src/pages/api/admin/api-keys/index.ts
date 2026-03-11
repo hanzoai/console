@@ -1,7 +1,7 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { z } from "zod/v4";
-import { prisma } from "@hanzo/shared/src/db";
-import { logger, redis } from "@hanzo/shared/src/server";
+import { prisma } from "@hanzo/console-core/src/db";
+import { logger, redis } from "@hanzo/console-core/src/server";
 import { ApiAuthService } from "@/src/features/public-api/server/apiAuth";
 import { AdminApiAuthService } from "@/src/features/admin-api/server/adminApiAuth";
 

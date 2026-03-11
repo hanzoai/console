@@ -1,11 +1,11 @@
 import { env } from "@/src/env.mjs";
 import { createUserEmailPassword } from "@/src/features/auth-credentials/lib/credentialsServerUtils";
-import { prisma } from "@hanzo/shared/src/db";
-import { createAndAddApiKeysToDb } from "@hanzo/shared/src/server/auth/apiKeys";
+import { prisma } from "@hanzo/console-core/src/db";
+import { createAndAddApiKeysToDb } from "@hanzo/console-core/src/server/auth/apiKeys";
 import { hasEntitlementBasedOnPlan } from "@/src/features/entitlements/server/hasEntitlement";
 import { getOrganizationPlanServerSide } from "@/src/features/entitlements/server/getPlan";
-import { CloudConfigSchema } from "@hanzo/shared";
-import { logger } from "@hanzo/shared/src/server";
+import { CloudConfigSchema } from "@hanzo/console";
+import { logger } from "@hanzo/console-core/src/server";
 
 const toTitleCase = (value: string) =>
   value

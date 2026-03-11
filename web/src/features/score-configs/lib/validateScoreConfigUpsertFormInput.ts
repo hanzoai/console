@@ -3,7 +3,7 @@ import {
   CategoricalConfigFields,
   BooleanConfigFields,
   validateNumericRangeFields,
-} from "@hanzo/shared";
+} from "@hanzo/console";
 import { z } from "zod/v4";
 import { type CreateConfig, type UpdateConfig } from "./upsertFormTypes";
 

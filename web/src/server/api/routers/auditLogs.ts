@@ -3,8 +3,8 @@ import { createTRPCRouter, protectedProjectProcedure, protectedOrganizationProce
 import { throwIfNoProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { throwIfNoOrganizationAccess } from "@/src/features/rbac/utils/checkOrganizationAccess";
 import { throwIfNoEntitlement } from "@/src/features/entitlements/server/hasEntitlement";
-import { paginationZod } from "@hanzo/shared";
-import { AuditLogRecordType, type AuditLog } from "@hanzo/shared/src/db";
+import { paginationZod } from "@hanzo/console";
+import { AuditLogRecordType, type AuditLog } from "@hanzo/console-core/src/db";
 
 type AuditLogActor =
   | {

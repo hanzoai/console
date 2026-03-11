@@ -1,6 +1,6 @@
 /** @jest-environment node */
 
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 import { makeZodVerifiedAPICall, makeAPICall, pruneDatabase } from "@/src/__tests__/test-utils";
 import {
   GetAnnotationQueuesResponse,
@@ -12,8 +12,8 @@ import {
   DeleteAnnotationQueueItemResponse,
   CreateAnnotationQueueResponse,
 } from "@/src/features/public-api/types/annotation-queues";
-import { AnnotationQueueObjectType, AnnotationQueueStatus } from "@hanzo/shared";
-import { createOrgProjectAndApiKey } from "@hanzo/shared/src/server";
+import { AnnotationQueueObjectType, AnnotationQueueStatus } from "@hanzo/console";
+import { createOrgProjectAndApiKey } from "@hanzo/console-core/src/server";
 import { v4 as uuidv4 } from "uuid";
 
 describe("Annotation Queues API Endpoints", () => {

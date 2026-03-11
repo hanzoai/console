@@ -17,8 +17,8 @@ import {
   redis,
   TQueueJobTypes,
   traceException,
-} from "@hanzo/shared/src/server";
-import { prisma } from "@hanzo/shared/src/db";
+} from "@hanzo/console-core/src/server";
+import { prisma } from "@hanzo/console-core/src/db";
 
 import { env } from "../env";
 import { IngestionService } from "../services/IngestionService";

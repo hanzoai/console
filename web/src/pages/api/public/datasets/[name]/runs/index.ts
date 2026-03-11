@@ -1,4 +1,4 @@
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 import {
   GetDatasetRunsV1Query,
   GetDatasetRunsV1Response,
@@ -6,7 +6,7 @@ import {
 } from "@/src/features/public-api/types/datasets";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
-import { ConsoleNotFoundError } from "@hanzo/shared";
+import { ConsoleNotFoundError } from "@hanzo/console";
 
 export default withMiddlewares({
   GET: createAuthedProjectAPIRoute({

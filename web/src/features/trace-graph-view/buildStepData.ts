@@ -1,4 +1,4 @@
-import { ObservationType } from "@hanzo/shared";
+import { ObservationType } from "@hanzo/console";
 import { type AgentGraphDataResponse, HANZO_START_NODE_NAME, HANZO_END_NODE_NAME } from "./types";
 
 function buildStepGroups(

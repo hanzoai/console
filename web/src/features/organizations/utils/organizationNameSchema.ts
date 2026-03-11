@@ -1,4 +1,4 @@
-import { StringNoHTML } from "@hanzo/shared";
+import { StringNoHTML } from "@hanzo/console";
 import * as z from "zod/v4";
 
 const organizationTypeOptions = ["Personal", "Educational", "Company", "Startup", "Agency", "N/A"] as const;

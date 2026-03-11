@@ -1,18 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { scheduleObservationEvals } from "../scheduleObservationEvals";
-import {
-  type ObservationForEval,
-  type ObservationEvalConfig,
-  type ObservationEvalSchedulerDeps,
-} from "../types";
-import { type Prisma } from "@hanzo/shared/src/db";
-import { EvalTargetObject, JobExecutionStatus } from "@hanzo/shared";
+import { type ObservationForEval, type ObservationEvalConfig, type ObservationEvalSchedulerDeps } from "../types";
+import { type Prisma } from "@hanzo/console-core/src/db";
+import { EvalTargetObject, JobExecutionStatus } from "@hanzo/console-core";
 import { createW3CTraceId } from "../../../utils";
 
 describe("scheduleObservationEvals", () => {
-  const createMockObservation = (
-    overrides: Partial<ObservationForEval> = {},
-  ): ObservationForEval => ({
+  const createMockObservation = (overrides: Partial<ObservationForEval> = {}): ObservationForEval => ({
     // Core identifiers (snake_case)
     span_id: "obs-123",
     trace_id: "trace-456",
@@ -69,9 +63,7 @@ describe("scheduleObservationEvals", () => {
     ...overrides,
   });
 
-  const createMockConfig = (
-    overrides: Partial<ObservationEvalConfig> = {},
-  ): ObservationEvalConfig => ({
+  const createMockConfig = (overrides: Partial<ObservationEvalConfig> = {}): ObservationEvalConfig => ({
     id: "config-1",
     projectId: "project-789",
     filter: [],
@@ -85,9 +77,7 @@ describe("scheduleObservationEvals", () => {
 
   const createMockSchedulerDeps = (): ObservationEvalSchedulerDeps => ({
     upsertJobExecution: vi.fn().mockResolvedValue({ id: "job-exec-1" }),
-    uploadObservationToS3: vi
-      .fn()
-      .mockResolvedValue("observations/project-789/obs-123.json"),
+    uploadObservationToS3: vi.fn().mockResolvedValue("observations/project-789/obs-123.json"),
     enqueueEvalJob: vi.fn().mockResolvedValue(undefined),
   });
 
@@ -267,9 +257,7 @@ describe("scheduleObservationEvals", () => {
         schedulerDeps,
       });
 
-      const expectedJobExecutionId = createW3CTraceId(
-        `${config.id}:${observation.span_id}`,
-      );
+      const expectedJobExecutionId = createW3CTraceId(`${config.id}:${observation.span_id}`);
       expect(schedulerDeps.upsertJobExecution).toHaveBeenCalledWith({
         id: expectedJobExecutionId,
         projectId: "project-789",
@@ -283,9 +271,7 @@ describe("scheduleObservationEvals", () => {
 
     it("should enqueue job with correct parameters", async () => {
       const schedulerDeps = createMockSchedulerDeps();
-      schedulerDeps.uploadObservationToS3 = vi
-        .fn()
-        .mockResolvedValue("observations/project-789/obs-123.json");
+      schedulerDeps.uploadObservationToS3 = vi.fn().mockResolvedValue("observations/project-789/obs-123.json");
       const observation = createMockObservation();
       const config = createMockConfig();
 
@@ -295,9 +281,7 @@ describe("scheduleObservationEvals", () => {
         schedulerDeps,
       });
 
-      const expectedJobExecutionId = createW3CTraceId(
-        `${config.id}:${observation.span_id}`,
-      );
+      const expectedJobExecutionId = createW3CTraceId(`${config.id}:${observation.span_id}`);
       expect(schedulerDeps.enqueueEvalJob).toHaveBeenCalledWith({
         jobExecutionId: expectedJobExecutionId,
         projectId: "project-789",

@@ -1,7 +1,7 @@
 import { api } from "@/src/utils/api";
 
 import { DashboardCard } from "@/src/features/dashboard/components/cards/DashboardCard";
-import { type ScoreDataTypeType, type FilterState } from "@hanzo/shared";
+import { type ScoreDataTypeType, type FilterState } from "@hanzo/console";
 import {
   extractTimeSeriesData,
   fillMissingValuesAndTransform,
@@ -13,11 +13,7 @@ import {
 } from "@/src/utils/date-range-utils";
 import { getScoreDataTypeIcon } from "@/src/features/scores/lib/scoreColumns";
 import { NoDataOrLoading } from "@/src/components/NoDataOrLoading";
-import {
-  type QueryType,
-  type ViewVersion,
-  mapLegacyUiTableFilterToView,
-} from "@/src/features/query";
+import { type QueryType, type ViewVersion, mapLegacyUiTableFilterToView } from "@/src/features/query";
 import { type DatabaseRow } from "@/src/server/api/services/sqlInterface";
 import { Chart } from "@/src/features/widgets/chart-library/Chart";
 import { timeSeriesToDataPoints } from "@/src/features/dashboard/lib/chart-data-adapters";

@@ -1,10 +1,10 @@
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
-import { logger, OtelIngestionProcessor, markProjectAsOtelUser } from "@hanzo/shared/src/server";
+import { logger, OtelIngestionProcessor, markProjectAsOtelUser } from "@hanzo/console-core/src/server";
 import { z } from "zod/v4";
 import { $root } from "@/src/pages/api/public/otel/otlp-proto/generated/root";
 import { gunzip } from "node:zlib";
-import { ForbiddenError } from "@hanzo/shared";
+import { ForbiddenError } from "@hanzo/console";
 import { env } from "@/src/env.mjs";
 
 /** Read a console SDK header that may arrive with hyphens or underscores. */

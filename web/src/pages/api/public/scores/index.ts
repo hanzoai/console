@@ -8,8 +8,8 @@ import {
   filterAndValidateV1GetScoreList,
   PostScoresBodyV1,
   PostScoresResponseV1,
-} from "@hanzo/shared";
-import { eventTypes, logger, processEventBatch } from "@hanzo/shared/src/server";
+} from "@hanzo/console";
+import { eventTypes, logger, processEventBatch } from "@hanzo/console-core/src/server";
 import { ScoresApiService } from "@/src/features/public-api/server/scores-api-service";
 
 export default withMiddlewares({

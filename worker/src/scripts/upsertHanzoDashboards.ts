@@ -1,7 +1,7 @@
 import { z } from "zod/v4";
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 import hanzoDashboards from "../constants/hanzo-dashboards.json";
-import { logger, WidgetDomainSchema, DashboardDomainSchema } from "@hanzo/shared/src/server";
+import { logger, WidgetDomainSchema, DashboardDomainSchema } from "@hanzo/console-core/src/server";
 
 /**
  * JSON STRUCTURE & SCHEMAS

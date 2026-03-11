@@ -6,8 +6,8 @@ import {
   publicApiPaginationZod,
   singleFilter,
   InvalidRequestError,
-} from "@hanzo/shared";
-import { stringDateTime, TraceBody } from "@hanzo/shared/src/server";
+} from "@hanzo/console";
+import { stringDateTime, TraceBody } from "@hanzo/console-core/src/server";
 import { z } from "zod/v4";
 import { useEventsTableSchema } from "../../query";
 

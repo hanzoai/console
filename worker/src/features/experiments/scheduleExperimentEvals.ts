@@ -1,13 +1,13 @@
-import { DatasetItemDomain } from "@hanzo/shared";
+import { DatasetItemDomain } from "@hanzo/console-core";
 import { PromptExperimentConfig } from "./utils";
-import { GenerationDetails, ConsoleInternalTraceEnvironment } from "@hanzo/shared/src/server";
+import { GenerationDetails, ConsoleInternalTraceEnvironment } from "@hanzo/console-core/src/server";
 import {
   fetchObservationEvalConfigs,
   scheduleObservationEvals,
   createObservationEvalSchedulerDeps,
   type ObservationForEval,
 } from "../evaluation/observationEval";
-import { logger, traceException } from "@hanzo/shared/src/server";
+import { logger, traceException } from "@hanzo/console-core/src/server";
 
 interface ScheduleExperimentEvalsParams {
   projectId: string;

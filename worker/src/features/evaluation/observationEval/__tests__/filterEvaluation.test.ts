@@ -1,16 +1,12 @@
 import { describe, it, expect, vi } from "vitest";
-import { type Prisma } from "@hanzo/shared/src/db";
+import { type Prisma } from "@hanzo/console-core/src/db";
 import { scheduleObservationEvals } from "../scheduleObservationEvals";
-import {
-  createTestObservation,
-  createTestEvalConfig,
-  createMockSchedulerDeps,
-} from "./fixtures";
-import { type ObservationForEval, EvalTargetObject } from "@hanzo/shared";
+import { createTestObservation, createTestEvalConfig, createMockSchedulerDeps } from "./fixtures";
+import { type ObservationForEval, EvalTargetObject } from "@hanzo/console-core";
 
 // Mock logger to avoid noise in tests
-vi.mock("@hanzo/shared/src/server", async () => {
-  const actual = await vi.importActual("@hanzo/shared/src/server");
+vi.mock("@hanzo/console-core/src/server", async () => {
+  const actual = await vi.importActual("@hanzo/console-core/src/server");
   return {
     ...actual,
     logger: {
@@ -29,10 +25,7 @@ describe("Filter Evaluation for Observation Evals", () => {
    * Helper to test if an observation matches a filter config.
    * Returns true if createJobExecution was called (meaning filter matched).
    */
-  async function testFilterMatch(
-    observation: ObservationForEval,
-    filter: unknown[],
-  ): Promise<boolean> {
+  async function testFilterMatch(observation: ObservationForEval, filter: unknown[]): Promise<boolean> {
     const config = createTestEvalConfig({
       projectId,
       filter,
@@ -47,10 +40,7 @@ describe("Filter Evaluation for Observation Evals", () => {
       schedulerDeps: deps,
     });
 
-    return (
-      (deps.upsertJobExecution as ReturnType<typeof vi.fn>).mock.calls.length >
-      0
-    );
+    return (deps.upsertJobExecution as ReturnType<typeof vi.fn>).mock.calls.length > 0;
   }
 
   describe("string filters", () => {
@@ -834,10 +824,7 @@ describe("Filter Evaluation for Observation Evals", () => {
         schedulerDeps: deps,
       });
 
-      return (
-        (deps.upsertJobExecution as ReturnType<typeof vi.fn>).mock.calls
-          .length > 0
-      );
+      return (deps.upsertJobExecution as ReturnType<typeof vi.fn>).mock.calls.length > 0;
     }
 
     it("should match when span_id equals experiment_item_root_span_id", async () => {

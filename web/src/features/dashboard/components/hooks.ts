@@ -1,4 +1,4 @@
-import { type FilterState, getGenerationLikeTypes } from "@hanzo/shared";
+import { type FilterState, getGenerationLikeTypes } from "@hanzo/console";
 
 export type TimeSeriesChartDataPoint = {
   ts: number;
@@ -6,10 +6,7 @@ export type TimeSeriesChartDataPoint = {
 };
 import { type DatabaseRow } from "@/src/server/api/services/sqlInterface";
 import { api } from "@/src/utils/api";
-import {
-  type ViewVersion,
-  mapLegacyUiTableFilterToView,
-} from "@/src/features/query";
+import { type ViewVersion, mapLegacyUiTableFilterToView } from "@/src/features/query";
 
 export const getAllModels = (
   projectId: string,

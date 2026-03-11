@@ -14,16 +14,9 @@ import {
   dashboardDateRangeAggregationSettings,
 } from "@/src/utils/date-range-utils";
 import { compactNumberFormatter } from "@/src/utils/numbers";
-import { type FilterState, getGenerationLikeTypes } from "@hanzo/shared";
-import {
-  ModelSelectorPopover,
-  useModelSelection,
-} from "@/src/features/dashboard/components/ModelSelector";
-import {
-  type QueryType,
-  type ViewVersion,
-  mapLegacyUiTableFilterToView,
-} from "@/src/features/query";
+import { type FilterState, getGenerationLikeTypes } from "@hanzo/console";
+import { ModelSelectorPopover, useModelSelection } from "@/src/features/dashboard/components/ModelSelector";
+import { type QueryType, type ViewVersion, mapLegacyUiTableFilterToView } from "@/src/features/query";
 import { type DatabaseRow } from "@/src/server/api/services/sqlInterface";
 import { Chart } from "@/src/features/widgets/chart-library/Chart";
 import { timeSeriesToDataPoints } from "@/src/features/dashboard/lib/chart-data-adapters";
@@ -49,20 +42,8 @@ export const ModelUsageChart = ({
   isLoading?: boolean;
   metricsVersion?: ViewVersion;
 }) => {
-  const {
-    allModels,
-    selectedModels,
-    setSelectedModels,
-    isAllSelected,
-    buttonText,
-    handleSelectAll,
-  } = useModelSelection(
-    projectId,
-    userAndEnvFilterState,
-    fromTimestamp,
-    toTimestamp,
-    metricsVersion,
-  );
+  const { allModels, selectedModels, setSelectedModels, isAllSelected, buttonText, handleSelectAll } =
+    useModelSelection(projectId, userAndEnvFilterState, fromTimestamp, toTimestamp, metricsVersion);
 
   const modelUsageQuery: QueryType = {
     view: "observations",

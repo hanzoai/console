@@ -1,9 +1,9 @@
 import { z } from "zod/v4";
 import { createTRPCRouter, authenticatedProcedure } from "@/src/server/api/trpc";
 import { TRPCError } from "@trpc/server";
-import { StringNoHTML } from "@hanzo/shared";
-import { Role, Prisma } from "@hanzo/shared/src/db";
-import type { PrismaClient } from "@hanzo/shared/src/db";
+import { StringNoHTML } from "@hanzo/console";
+import { Role, Prisma } from "@hanzo/console-core/src/db";
+import type { PrismaClient } from "@hanzo/console-core/src/db";
 
 const updateDisplayNameSchema = z.object({
   name: StringNoHTML.min(1, "Name cannot be empty").max(100, "Name must be at most 100 characters"),

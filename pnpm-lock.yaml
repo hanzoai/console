@@ -423,6 +423,9 @@ importers:
       '@hanzo/console':
         specifier: workspace:*
         version: link:../packages/console-js
+      '@hanzo/console-core':
+        specifier: workspace:*
+        version: link:../packages/shared
       '@hanzo/console-sdk':
         specifier: npm:langfuse@3.38.4
         version: langfuse@3.38.4
@@ -438,9 +441,6 @@ importers:
       '@hanzo/mq':
         specifier: npm:bullmq@^5.34.10
         version: bullmq@5.34.10
-      '@hanzo/shared':
-        specifier: workspace:*
-        version: link:../packages/shared
       '@hanzo/ui':
         specifier: 5.3.39
         version: 5.3.39(aairfokagcw3ahe2jxhkqnx3vi)
@@ -946,12 +946,12 @@ importers:
       '@aws-sdk/client-s3':
         specifier: ^3.675.0
         version: 3.675.0
+      '@hanzo/console-core':
+        specifier: workspace:*
+        version: link:../packages/shared
       '@hanzo/mq':
         specifier: npm:bullmq@^5.34.10
         version: bullmq@5.34.10
-      '@hanzo/shared':
-        specifier: workspace:*
-        version: link:../packages/shared
       '@opentelemetry/api':
         specifier: ^1.9.0
         version: 1.9.0

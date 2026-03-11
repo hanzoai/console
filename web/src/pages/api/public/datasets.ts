@@ -1,4 +1,4 @@
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
 import {
@@ -10,7 +10,7 @@ import {
 } from "@/src/features/public-api/types/datasets";
 import { upsertDataset } from "@/src/features/datasets/server/actions/createDataset";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
-import { createDatasetItemFilterState, getDatasetItems } from "@hanzo/shared/src/server";
+import { createDatasetItemFilterState, getDatasetItems } from "@hanzo/console-core/src/server";
 
 export default withMiddlewares({
   POST: createAuthedProjectAPIRoute({

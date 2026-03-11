@@ -1,5 +1,5 @@
 import { describe, it, expect, assert } from "vitest";
-import { processEventBatch } from "@hanzo/shared/src/server";
+import { processEventBatch } from "@hanzo/console-core/src/server";
 
 describe("processEventBatch", () => {
   it("returns early on empty input", async () => {

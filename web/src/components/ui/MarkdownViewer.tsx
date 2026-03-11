@@ -18,7 +18,7 @@ import {
   type OpenAIOutputAudioType,
   isOpenAITextContentPart,
   isOpenAIImageContentPart,
-} from "@hanzo/shared";
+} from "@hanzo/console";
 import { type z } from "zod/v4";
 import { ResizableImage } from "@/src/components/ui/resizable-image";
 import { HanzoMediaView } from "@/src/components/ui/HanzoMediaView";

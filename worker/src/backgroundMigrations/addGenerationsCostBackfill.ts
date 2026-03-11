@@ -1,7 +1,7 @@
 import { IBackgroundMigration } from "./IBackgroundMigration";
-import { logger } from "@hanzo/shared/src/server";
+import { logger } from "@hanzo/console-core/src/server";
 import { parseArgs } from "node:util";
-import { prisma, Prisma } from "@hanzo/shared/src/db";
+import { prisma, Prisma } from "@hanzo/console-core/src/db";
 
 type StatementTimeout = {
   statement_timeout: string;

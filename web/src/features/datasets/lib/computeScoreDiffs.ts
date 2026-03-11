@@ -1,4 +1,4 @@
-import { type ScoreAggregate } from "@hanzo/shared";
+import { type ScoreAggregate } from "@hanzo/console";
 import { type BaselineDiff, calculateScoreDiff } from "./calculateBaselineDiff";
 
 /**

@@ -1,9 +1,9 @@
-import { prisma } from "@hanzo/shared/src/db";
-import { encrypt } from "@hanzo/shared/encryption";
+import { prisma } from "@hanzo/console-core/src/db";
+import { encrypt } from "@hanzo/console-core/encryption";
 import { SsoProviderSchema } from "./types";
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { env } from "@/src/env.mjs";
-import { logger } from "@hanzo/shared/src/server";
+import { logger } from "@hanzo/console-core/src/server";
 import { multiTenantSsoAvailable } from "@/src/features/multi-tenant-sso/multiTenantSsoAvailable";
 
 export async function createNewSsoConfigHandler(req: NextApiRequest, res: NextApiResponse) {

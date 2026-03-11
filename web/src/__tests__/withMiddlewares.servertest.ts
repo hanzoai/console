@@ -1,15 +1,15 @@
 /** @jest-environment node */
 import type { NextApiRequest, NextApiResponse } from "next";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
-import { BaseError, ConsoleNotFoundError, UnauthorizedError, ServiceUnavailableError } from "@hanzo/shared";
-import { DatastoreResourceError, logger, traceException } from "@hanzo/shared/src/server";
+import { BaseError, ConsoleNotFoundError, UnauthorizedError, ServiceUnavailableError } from "@hanzo/console";
+import { DatastoreResourceError, logger, traceException } from "@hanzo/console-core/src/server";
 import { createMocks } from "node-mocks-http";
 import { z } from "zod/v4";
 import { Prisma } from "@prisma/client";
 
 // Mock the logger and traceException
-jest.mock("@hanzo/shared/src/server", () => ({
-  ...jest.requireActual("@hanzo/shared/src/server"),
+jest.mock("@hanzo/console-core/src/server", () => ({
+  ...jest.requireActual("@hanzo/console-core/src/server"),
   logger: {
     info: jest.fn(),
     warn: jest.fn(),

@@ -1,15 +1,15 @@
 import { StreamingTextResponse } from "ai";
 import { NextResponse, type NextRequest } from "next/server";
 
-import { BaseError, ForbiddenError, InternalServerError, InvalidRequestError } from "@hanzo/shared";
+import { BaseError, ForbiddenError, InternalServerError, InvalidRequestError } from "@hanzo/console";
 
 import { InsightsCallbackHandler } from "./analytics/insightsCallback";
 import { authorizeRequestOrThrow } from "./authorizeRequest";
 import { validateChatCompletionBody } from "./validateChatCompletionBody";
 
 import { env } from "@/src/env.mjs";
-import { prisma } from "@hanzo/shared/src/db";
-import { LLMApiKeySchema, logger, fetchLLMCompletion, contextWithHanzoProps } from "@hanzo/shared/src/server";
+import { prisma } from "@hanzo/console-core/src/db";
+import { LLMApiKeySchema, logger, fetchLLMCompletion, contextWithHanzoProps } from "@hanzo/console-core/src/server";
 import * as opentelemetry from "@opentelemetry/api";
 
 export default async function chatCompletionHandler(req: NextRequest) {

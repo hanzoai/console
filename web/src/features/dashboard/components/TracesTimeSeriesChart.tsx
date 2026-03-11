@@ -1,5 +1,5 @@
 import { api } from "@/src/utils/api";
-import { type FilterState } from "@hanzo/shared";
+import { type FilterState } from "@hanzo/console";
 import { DashboardCard } from "@/src/features/dashboard/components/cards/DashboardCard";
 import { TotalMetric } from "@/src/features/dashboard/components/TotalMetric";
 import { compactNumberFormatter } from "@/src/utils/numbers";
@@ -10,11 +10,7 @@ import {
 } from "@/src/utils/date-range-utils";
 import { NoDataOrLoading } from "@/src/components/NoDataOrLoading";
 import { TabComponent } from "@/src/features/dashboard/components/TabsComponent";
-import {
-  type QueryType,
-  type ViewVersion,
-  mapLegacyUiTableFilterToView,
-} from "@/src/features/query";
+import { type QueryType, type ViewVersion, mapLegacyUiTableFilterToView } from "@/src/features/query";
 import { Chart } from "@/src/features/widgets/chart-library/Chart";
 import { timeSeriesToDataPoints } from "@/src/features/dashboard/lib/chart-data-adapters";
 
@@ -175,9 +171,7 @@ export const TracesAndObservationsTimeSeriesChart = ({
     <DashboardCard
       className={className}
       title={isV2 ? "Observations by time" : "Traces by time"}
-      isLoading={
-        isLoading || observations.isPending || (!isV2 && traces.isPending)
-      }
+      isLoading={isLoading || observations.isPending || (!isV2 && traces.isPending)}
       cardContentClassName="flex flex-col content-end "
     >
       <TabComponent
@@ -205,11 +199,7 @@ export const TracesAndObservationsTimeSeriesChart = ({
                   </div>
                 ) : (
                   <NoDataOrLoading
-                    isLoading={
-                      isLoading ||
-                      observations.isPending ||
-                      (!isV2 && traces.isPending)
-                    }
+                    isLoading={isLoading || observations.isPending || (!isV2 && traces.isPending)}
                     description="Traces contain details about LLM applications and can be created using the SDK."
                     href="https://hanzo.com/docs/observability/overview"
                   />

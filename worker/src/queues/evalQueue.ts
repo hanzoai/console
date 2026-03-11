@@ -1,6 +1,6 @@
 import { Job } from "@hanzo/mq";
-import { JobExecutionStatus } from "@hanzo/shared";
-import { prisma } from "@hanzo/shared/src/db";
+import { JobExecutionStatus } from "@hanzo/console-core";
+import { prisma } from "@hanzo/console-core/src/db";
 import {
   QueueName,
   TQueueJobTypes,
@@ -11,7 +11,7 @@ import {
   QueueJobs,
   getCurrentSpan,
   isLLMCompletionError,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import { createEvalJobs, evaluate } from "../features/evaluation/evalService";
 import { processObservationEval } from "../features/evaluation/observationEval";
 import { delayInMs } from "./utils/delays";

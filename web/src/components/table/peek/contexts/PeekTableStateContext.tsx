@@ -1,11 +1,5 @@
-import {
-  createContext,
-  useContext,
-  useState,
-  useMemo,
-  type ReactNode,
-} from "react";
-import type { FilterState, OrderByState } from "@hanzo/shared";
+import { createContext, useContext, useState, useMemo, type ReactNode } from "react";
+import type { FilterState, OrderByState } from "@hanzo/console";
 
 interface PeekTableState {
   filters: FilterState;
@@ -19,9 +13,7 @@ interface PeekTableStateContextValue {
   setTableState: (state: PeekTableState) => void;
 }
 
-const PeekTableStateContext = createContext<
-  PeekTableStateContextValue | undefined
->(undefined);
+const PeekTableStateContext = createContext<PeekTableStateContextValue | undefined>(undefined);
 
 export function PeekTableStateProvider({ children }: { children: ReactNode }) {
   const [tableState, setTableState] = useState<PeekTableState>({
@@ -33,11 +25,7 @@ export function PeekTableStateProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo(() => ({ tableState, setTableState }), [tableState]);
 
-  return (
-    <PeekTableStateContext.Provider value={value}>
-      {children}
-    </PeekTableStateContext.Provider>
-  );
+  return <PeekTableStateContext.Provider value={value}>{children}</PeekTableStateContext.Provider>;
 }
 
 export function usePeekTableState() {

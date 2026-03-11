@@ -1,5 +1,5 @@
 import { z } from "zod/v4";
-import { LegacySpanPatchSchema, LegacySpanPostSchema } from "@hanzo/shared/src/server";
+import { LegacySpanPatchSchema, LegacySpanPostSchema } from "@hanzo/console-core/src/server";
 
 // POST /spans
 export const PostSpansV1Body = LegacySpanPostSchema;

@@ -1,6 +1,6 @@
 import { makeAPICall } from "@/src/__tests__/test-utils";
 import waitForExpect from "wait-for-expect";
-import { getObservationById, getObservationByIdFromEventsTable, getTraceById } from "@hanzo/shared/src/server";
+import { getObservationById, getObservationByIdFromEventsTable, getTraceById } from "@hanzo/console-core/src/server";
 import { randomBytes } from "crypto";
 
 const projectId = "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a";

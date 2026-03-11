@@ -1,7 +1,7 @@
 import { expect, describe, it, beforeEach, afterEach } from "vitest";
 import { randomUUID } from "crypto";
-import { prisma } from "@hanzo/shared/src/db";
-import { createOrgProjectAndApiKey } from "@hanzo/shared/src/server";
+import { prisma } from "@hanzo/console-core/src/db";
+import { createOrgProjectAndApiKey } from "@hanzo/console-core/src/server";
 import { BatchTraceDeletionCleaner } from "../features/batch-trace-deletion-cleaner";
 
 describe("BatchTraceDeletionCleaner", () => {
@@ -75,9 +75,7 @@ describe("BatchTraceDeletionCleaner", () => {
       });
 
       // Pending traces should now be marked as deleted
-      const pendingDeletions = deletions.filter((d) =>
-        pendingTraces.includes(d.objectId),
-      );
+      const pendingDeletions = deletions.filter((d) => pendingTraces.includes(d.objectId));
       expect(pendingDeletions.every((d) => d.isDeleted)).toBe(true);
 
       // Already-deleted trace should remain unchanged

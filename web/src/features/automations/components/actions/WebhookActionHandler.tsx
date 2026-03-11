@@ -8,7 +8,7 @@ import {
   WebhookDefaultHeaders,
   type ActionCreate,
   type ActionDomain,
-} from "@hanzo/shared";
+} from "@hanzo/console";
 import { z } from "zod/v4";
 
 // Define the form schema for webhook actions

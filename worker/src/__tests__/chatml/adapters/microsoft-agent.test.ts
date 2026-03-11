@@ -1,5 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { microsoftAgentAdapter, selectAdapter, SimpleChatMlArraySchema, type NormalizerContext } from "@hanzo/shared";
+import {
+  microsoftAgentAdapter,
+  selectAdapter,
+  SimpleChatMlArraySchema,
+  type NormalizerContext,
+} from "@hanzo/console-core";
 
 // Test helpers
 function normalizeInput(input: unknown, ctx: NormalizerContext = {}) {

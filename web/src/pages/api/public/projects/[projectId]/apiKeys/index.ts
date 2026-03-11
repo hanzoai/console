@@ -1,6 +1,6 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
-import { prisma } from "@hanzo/shared/src/db";
-import { logger, redis, createAndAddApiKeysToDb } from "@hanzo/shared/src/server";
+import { prisma } from "@hanzo/console-core/src/db";
+import { logger, redis, createAndAddApiKeysToDb } from "@hanzo/console-core/src/server";
 import { ApiAuthService } from "@/src/features/public-api/server/apiAuth";
 import { cors, runMiddleware } from "@/src/features/public-api/server/cors";
 import { hasEntitlementBasedOnPlan } from "@/src/features/entitlements/server/hasEntitlement";

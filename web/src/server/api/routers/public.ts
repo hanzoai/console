@@ -1,7 +1,7 @@
 import { VERSION } from "@/src/constants/VERSION";
 import { env } from "@/src/env.mjs";
 import { createTRPCRouter, publicProcedure } from "@/src/server/api/trpc";
-import { logger, compareVersions } from "@hanzo/shared/src/server";
+import { logger, compareVersions } from "@hanzo/console-core/src/server";
 import { z } from "zod/v4";
 
 const ReleaseApiRes = z.array(

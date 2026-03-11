@@ -10,22 +10,13 @@ import {
   datasetItemFilterColumns,
   datasetRunItemsTableCols,
   usersTableCols,
-} from "@hanzo/shared";
+} from "@hanzo/console";
 import { scoresTableCols } from "@/src/server/api/definitions/scoresTable";
-import {
-  useQueryParam,
-  encodeDelimitedArray,
-  decodeDelimitedArray,
-  withDefault,
-} from "use-query-params";
+import { useQueryParam, encodeDelimitedArray, decodeDelimitedArray, withDefault } from "use-query-params";
 import useSessionStorage from "@/src/components/useSessionStorage";
 import { evalConfigFilterColumns } from "@/src/server/api/definitions/evalConfigsTable";
 import { evalExecutionsFilterCols } from "@/src/server/api/definitions/evalExecutionsTable";
-import {
-  escapePipeInValue,
-  splitOnUnescapedPipe,
-  unescapePipeInValue,
-} from "../lib/filter-query-encoding";
+import { escapePipeInValue, splitOnUnescapedPipe, unescapePipeInValue } from "../lib/filter-query-encoding";
 import { usePeekTableState } from "@/src/components/table/peek/contexts/PeekTableStateContext";
 
 const DEBUG_QUERY_STATE = false;
@@ -54,9 +45,7 @@ const getCommaArrayParam = (table: TableName) => ({
           };${f.operator};${encodeURIComponent(
             f.type === "datetime"
               ? new Date(f.value).toISOString()
-              : f.type === "stringOptions" ||
-                  f.type === "arrayOptions" ||
-                  f.type === "categoryOptions"
+              : f.type === "stringOptions" || f.type === "arrayOptions" || f.type === "categoryOptions"
                 ? (f.value as string[]).map(escapePipeInValue).join("|")
                 : f.type === "positionInTrace"
                   ? f.value === undefined || f.value === null
@@ -78,8 +67,7 @@ const getCommaArrayParam = (table: TableName) => ({
         if (!f) return null;
         const [column, type, key, operator, value] = f.split(";");
 
-        if (DEBUG_QUERY_STATE)
-          console.log("values", [column, type, key, operator, value]);
+        if (DEBUG_QUERY_STATE) console.log("values", [column, type, key, operator, value]);
         const decodedValue = value ? decodeURIComponent(value) : undefined;
         const parsedValue =
           decodedValue === undefined || type === undefined
@@ -92,12 +80,8 @@ const getCommaArrayParam = (table: TableName) => ({
                   ? decodedValue === ""
                     ? undefined
                     : Number(decodedValue)
-                  : type === "stringOptions" ||
-                      type === "arrayOptions" ||
-                      type === "categoryOptions"
-                    ? splitOnUnescapedPipe(decodedValue).map(
-                        unescapePipeInValue,
-                      )
+                  : type === "stringOptions" || type === "arrayOptions" || type === "categoryOptions"
+                    ? splitOnUnescapedPipe(decodedValue).map(unescapePipeInValue)
                     : type === "boolean"
                       ? decodedValue === "true"
                       : decodedValue;
@@ -124,11 +108,10 @@ export const useQueryFilterState = (
 ) => {
   const peekContext = usePeekTableState();
 
-  const [sessionFilterState, setSessionFilterState] =
-    useSessionStorage<FilterState>(
-      !!projectId ? `${table}FilterState-${projectId}` : `${table}FilterState`,
-      initialState,
-    );
+  const [sessionFilterState, setSessionFilterState] = useSessionStorage<FilterState>(
+    !!projectId ? `${table}FilterState-${projectId}` : `${table}FilterState`,
+    initialState,
+  );
   // Merge initial state with session state if filter elements don't exist
   const mergedInitialState = initialState.reduce(
     (acc, filter) => {
@@ -203,8 +186,7 @@ const tableCols = {
 function getColumnId(table: TableName, name: string): string | undefined {
   // TODO: make this more robust, will change with new filters
   // to give more leeway to LLMs, we check against name or id
-  return tableCols[table]?.find((col) => col.name === name || col.id === name)
-    ?.id;
+  return tableCols[table]?.find((col) => col.name === name || col.id === name)?.id;
 }
 
 function getColumnName(table: TableName, id: string): string | undefined {

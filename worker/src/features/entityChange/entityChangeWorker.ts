@@ -1,4 +1,4 @@
-import { getCurrentSpan, logger, type EntityChangeEventType } from "@hanzo/shared/src/server";
+import { getCurrentSpan, logger, type EntityChangeEventType } from "@hanzo/console-core/src/server";
 import { promptVersionProcessor } from "./promptVersionProcessor";
 
 /**

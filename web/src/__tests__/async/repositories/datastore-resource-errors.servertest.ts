@@ -1,4 +1,4 @@
-import { queryDatastore, queryDatastoreStream, DatastoreResourceError } from "@hanzo/shared/src/server";
+import { queryDatastore, queryDatastoreStream, DatastoreResourceError } from "@hanzo/console-core/src/server";
 import { fail } from "assert";
 
 describe("Datastore Resource Error Handling", () => {

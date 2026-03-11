@@ -1,12 +1,12 @@
 import { type ObservationForEval, type ObservationEvalConfig, type ObservationEvalSchedulerDeps } from "./types";
 import { shouldSampleObservation } from "./shouldSampleObservation";
-import { InMemoryFilterService, logger } from "@hanzo/shared/src/server";
+import { InMemoryFilterService, logger } from "@hanzo/console-core/src/server";
 import {
   EvalTargetObject,
   JobExecutionStatus,
   type FilterState,
   mapEventEvalFilterColumnIdToField,
-} from "@hanzo/shared";
+} from "@hanzo/console-core";
 import { createW3CTraceId } from "../../utils";
 
 interface ScheduleObservationEvalsParams {

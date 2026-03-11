@@ -1,7 +1,7 @@
 import { PostEventsV1Body, PostEventsV1Response } from "@/src/features/public-api/types/events";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
-import { eventTypes, logger, processEventBatch } from "@hanzo/shared/src/server";
+import { eventTypes, logger, processEventBatch } from "@hanzo/console-core/src/server";
 import { v4 } from "uuid";
 
 export default withMiddlewares({

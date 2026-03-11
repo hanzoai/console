@@ -22,7 +22,7 @@ export * from "./auth/gitHubEnterpriseProvider";
 export * from "./auth/jumpcloudProvider";
 // iamProvider re-export is excluded from the barrel because @hanzo/iam
 // only ships ESM and breaks ts-node (CommonJS) consumers like the seeder.
-// Import directly from "@hanzo/iam/nextauth" or "@hanzo/shared/src/server/auth/iamProvider".
+// Import directly from "@hanzo/iam/nextauth" or "@hanzo/console-core/src/server/auth/iamProvider".
 export * from "./auth/userProjectRoleAuth";
 export * from "./llm/fetchLLMCompletion";
 export * from "./llm/errors";

@@ -10,7 +10,7 @@ import {
   QueueName,
   redis,
   ZodModelConfig,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import { createTRPCRouter, protectedProjectProcedure } from "@/src/server/api/trpc";
 import {
   extractVariables,
@@ -21,7 +21,7 @@ import {
   type PromptMessage,
   isPresent,
   type DatasetItemDomain,
-} from "@hanzo/shared";
+} from "@hanzo/console";
 import { throwIfNoProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 
 const ValidConfigResponse = z.object({

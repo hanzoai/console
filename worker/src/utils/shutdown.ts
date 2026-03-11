@@ -1,5 +1,5 @@
-import { DatastoreClientManager, logger } from "@hanzo/shared/src/server";
-import { redis } from "@hanzo/shared/src/server";
+import { DatastoreClientManager, logger } from "@hanzo/console-core/src/server";
+import { redis } from "@hanzo/console-core/src/server";
 
 import { DatastoreWriter } from "../services/DatastoreWriter";
 import { setSigtermReceived } from "../features/health";
@@ -7,7 +7,7 @@ import { server } from "../index";
 import { freeAllTokenizers } from "../features/tokenisation/usage";
 import { getTokenCountWorkerManager } from "../features/tokenisation/async-usage";
 import { WorkerManager } from "../queues/workerManager";
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 import { BackgroundMigrationManager } from "../backgroundMigrations/backgroundMigrationManager";
 import {
   batchProjectCleaners,

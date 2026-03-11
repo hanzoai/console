@@ -1,5 +1,5 @@
 import { env } from "@/src/env.mjs";
-import { logger } from "@hanzo/shared/src/server";
+import { logger } from "@hanzo/console-core/src/server";
 
 interface ProvisionOrgObservabilityInput {
   orgId: string;

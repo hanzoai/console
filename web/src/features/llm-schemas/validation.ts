@@ -1,5 +1,5 @@
 import { z } from "zod/v4";
-import { LLMJSONSchema } from "@hanzo/shared";
+import { LLMJSONSchema } from "@hanzo/console";
 
 export const LLMSchemaNameSchema = z
   .string()

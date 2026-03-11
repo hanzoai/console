@@ -13,7 +13,7 @@ import {
   type ScoreDataTypeType,
   TimeFilter,
   TracingSearchType,
-} from "@hanzo/shared";
+} from "@hanzo/console-core";
 import {
   getDistinctScoreNames,
   queryDatastoreStream,
@@ -24,7 +24,7 @@ import {
   datastoreSearchCondition,
   EventsQueryBuilder,
   eventsScoresAggregation,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import { Readable } from "stream";
 import { env } from "../../env";
 import { getChunkWithFlattenedScores, prepareScoresForOutput } from "./getDatabaseReadStream";

@@ -1,4 +1,4 @@
-import { type PrismaClient } from "@hanzo/shared/src/db";
+import { type PrismaClient } from "@hanzo/console-core/src/db";
 
 export const updatePromptTagsOnAllVersions = async ({
   prisma,

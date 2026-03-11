@@ -6,7 +6,7 @@ import {
   isJsonPath,
   testJsonPath,
   generateJsonPathSuggestions,
-} from "@hanzo/shared";
+} from "@hanzo/console-core";
 
 describe("applyFieldMapping", () => {
   // Sample observation data for testing

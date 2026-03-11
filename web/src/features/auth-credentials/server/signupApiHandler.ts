@@ -7,7 +7,7 @@ function getSsoAuthProviderIdForDomain(_domain: string): string | null {
 }
 import { ENTERPRISE_SSO_REQUIRED_MESSAGE } from "@/src/features/auth/constants";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { logger } from "@hanzo/shared/src/server";
+import { logger } from "@hanzo/console-core/src/server";
 
 export function getSSOBlockedDomains() {
   return (

@@ -1,4 +1,4 @@
-import { createFilterFromFilterState } from "@hanzo/shared/src/server";
+import { createFilterFromFilterState } from "@hanzo/console-core/src/server";
 
 /**
  * Unit tests for the parentObservationId null-filter special case in

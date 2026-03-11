@@ -1,5 +1,5 @@
 import { v4 } from "uuid";
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 import {
   createObservation,
   createObservationsCh,
@@ -16,32 +16,23 @@ import {
   type TraceRecordInsertType,
   type ObservationRecordInsertType,
   type EventRecordInsertType,
-} from "@hanzo/shared/src/server";
-import { createTrace } from "@hanzo/shared/src/server";
-import { type FilterState } from "@hanzo/shared";
+} from "@hanzo/console-core/src/server";
+import { createTrace } from "@hanzo/console-core/src/server";
+import { type FilterState } from "@hanzo/console";
 import { env } from "@/src/env.mjs";
 
 const isEventsPath = env.HANZO_ENABLE_EVENTS_TABLE_V2_APIS === "true";
 
 // Pick the right listing function based on env flag
-const sessionsTable = isEventsPath
-  ? getSessionsTableFromEvents
-  : getSessionsTable;
+const sessionsTable = isEventsPath ? getSessionsTableFromEvents : getSessionsTable;
 
 // Adapter for metrics: legacy takes filter/orderBy, events-based takes sessionIds
-async function sessionsWithMetrics(props: {
-  projectId: string;
-  filter: FilterState;
-}) {
+async function sessionsWithMetrics(props: { projectId: string; filter: FilterState }) {
   if (!isEventsPath) {
     return getSessionsWithMetrics(props);
   }
-  const idFilter = props.filter.find(
-    (f): f is Extract<FilterState[number], { column: "id" }> =>
-      f.column === "id",
-  );
-  const sessionIds =
-    idFilter && "value" in idFilter ? (idFilter.value as string[]) : [];
+  const idFilter = props.filter.find((f): f is Extract<FilterState[number], { column: "id" }> => f.column === "id");
+  const sessionIds = idFilter && "value" in idFilter ? (idFilter.value as string[]) : [];
   return getSessionMetricsFromEvents({
     projectId: props.projectId,
     sessionIds,
@@ -138,9 +129,7 @@ function buildMatchingEvents(
         tool_call_names: o.tool_call_names ?? [],
         start_time: o.start_time * 1000,
         end_time: o.end_time ? o.end_time * 1000 : null,
-        completion_start_time: o.completion_start_time
-          ? o.completion_start_time * 1000
-          : null,
+        completion_start_time: o.completion_start_time ? o.completion_start_time * 1000 : null,
         created_at: o.created_at * 1000,
         updated_at: o.updated_at * 1000,
         event_ts: o.event_ts * 1000,
@@ -155,10 +144,7 @@ function buildMatchingEvents(
  * Seed both legacy tables (traces + observations) and events table.
  * This ensures the same test data is available for both code paths.
  */
-async function seedSessionData(
-  traces: TraceRecordInsertType[],
-  observations?: ObservationRecordInsertType[],
-) {
+async function seedSessionData(traces: TraceRecordInsertType[], observations?: ObservationRecordInsertType[]) {
   await createTracesCh(traces);
   if (observations?.length) await createObservationsCh(observations);
 

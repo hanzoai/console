@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi, type Mock } from "vitest";
-import { EvalTargetObject } from "@hanzo/shared";
+import { EvalTargetObject } from "@hanzo/console-core";
 import { type ObservationEvalConfig } from "../evaluation/observationEval";
 
-vi.mock("@hanzo/shared/src/db", () => ({
+vi.mock("@hanzo/console-core/src/db", () => ({
   prisma: {
     batchAction: {
       update: vi.fn().mockResolvedValue(undefined),
@@ -15,7 +15,7 @@ vi.mock("../evaluation/observationEval", () => ({
   scheduleObservationEvals: vi.fn().mockResolvedValue(undefined),
 }));
 
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 import { scheduleObservationEvals } from "../evaluation/observationEval";
 import { processBatchedObservationEval } from "./processBatchedObservationEval";
 
@@ -78,8 +78,6 @@ describe("processBatchedObservationEval", () => {
         configs: evaluators,
       }),
     );
-    expect(
-      (prisma.batchAction.update as Mock).mock.calls.length,
-    ).toBeGreaterThan(0);
+    expect((prisma.batchAction.update as Mock).mock.calls.length).toBeGreaterThan(0);
   });
 });

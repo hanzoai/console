@@ -1,4 +1,4 @@
-import { OtelIngestionProcessor, createIngestionEventSchema } from "@hanzo/shared/src/server";
+import { OtelIngestionProcessor, createIngestionEventSchema } from "@hanzo/console-core/src/server";
 
 // Test helper function to maintain backward compatibility with existing tests
 // This mimics the old convertOtelSpanToIngestionEvent function signature

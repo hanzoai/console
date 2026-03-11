@@ -1,4 +1,4 @@
-import { type FilterState } from "@hanzo/shared";
+import { type FilterState } from "@hanzo/console";
 import { useQueryParam, JsonParam, withDefault } from "use-query-params";
 
 /**

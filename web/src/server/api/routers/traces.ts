@@ -2,7 +2,7 @@ import { z } from "zod/v4";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
 import { throwIfNoProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { aggregateScores } from "@/src/features/scores/lib/aggregateScores";
-import { applyCommentFilters } from "@hanzo/shared/src/server";
+import { applyCommentFilters } from "@hanzo/console-core/src/server";
 import { createTRPCRouter, protectedGetTraceProcedure, protectedProjectProcedure } from "@/src/server/api/trpc";
 import {
   BatchActionQuerySchema,
@@ -19,7 +19,7 @@ import {
   type ScoreDomain,
   AGGREGATABLE_SCORE_TYPES,
   ScoreDataTypeEnum,
-} from "@hanzo/shared";
+} from "@hanzo/console";
 import {
   traceException,
   getTracesTable,
@@ -44,7 +44,7 @@ import {
   getTracesGroupedBySessionId,
   updateEvents,
   getScoresAndCorrectionsForTraces,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import { TRPCError } from "@trpc/server";
 import { createBatchActionJob } from "@/src/features/table/server/createBatchActionJob";
 import { throwIfNoEntitlement } from "@/src/features/entitlements/server/hasEntitlement";

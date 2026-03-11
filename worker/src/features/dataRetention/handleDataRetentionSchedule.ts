@@ -1,6 +1,6 @@
 import { Job } from "@hanzo/mq";
-import { prisma } from "@hanzo/shared/src/db";
-import { DataRetentionProcessingQueue, QueueJobs } from "@hanzo/shared/src/server";
+import { prisma } from "@hanzo/console-core/src/db";
+import { DataRetentionProcessingQueue, QueueJobs } from "@hanzo/console-core/src/server";
 import { randomUUID } from "crypto";
 
 export const handleDataRetentionSchedule = async (_job: Job) => {

@@ -7,8 +7,8 @@ import {
   getTraceById,
   createEvent,
   type EventRecordInsertType,
-} from "@hanzo/shared/src/server";
-import { createObservationsCh, createTracesCh, createEventsCh } from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
+import { createObservationsCh, createTracesCh, createEventsCh } from "@hanzo/console-core/src/server";
 import { makeZodVerifiedAPICall, makeZodVerifiedAPICallSilent } from "@/src/__tests__/test-utils";
 import {
   DeleteTracesV1Response,
@@ -1953,28 +1953,20 @@ describe("/api/public/traces API Endpoint", () => {
   });
 
   describe.skip("GET /api/public/traces env var controls", () => {
-    const originalRejectNoDateRange =
-      env.HANZO_API_TRACES_REJECT_NO_DATE_RANGE;
-    const originalDefaultDateRangeDays =
-      env.HANZO_API_TRACES_DEFAULT_DATE_RANGE_DAYS;
+    const originalRejectNoDateRange = env.HANZO_API_TRACES_REJECT_NO_DATE_RANGE;
+    const originalDefaultDateRangeDays = env.HANZO_API_TRACES_DEFAULT_DATE_RANGE_DAYS;
     const originalDefaultFields = env.HANZO_API_TRACES_DEFAULT_FIELDS;
 
     afterEach(() => {
-      (env as any).HANZO_API_TRACES_REJECT_NO_DATE_RANGE =
-        originalRejectNoDateRange;
-      (env as any).HANZO_API_TRACES_DEFAULT_DATE_RANGE_DAYS =
-        originalDefaultDateRangeDays;
+      (env as any).HANZO_API_TRACES_REJECT_NO_DATE_RANGE = originalRejectNoDateRange;
+      (env as any).HANZO_API_TRACES_DEFAULT_DATE_RANGE_DAYS = originalDefaultDateRangeDays;
       (env as any).HANZO_API_TRACES_DEFAULT_FIELDS = originalDefaultFields;
     });
 
     it("should return 400 when REJECT_NO_DATE_RANGE=true and no fromTimestamp", async () => {
       (env as any).HANZO_API_TRACES_REJECT_NO_DATE_RANGE = "true";
 
-      const response = await makeZodVerifiedAPICallSilent(
-        GetTracesV1Response,
-        "GET",
-        "/api/public/traces",
-      );
+      const response = await makeZodVerifiedAPICallSilent(GetTracesV1Response, "GET", "/api/public/traces");
 
       expect(response.status).toBe(400);
     });
@@ -1982,9 +1974,7 @@ describe("/api/public/traces API Endpoint", () => {
     it("should allow request when REJECT_NO_DATE_RANGE=true and fromTimestamp is provided", async () => {
       (env as any).HANZO_API_TRACES_REJECT_NO_DATE_RANGE = "true";
 
-      const fromTimestamp = new Date(
-        Date.now() - 7 * 24 * 60 * 60 * 1000,
-      ).toISOString();
+      const fromTimestamp = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
       const response = await makeZodVerifiedAPICall(
         GetTracesV1Response,
         "GET",
@@ -1998,11 +1988,7 @@ describe("/api/public/traces API Endpoint", () => {
       (env as any).HANZO_API_TRACES_REJECT_NO_DATE_RANGE = "true";
       (env as any).HANZO_API_TRACES_DEFAULT_DATE_RANGE_DAYS = 7;
 
-      const response = await makeZodVerifiedAPICallSilent(
-        GetTracesV1Response,
-        "GET",
-        "/api/public/traces",
-      );
+      const response = await makeZodVerifiedAPICallSilent(GetTracesV1Response, "GET", "/api/public/traces");
 
       expect(response.status).toBe(400);
     });
@@ -2038,11 +2024,7 @@ describe("/api/public/traces API Endpoint", () => {
       await createObservationsCh([observation]);
       await createScoresCh([score]);
 
-      const response = await makeZodVerifiedAPICall(
-        GetTracesV1Response,
-        "GET",
-        "/api/public/traces",
-      );
+      const response = await makeZodVerifiedAPICall(GetTracesV1Response, "GET", "/api/public/traces");
 
       const trace = response.body.data.find((t) => t.id === traceId);
       expect(trace).toBeTruthy();
@@ -2071,11 +2053,7 @@ describe("/api/public/traces API Endpoint", () => {
 
       await createTracesCh([createdTrace]);
 
-      const response = await makeZodVerifiedAPICall(
-        GetTracesV1Response,
-        "GET",
-        "/api/public/traces?fields=core,io",
-      );
+      const response = await makeZodVerifiedAPICall(GetTracesV1Response, "GET", "/api/public/traces?fields=core,io");
 
       const trace = response.body.data.find((t) => t.id === traceId);
       expect(trace).toBeTruthy();

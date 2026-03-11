@@ -1,5 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 
 // const checkConsoleErrors = async (page: Page) => {
 //   const errors: string[] = [];
@@ -31,9 +31,7 @@ const cleanUpConsoleEventListeners = (page: Page) => {
 };
 
 test.describe("Create project", () => {
-  test("Sign in, create an organization, create a project", async ({
-    page,
-  }) => {
+  test("Sign in, create an organization, create a project", async ({ page }) => {
     test.setTimeout(60000);
     // const errors = await checkConsoleErrors(page);
 
@@ -42,13 +40,9 @@ test.describe("Create project", () => {
     await page.fill('input[name="email"]', "demo@hanzo.ai");
     await page.fill('input[type="password"]', "password");
 
-    await expect(
-      page.locator('button[data-testid="submit-email-password-sign-in-form"]'),
-    ).toBeEnabled();
+    await expect(page.locator('button[data-testid="submit-email-password-sign-in-form"]')).toBeEnabled();
 
-    await page.click(
-      'button[data-testid="submit-email-password-sign-in-form"]',
-    );
+    await page.click('button[data-testid="submit-email-password-sign-in-form"]');
 
     await page.waitForTimeout(2000);
 
@@ -62,9 +56,7 @@ test.describe("Create project", () => {
     await expect(page).toHaveURL("/");
 
     // Start create org flow — wait for button to be visible after page load
-    await expect(
-      page.locator('[data-testid="create-organization-btn"]'),
-    ).toBeVisible();
+    await expect(page.locator('[data-testid="create-organization-btn"]')).toBeVisible();
     await page.click('[data-testid="create-organization-btn"]');
     await expect(page).toHaveURL("/setup");
 
@@ -72,12 +64,9 @@ test.describe("Create project", () => {
     await expect(page.locator("data-testid=new-org-form")).toBeVisible();
     await page.fill('[data-testid="new-org-name-input"]', "e2e test org");
     await page.click('button[type="submit"]');
-    await expect(page).toHaveURL(
-      /\/organization\/.*\/setup\?orgstep=invite-members/,
-      {
-        timeout: 15000,
-      },
-    );
+    await expect(page).toHaveURL(/\/organization\/.*\/setup\?orgstep=invite-members/, {
+      timeout: 15000,
+    });
 
     // Parse the organization ID from the URL using a simpler method
     const url = new URL(page.url());
@@ -85,20 +74,13 @@ test.describe("Create project", () => {
     console.log("organization", organizationId);
 
     // Skip add new members step — wait for button to be visible
-    await expect(
-      page.locator('[data-testid="btn-skip-add-members"]'),
-    ).toBeVisible();
+    await expect(page.locator('[data-testid="btn-skip-add-members"]')).toBeVisible();
     await page.click('[data-testid="btn-skip-add-members"]');
-    expect(page.url()).toContain(
-      "/organization/" + organizationId + "/setup?orgstep=create-project",
-    );
+    expect(page.url()).toContain("/organization/" + organizationId + "/setup?orgstep=create-project");
 
     // Create project
     await expect(page.locator("data-testid=new-project-form")).toBeVisible();
-    await page.fill(
-      '[data-testid="new-project-name-input"]',
-      "e2e test project",
-    );
+    await page.fill('[data-testid="new-project-name-input"]', "e2e test project");
     await page.click('button[type="submit"]');
     await expect(page).toHaveURL(/\/project\/.*\/traces/, { timeout: 15000 });
 
@@ -130,9 +112,7 @@ test.describe("Create project", () => {
     { title: "Tracing", url: "/observations", subTitle: "Observations" },
     { title: "Scores", url: "/scores" },
   ].forEach(({ title, url, subTitle }) => {
-    test(`Check ${title} ${subTitle ? `- ${subTitle}` : ""} page`, async ({
-      page,
-    }) => {
+    test(`Check ${title} ${subTitle ? `- ${subTitle}` : ""} page`, async ({ page }) => {
       // const errors = await checkConsoleErrors(page);
       await signin(page);
 
@@ -158,9 +138,7 @@ const signin = async (page: Page) => {
   await page.fill('input[name="email"]', "demo@hanzo.ai");
   await page.fill('input[type="password"]', "password");
 
-  await expect(
-    page.locator('button[data-testid="submit-email-password-sign-in-form"]'),
-  ).toBeEnabled();
+  await expect(page.locator('button[data-testid="submit-email-password-sign-in-form"]')).toBeEnabled();
 
   await page.click('button[data-testid="submit-email-password-sign-in-form"]');
 

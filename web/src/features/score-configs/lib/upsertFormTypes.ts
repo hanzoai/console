@@ -1,4 +1,4 @@
-import { ScoreConfigCategory } from "@hanzo/shared";
+import { ScoreConfigCategory } from "@hanzo/console";
 import { z } from "zod/v4";
 
 export const createConfigSchema = z.object({

@@ -1,4 +1,4 @@
-import { Prisma, type prisma as _prisma } from "@hanzo/shared/src/db";
+import { Prisma, type prisma as _prisma } from "@hanzo/console-core/src/db";
 
 export const isValidPostgresRegex = async (regex: string, prisma: typeof _prisma): Promise<boolean> => {
   try {

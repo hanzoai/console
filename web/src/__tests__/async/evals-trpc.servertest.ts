@@ -2,9 +2,9 @@
 
 import { appRouter } from "@/src/server/api/root";
 import { createInnerTRPCContext } from "@/src/server/api/trpc";
-import { prisma } from "@hanzo/shared/src/db";
-import { createOrgProjectAndApiKey } from "@hanzo/shared/src/server";
-import { EvalTargetObject } from "@hanzo/shared";
+import { prisma } from "@hanzo/console-core/src/db";
+import { createOrgProjectAndApiKey } from "@hanzo/console-core/src/server";
+import { EvalTargetObject } from "@hanzo/console";
 import type { Session } from "next-auth";
 
 const __orgIds: string[] = [];

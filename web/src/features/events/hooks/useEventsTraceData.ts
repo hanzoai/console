@@ -6,12 +6,9 @@ import {
   AGGREGATABLE_SCORE_TYPES,
   ScoreDataTypeEnum,
   type ScoreDomain,
-} from "@hanzo/shared";
-import type { FullEventsObservations } from "@hanzo/shared/src/server";
-import {
-  type WithStringifiedMetadata,
-  toDomainArrayWithStringifiedMetadata,
-} from "@/src/utils/clientSideDomainTypes";
+} from "@hanzo/console";
+import type { FullEventsObservations } from "@hanzo/console-core/src/server";
+import { type WithStringifiedMetadata, toDomainArrayWithStringifiedMetadata } from "@/src/utils/clientSideDomainTypes";
 import { partition } from "lodash";
 
 interface UseEventsTraceDataProps {
@@ -66,9 +63,7 @@ export function useEventsTraceData(props: UseEventsTraceDataProps): UseEventsTra
   );
 
   // Step 2: Find root observation and calculate time range for batchIO
-  const observations = eventsQuery.data?.observations as
-    | FullEventsObservations
-    | undefined;
+  const observations = eventsQuery.data?.observations as FullEventsObservations | undefined;
 
   const rootObservation = useMemo(() => {
     if (!observations?.length) return null;
@@ -141,8 +136,7 @@ export function useEventsTraceData(props: UseEventsTraceDataProps): UseEventsTra
     };
   }, [observations, traceId, rootIOQuery.data, scoresQuery.data]);
 
-  const cutoffObservationsAfterMaxCount =
-    eventsQuery.data?.cutoffObservationsAfterMaxCount ?? false;
+  const cutoffObservationsAfterMaxCount = eventsQuery.data?.cutoffObservationsAfterMaxCount ?? false;
 
   return {
     data: transformed ?? undefined,

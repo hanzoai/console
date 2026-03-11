@@ -18,7 +18,7 @@ import {
   BatchActionType,
   ActionId,
   type TimeFilter,
-} from "@hanzo/shared";
+} from "@hanzo/console";
 import { useDetailPageLists } from "@/src/features/navigate-detail-pages/context";
 import { useOrderByState } from "@/src/features/orderBy/hooks/useOrderByState";
 import { api } from "@/src/utils/api";
@@ -39,7 +39,7 @@ import useColumnOrder from "@/src/features/column-visibility/hooks/useColumnOrde
 import { LocalIsoDate } from "@/src/components/LocalIsoDate";
 import { useTableViewManager } from "@/src/components/table/table-view-presets/hooks/useTableViewManager";
 import { Badge } from "@/src/components/ui/badge";
-import { type ScoreAggregate } from "@hanzo/shared";
+import { type ScoreAggregate } from "@hanzo/console";
 import { useSelectAll } from "@/src/features/table/hooks/useSelectAll";
 import { type TableAction } from "@/src/features/table/types";
 import { TableActionMenu } from "@/src/features/table/components/TableActionMenu";

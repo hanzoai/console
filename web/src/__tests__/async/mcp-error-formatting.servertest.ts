@@ -1,8 +1,8 @@
 /** @jest-environment node */
 
 // Mock queue operations to avoid Redis dependency in tests
-jest.mock("@hanzo/shared/src/server", () => {
-  const actual = jest.requireActual("@hanzo/shared/src/server");
+jest.mock("@hanzo/console-core/src/server", () => {
+  const actual = jest.requireActual("@hanzo/console-core/src/server");
   return {
     ...actual,
     // Mock queue getInstance to return a no-op queue
@@ -20,7 +20,13 @@ import { ZodError } from "zod/v4";
 import { z } from "zod/v4";
 import { formatErrorForUser, wrapErrorHandling } from "@/src/features/mcp/core/error-formatting";
 import { UserInputError, ApiServerError } from "@/src/features/mcp/core/errors";
-import { UnauthorizedError, ForbiddenError, ConsoleNotFoundError, InvalidRequestError, BaseError } from "@hanzo/shared";
+import {
+  UnauthorizedError,
+  ForbiddenError,
+  ConsoleNotFoundError,
+  InvalidRequestError,
+  BaseError,
+} from "@hanzo/console";
 
 describe("MCP Error Formatting", () => {
   describe("formatErrorForUser", () => {

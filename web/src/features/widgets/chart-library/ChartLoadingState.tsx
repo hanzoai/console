@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/src/utils/tailwind";
-import { SLOW_QUERY_HINT_TEXT } from "@hanzo/shared";
+import { SLOW_QUERY_HINT_TEXT } from "@hanzo/console";
 
 const DEFAULT_HINT_DELAY_MS = 2000;
 
@@ -56,10 +56,7 @@ export function ChartLoadingState({
       role="status"
       aria-live="polite"
       aria-label={spinnerLabel}
-      className={cn(
-        "flex flex-col items-center justify-center gap-2 text-muted-foreground",
-        className,
-      )}
+      className={cn("flex flex-col items-center justify-center gap-2 text-muted-foreground", className)}
     >
       <div className="flex h-4 w-4 items-center justify-center">
         {showSpinner ? (
@@ -69,12 +66,7 @@ export function ChartLoadingState({
         )}
       </div>
       {shouldShowHint ? (
-        <p
-          className={cn(
-            "max-w-xs text-center text-xs duration-300 animate-in fade-in-0",
-            hintClassName,
-          )}
-        >
+        <p className={cn("max-w-xs text-center text-xs duration-300 animate-in fade-in-0", hintClassName)}>
           {hintText}
         </p>
       ) : null}

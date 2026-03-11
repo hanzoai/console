@@ -29,12 +29,12 @@ import {
   ActionId,
   TableViewPresetTableName,
   type TimeFilter,
-} from "@hanzo/shared";
+} from "@hanzo/console";
 import { useRowHeightLocalStorage } from "@/src/components/table/data-table-row-height-switch";
 import { MemoizedIOTableCell } from "../../ui/IOTableCell";
 import { useTableDateRange } from "@/src/hooks/useTableDateRange";
 import { toAbsoluteTimeRange } from "@/src/utils/date-range-utils";
-import { type ScoreAggregate } from "@hanzo/shared";
+import { type ScoreAggregate } from "@hanzo/console";
 import { joinTableCoreAndMetrics } from "@/src/components/table/utils/joinTableCoreAndMetrics";
 import { Skeleton } from "@/src/components/ui/skeleton";
 import useColumnOrder from "@/src/features/column-visibility/hooks/useColumnOrder";

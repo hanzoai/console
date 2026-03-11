@@ -1,5 +1,5 @@
 // Export source options for analytics integrations (Insights, Mixpanel, Blob Storage)
-// This is a client-safe file that can be imported from @hanzo/shared
+// This is a client-safe file that can be imported from @hanzo/console
 
 import { AnalyticsIntegrationExportSource } from "@prisma/client";
 

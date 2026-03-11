@@ -1,5 +1,5 @@
 import crypto from "node:crypto";
-import { logger } from "@hanzo/shared/src/server";
+import { logger } from "@hanzo/console-core/src/server";
 
 export function compileTemplateString(template: string, context: Record<string, any>): string {
   try {

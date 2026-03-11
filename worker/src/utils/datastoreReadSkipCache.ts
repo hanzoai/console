@@ -1,5 +1,5 @@
-import { PrismaClient, ConsoleNotFoundError } from "@hanzo/shared";
-import { logger } from "@hanzo/shared/src/server";
+import { PrismaClient, ConsoleNotFoundError } from "@hanzo/console-core";
+import { logger } from "@hanzo/console-core/src/server";
 import { env } from "../env";
 
 export class DatastoreReadSkipCache {

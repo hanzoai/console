@@ -1,6 +1,6 @@
 import { createTRPCRouter, publicProcedure } from "@/src/server/api/trpc";
 import { env } from "@/src/env.mjs";
-import { logger } from "@hanzo/shared/src/server";
+import { logger } from "@hanzo/console-core/src/server";
 import { CloudStatus } from "@/src/features/cloud-status-notification/types";
 import { z } from "zod/v4";
 

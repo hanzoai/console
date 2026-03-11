@@ -3,7 +3,7 @@ import { Button } from "@/src/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/src/components/ui/dialog";
 import { CreateLLMApiKeyForm } from "./CreateLLMApiKeyForm";
 import { useUiCustomization } from "@/src/features/ui-customization/useUiCustomization";
-import { type LlmApiKeys } from "@hanzo/shared";
+import { type LlmApiKeys } from "@hanzo/console";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { PencilIcon } from "lucide-react";
 

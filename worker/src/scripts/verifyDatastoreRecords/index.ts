@@ -1,8 +1,8 @@
 import { writeFile } from "node:fs/promises";
 import path from "node:path";
-import { parseJsonPrioritised } from "@hanzo/shared";
-import { prisma, Prisma } from "@hanzo/shared/src/db";
-import { datastoreClient, datastoreStringDateSchema, logger } from "@hanzo/shared/src/server";
+import { parseJsonPrioritised } from "@hanzo/console-core";
+import { prisma, Prisma } from "@hanzo/console-core/src/db";
+import { datastoreClient, datastoreStringDateSchema, logger } from "@hanzo/console-core/src/server";
 
 const getErrorMessage = (params: {
   type: "observation" | "trace" | "score";

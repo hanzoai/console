@@ -93,7 +93,7 @@ interface ParsedData {
  * Sync parse helper - used for small payloads or when Web Worker unavailable
  */
 async function syncParseTraceData(input: unknown, output: unknown, metadata: unknown): Promise<ParsedData> {
-  const { deepParseJsonIterative } = await import("@hanzo/shared");
+  const { deepParseJsonIterative } = await import("@hanzo/console");
   const startTime = performance.now();
 
   return {

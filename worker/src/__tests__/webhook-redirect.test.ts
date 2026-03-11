@@ -2,10 +2,10 @@ import { describe, it, expect, beforeAll, afterAll, beforeEach } from "vitest";
 import { setupServer } from "msw/node";
 import { http, HttpResponse } from "msw";
 import { executeWebhook } from "../queues/webhooks";
-import { prisma } from "@hanzo/shared/src/db";
-import { encrypt } from "@hanzo/shared/encryption";
-import { ActionExecutionStatus, JobConfigState, PromptDomainSchema } from "@hanzo/shared";
-import type { WebhookInput } from "@hanzo/shared/src/server";
+import { prisma } from "@hanzo/console-core/src/db";
+import { encrypt } from "@hanzo/console-core/encryption";
+import { ActionExecutionStatus, JobConfigState, PromptDomainSchema } from "@hanzo/console-core";
+import type { WebhookInput } from "@hanzo/console-core/src/server";
 import { randomUUID } from "crypto";
 
 /**

@@ -1,5 +1,5 @@
 import { Job } from "@hanzo/mq";
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 import {
   QueueName,
   TQueueJobTypes,
@@ -10,14 +10,14 @@ import {
   getEventsForAnalyticsIntegrations,
   getCurrentSpan,
   validateWebhookURL,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import {
   transformTraceForInsights,
   transformGenerationForInsights,
   transformEventForInsights,
   transformScoreForInsights,
 } from "./transformers";
-import { decrypt } from "@hanzo/shared/encryption";
+import { decrypt } from "@hanzo/console-core/encryption";
 // posthog-node is the underlying SDK; re-aliased as Insights for branding
 import { PostHog as Insights } from "posthog-node";
 

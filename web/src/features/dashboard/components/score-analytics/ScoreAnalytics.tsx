@@ -1,6 +1,6 @@
 import { api } from "@/src/utils/api";
 import { DashboardCard } from "@/src/features/dashboard/components/cards/DashboardCard";
-import { type ScoreDataTypeType, type FilterState } from "@hanzo/shared";
+import { type ScoreDataTypeType, type FilterState } from "@hanzo/console";
 import { type DashboardDateRangeAggregationOption } from "@/src/utils/date-range-utils";
 import { MultiSelectKeyValues } from "@/src/features/scores/components/multi-select-key-values";
 import React, { useMemo } from "react";
@@ -13,10 +13,7 @@ import DocPopup from "@/src/components/layouts/doc-popup";
 import { NoDataOrLoading } from "@/src/components/NoDataOrLoading";
 import useLocalStorage from "@/src/components/useLocalStorage";
 import { type ViewVersion } from "@/src/features/query";
-import {
-  convertScoreColumnsToAnalyticsData,
-  getScoreDataTypeIcon,
-} from "@/src/features/scores/lib/scoreColumns";
+import { convertScoreColumnsToAnalyticsData, getScoreDataTypeIcon } from "@/src/features/scores/lib/scoreColumns";
 
 export function ScoreAnalytics(props: {
   className?: string;
@@ -164,9 +161,7 @@ export function ScoreAnalytics(props: {
         </div>
       ) : Boolean(scoreKeysAndProps.data?.scoreColumns.length) ? (
         <div className="flex min-h-[9rem] w-full flex-1 items-center justify-center rounded-md border">
-          <p className="text-muted-foreground">
-            Select a score to view analytics
-          </p>
+          <p className="text-muted-foreground">Select a score to view analytics</p>
         </div>
       ) : (
         <NoDataOrLoading isLoading={scoreKeysAndProps.isPending} />

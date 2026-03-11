@@ -4,7 +4,7 @@ import {
   BatchTableNames,
   BatchActionStatus,
   EvalTargetObject,
-} from "@hanzo/shared";
+} from "@hanzo/console-core";
 import { expect, describe, it, vi } from "vitest";
 import { v4 as uuidv4 } from "uuid";
 import { handleBatchActionJob } from "../features/batchAction/handleBatchActionJob";
@@ -25,8 +25,8 @@ import {
   createDatasetRunItemsCh,
   createDatasetRunItem,
   createDatasetItem,
-} from "@hanzo/shared/src/server";
-import { prisma } from "@hanzo/shared/src/db";
+} from "@hanzo/console-core/src/server";
+import { prisma } from "@hanzo/console-core/src/db";
 import { Decimal } from "decimal.js";
 import waitForExpect from "wait-for-expect";
 

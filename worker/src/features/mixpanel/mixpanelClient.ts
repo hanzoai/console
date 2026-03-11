@@ -1,4 +1,4 @@
-import { logger } from "@hanzo/shared/src/server";
+import { logger } from "@hanzo/console-core/src/server";
 import { gzipSync } from "zlib";
 import type { MixpanelEvent } from "./transformers";
 

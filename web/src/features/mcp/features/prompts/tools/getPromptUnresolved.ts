@@ -10,7 +10,7 @@ import { z } from "zod/v4";
 import { defineTool } from "../../../core/define-tool";
 import { ParamPromptName, ParamPromptLabel, ParamPromptVersion } from "../validation";
 import { UserInputError } from "../../../core/errors";
-import { instrumentAsync } from "@hanzo/shared/src/server";
+import { instrumentAsync } from "@hanzo/console-core/src/server";
 import { SpanKind } from "@opentelemetry/api";
 import { getPromptByName } from "@/src/features/prompts/server/actions/getPromptByName";
 

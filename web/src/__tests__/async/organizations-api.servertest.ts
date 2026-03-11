@@ -1,10 +1,10 @@
 /** @jest-environment node */
 
 import { makeZodVerifiedAPICall, makeAPICall } from "@/src/__tests__/test-utils";
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 import { z } from "zod/v4";
 import { randomUUID } from "crypto";
-import { createAndAddApiKeysToDb, createBasicAuthHeader } from "@hanzo/shared/src/server";
+import { createAndAddApiKeysToDb, createBasicAuthHeader } from "@hanzo/console-core/src/server";
 
 // Schema for organization project response
 const OrganizationProjectSchema = z.object({

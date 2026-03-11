@@ -5,7 +5,7 @@ import {
   availableObservationEvalVariableColumns,
   ObservationEvalVariableColumn,
   type ObservationVariableMapping,
-} from "@hanzo/shared";
+} from "@hanzo/console-core";
 
 describe("extractObservationVariables", () => {
   const mockObservation: ObservationForEval = {
@@ -72,9 +72,7 @@ describe("extractObservationVariables", () => {
 
   describe("basic variable extraction", () => {
     it("should extract input variable", () => {
-      const variableMapping: ObservationVariableMapping[] = [
-        { templateVariable: "input", selectedColumnId: "input" },
-      ];
+      const variableMapping: ObservationVariableMapping[] = [{ templateVariable: "input", selectedColumnId: "input" }];
 
       const result = extractObservationVariables(
         {
@@ -186,9 +184,7 @@ describe("extractObservationVariables", () => {
 
       expect(result).toHaveLength(1);
       expect(result[0].var).toBe("definitions");
-      expect(result[0].value).toBe(
-        JSON.stringify(mockObservation.tool_definitions),
-      );
+      expect(result[0].value).toBe(JSON.stringify(mockObservation.tool_definitions));
     });
   });
 
@@ -269,9 +265,7 @@ describe("extractObservationVariables", () => {
 
       expect(result).toHaveLength(1);
       expect(result[0].var).toBe("usage");
-      expect(result[0].value).toBe(
-        JSON.stringify(mockObservation.usage_details),
-      );
+      expect(result[0].value).toBe(JSON.stringify(mockObservation.usage_details));
     });
 
     it("should extract costDetails variable", () => {
@@ -289,9 +283,7 @@ describe("extractObservationVariables", () => {
 
       expect(result).toHaveLength(1);
       expect(result[0].var).toBe("cost");
-      expect(result[0].value).toBe(
-        JSON.stringify(mockObservation.cost_details),
-      );
+      expect(result[0].value).toBe(JSON.stringify(mockObservation.cost_details));
     });
   });
 
@@ -453,9 +445,7 @@ describe("extractObservationVariables", () => {
 
   describe("column ID mapping", () => {
     it("should map 'input' to observation input field", () => {
-      const variableMapping: ObservationVariableMapping[] = [
-        { templateVariable: "var", selectedColumnId: "input" },
-      ];
+      const variableMapping: ObservationVariableMapping[] = [{ templateVariable: "var", selectedColumnId: "input" }];
 
       const result = extractObservationVariables(
         {
@@ -469,9 +459,7 @@ describe("extractObservationVariables", () => {
     });
 
     it("should map 'output' to observation output field", () => {
-      const variableMapping: ObservationVariableMapping[] = [
-        { templateVariable: "var", selectedColumnId: "output" },
-      ];
+      const variableMapping: ObservationVariableMapping[] = [{ templateVariable: "var", selectedColumnId: "output" }];
 
       const result = extractObservationVariables(
         {
@@ -485,9 +473,7 @@ describe("extractObservationVariables", () => {
     });
 
     it("should map 'metadata' to observation metadata field as JSON string", () => {
-      const variableMapping: ObservationVariableMapping[] = [
-        { templateVariable: "var", selectedColumnId: "metadata" },
-      ];
+      const variableMapping: ObservationVariableMapping[] = [{ templateVariable: "var", selectedColumnId: "metadata" }];
 
       const result = extractObservationVariables({
         observation: mockObservation,

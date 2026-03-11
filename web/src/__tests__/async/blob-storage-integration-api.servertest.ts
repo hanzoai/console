@@ -1,11 +1,11 @@
 /** @jest-environment node */
 
 import { makeZodVerifiedAPICall, makeAPICall } from "@/src/__tests__/test-utils";
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 import { z } from "zod/v4";
 import { randomUUID } from "crypto";
-import { createAndAddApiKeysToDb, createBasicAuthHeader } from "@hanzo/shared/src/server";
-import { decrypt } from "@hanzo/shared/encryption";
+import { createAndAddApiKeysToDb, createBasicAuthHeader } from "@hanzo/console-core/src/server";
+import { decrypt } from "@hanzo/console-core/encryption";
 
 // Schemas based on Fern schema definition
 const BlobStorageIntegrationResponseSchema = z.object({

@@ -1,6 +1,6 @@
 import { Job } from "@hanzo/mq";
-import { traceException, logger } from "@hanzo/shared/src/server";
-import { QueueName, TQueueJobTypes } from "@hanzo/shared/src/server";
+import { traceException, logger } from "@hanzo/console-core/src/server";
+import { QueueName, TQueueJobTypes } from "@hanzo/console-core/src/server";
 import { handleBatchActionJob } from "../features/batchAction/handleBatchActionJob";
 
 export const batchActionQueueProcessor = async (job: Job<TQueueJobTypes[QueueName.BatchActionQueue]>) => {

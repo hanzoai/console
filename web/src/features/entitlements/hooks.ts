@@ -4,7 +4,7 @@ import {
   type Entitlement,
   type EntitlementLimit,
 } from "@/src/features/entitlements/constants/entitlements";
-import { type Plan } from "@hanzo/shared";
+import { type Plan } from "@hanzo/console";
 
 /**
  * Hook to get the plan — always returns "oss" (full access, no license gating).

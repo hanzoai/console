@@ -10,10 +10,10 @@ import {
   isGitHubDispatchAction,
   type AutomationDomain,
   type ActionDomainWithSecrets,
-} from "@hanzo/shared";
-import { decrypt, createSignatureHeader } from "@hanzo/shared/encryption";
-import { prisma } from "@hanzo/shared/src/db";
-import { validateWebhookURL, whitelistFromEnv, fetchWithSecureRedirects } from "@hanzo/shared/src/server";
+} from "@hanzo/console-core";
+import { decrypt, createSignatureHeader } from "@hanzo/console-core/encryption";
+import { prisma } from "@hanzo/console-core/src/db";
+import { validateWebhookURL, whitelistFromEnv, fetchWithSecureRedirects } from "@hanzo/console-core/src/server";
 import {
   TQueueJobTypes,
   QueueName,
@@ -24,7 +24,7 @@ import {
   getConsecutiveAutomationFailures,
   SlackService,
   logger,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import { Processor, Job } from "@hanzo/mq";
 import { backOff } from "exponential-backoff";
 import { env } from "../env";

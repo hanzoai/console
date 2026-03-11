@@ -1,6 +1,6 @@
 import { type EvalFormType } from "@/src/features/evals/utils/evaluator-form-utils";
 import { api, type RouterOutputs } from "@/src/utils/api";
-import { EvalTargetObject, type FilterState } from "@hanzo/shared";
+import { EvalTargetObject, type FilterState } from "@hanzo/console";
 import { type UseFormReturn } from "react-hook-form";
 import { isEventTarget } from "@/src/features/evals/utils/typeHelpers";
 import { useV4Beta } from "@/src/features/events/hooks/useV4Beta";
@@ -15,10 +15,7 @@ export type PreviewData =
       type: typeof EvalTargetObject.EVENT;
       traceId: string;
       observationId: string;
-      data:
-        | RouterOutputs["observations"]["byId"]
-        | RouterOutputs["events"]["batchIO"][number]
-        | undefined;
+      data: RouterOutputs["observations"]["byId"] | RouterOutputs["events"]["batchIO"][number] | undefined;
     };
 
 // Temporary workaround to make filter backwards compatible with generations table
@@ -123,10 +120,8 @@ export function usePreviewData(
       ? latestObservationBeta.data?.observations[0]?.id
       : latestObservation.data?.generations[0]?.id;
 
-  const latestObservationStartTime =
-    latestObservationBeta.data?.observations[0]?.startTime;
-  const latestObservationEndTime =
-    latestObservationBeta.data?.observations[0]?.endTime;
+  const latestObservationStartTime = latestObservationBeta.data?.observations[0]?.startTime;
+  const latestObservationEndTime = latestObservationBeta.data?.observations[0]?.endTime;
 
   // For event evals: fetch only the single observation
   const observationDetails = api.observations.byId.useQuery(
@@ -138,11 +133,7 @@ export function usePreviewData(
     },
     {
       enabled:
-        enabled &&
-        !!latestObservationTraceId &&
-        !!latestObservationObservationId &&
-        isEventEval &&
-        !isBetaEnabled,
+        enabled && !!latestObservationTraceId && !!latestObservationObservationId && isEventEval && !isBetaEnabled,
     },
   );
 
@@ -172,18 +163,14 @@ export function usePreviewData(
   );
 
   const previewData: PreviewData | null = isEventEval
-    ? (isBetaEnabled
-        ? observationDetailsBeta.data?.[0]
-        : observationDetails.data) &&
+    ? (isBetaEnabled ? observationDetailsBeta.data?.[0] : observationDetails.data) &&
       latestObservationTraceId &&
       latestObservationObservationId
       ? {
           type: EvalTargetObject.EVENT,
           traceId: latestObservationTraceId,
           observationId: latestObservationObservationId,
-          data: isBetaEnabled
-            ? observationDetailsBeta.data?.[0]
-            : observationDetails.data,
+          data: isBetaEnabled ? observationDetailsBeta.data?.[0] : observationDetails.data,
         }
       : null
     : traceDetails.data && actualTraceId
@@ -197,9 +184,7 @@ export function usePreviewData(
   const isLoading =
     latestTrace.isLoading ||
     traceDetails.isLoading ||
-    (isBetaEnabled
-      ? observationDetailsBeta.isLoading
-      : observationDetails.isLoading);
+    (isBetaEnabled ? observationDetailsBeta.isLoading : observationDetails.isLoading);
 
   return {
     previewData,

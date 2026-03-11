@@ -1,6 +1,6 @@
 import type { AnnotationScore, ScoreTarget } from "@/src/features/scores/types";
 import { type WithStringifiedMetadata } from "@/src/utils/clientSideDomainTypes";
-import { type ScoreDomain } from "@hanzo/shared";
+import { type ScoreDomain } from "@hanzo/console";
 
 /**
  * Filter scores to match exact target based on mode

@@ -2,7 +2,7 @@ import React from "react";
 import { type UseFormReturn } from "react-hook-form";
 import { type BaseActionHandler } from "./BaseActionHandler";
 import { GitHubDispatchActionForm } from "./GitHubDispatchActionForm";
-import { type AutomationDomain, type ActionCreate, type ActionDomain } from "@hanzo/shared";
+import { type AutomationDomain, type ActionCreate, type ActionDomain } from "@hanzo/console";
 import { z } from "zod/v4";
 
 // Define the form schema for GitHub dispatch actions

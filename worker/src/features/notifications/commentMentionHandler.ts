@@ -1,9 +1,9 @@
 import { env } from "../../env";
-import { logger, sendCommentMentionEmail, getObservationById } from "@hanzo/shared/src/server";
-import { prisma } from "@hanzo/shared/src/db";
-import { Prisma } from "@hanzo/shared";
-import { getUserProjectRoles } from "@hanzo/shared/src/server";
-import { type NotificationEventType } from "@hanzo/shared/src/server";
+import { logger, sendCommentMentionEmail, getObservationById } from "@hanzo/console-core/src/server";
+import { prisma } from "@hanzo/console-core/src/db";
+import { Prisma } from "@hanzo/console-core";
+import { getUserProjectRoles } from "@hanzo/console-core/src/server";
+import { type NotificationEventType } from "@hanzo/console-core/src/server";
 
 type CommentMentionPayload = Omit<Extract<NotificationEventType, { type: "COMMENT_MENTION" }>, "type">;
 

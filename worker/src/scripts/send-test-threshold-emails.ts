@@ -9,7 +9,11 @@
  *
  */
 
-import { sendUsageThresholdWarningEmail, sendUsageThresholdSuspensionEmail, logger } from "@hanzo/shared/src/server";
+import {
+  sendUsageThresholdWarningEmail,
+  sendUsageThresholdSuspensionEmail,
+  logger,
+} from "@hanzo/console-core/src/server";
 import { env } from "../env";
 
 const TEST_EMAILS: string[] = [

@@ -1,10 +1,10 @@
 import { type z } from "zod/v4";
-import { convertDateToDatastoreDateTime, shouldSkipObservationsFinal } from "@hanzo/shared/src/server";
+import { convertDateToDatastoreDateTime, shouldSkipObservationsFinal } from "@hanzo/console-core/src/server";
 import type { QueryType, ViewDeclarationType, metricAggregations, granularities, ViewVersion, views } from "../types";
 import { query as queryModel } from "../types";
 import { getViewDeclaration } from "@/src/features/query/dataModel";
-import { FilterList, createFilterFromFilterState, type Filter } from "@hanzo/shared/src/server";
-import { InvalidRequestError } from "@hanzo/shared";
+import { FilterList, createFilterFromFilterState, type Filter } from "@hanzo/console-core/src/server";
+import { InvalidRequestError } from "@hanzo/console";
 import { env } from "@/src/env.mjs";
 
 type AppliedDimensionType = {

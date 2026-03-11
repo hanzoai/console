@@ -1,5 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { extractToolsFromObservation, convertDefinitionsToMap, convertCallsToArrays } from "@hanzo/shared/src/server";
+import {
+  extractToolsFromObservation,
+  convertDefinitionsToMap,
+  convertCallsToArrays,
+} from "@hanzo/console-core/src/server";
 
 describe("extractToolsFromObservation", () => {
   describe("Tool Definitions extraction", () => {

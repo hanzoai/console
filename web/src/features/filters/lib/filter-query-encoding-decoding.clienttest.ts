@@ -1,5 +1,5 @@
 import { encodeFiltersGeneric, decodeFiltersGeneric } from "@/src/features/filters/lib/filter-query-encoding";
-import type { FilterState } from "@hanzo/shared";
+import type { FilterState } from "@hanzo/console";
 
 // Wrapper functions for tests
 const encodeFilters = (filters: FilterState) => encodeFiltersGeneric(filters);
@@ -453,11 +453,7 @@ describe("Filter Query Encoding & Decoding (Legacy Format)", () => {
             column: "name",
             type: "stringOptions",
             operator: "any of",
-            value: [
-              "Builder | Short Research",
-              "Regular Value",
-              "Another | Pipe | Value",
-            ],
+            value: ["Builder | Short Research", "Regular Value", "Another | Pipe | Value"],
           },
         ],
         [

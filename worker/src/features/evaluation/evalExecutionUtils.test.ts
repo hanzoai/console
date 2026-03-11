@@ -10,8 +10,8 @@ import {
   evalTemplateOutputSchema,
 } from "./evalExecutionUtils";
 import { type ExtractedVariable } from "./evalService";
-import { ChatMessageRole } from "@hanzo/shared";
-import { ChatMessageType } from "@hanzo/shared/src/server";
+import { ChatMessageRole } from "@hanzo/console-core";
+import { ChatMessageType } from "@hanzo/console-core/src/server";
 
 describe("evalExecutionUtils", () => {
   describe("compileEvalPrompt", () => {
@@ -25,9 +25,7 @@ describe("evalExecutionUtils", () => {
       };
 
       const result = compileEvalPrompt(params);
-      expect(result).toBe(
-        "Evaluate user question and compare to model response",
-      );
+      expect(result).toBe("Evaluate user question and compare to model response");
     });
 
     it("should handle empty variables array", () => {
@@ -43,9 +41,7 @@ describe("evalExecutionUtils", () => {
     it("should handle variables with special characters", () => {
       const params = {
         templatePrompt: "Input: {{input}}",
-        variables: [
-          { var: "input", value: "text with \"quotes\" and 'apostrophes'" },
-        ] as ExtractedVariable[],
+        variables: [{ var: "input", value: "text with \"quotes\" and 'apostrophes'" }] as ExtractedVariable[],
       };
 
       const result = compileEvalPrompt(params);
@@ -55,9 +51,7 @@ describe("evalExecutionUtils", () => {
     it("should handle JSON values in variables", () => {
       const params = {
         templatePrompt: "Data: {{data}}",
-        variables: [
-          { var: "data", value: '{"key": "value", "count": 42}' },
-        ] as ExtractedVariable[],
+        variables: [{ var: "data", value: '{"key": "value", "count": 42}' }] as ExtractedVariable[],
       };
 
       const result = compileEvalPrompt(params);

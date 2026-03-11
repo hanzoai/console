@@ -12,7 +12,7 @@ import { useSidebarFilterState } from "@/src/features/filters/hooks/useSidebarFi
 import { evaluatorFilterConfig } from "@/src/features/filters/config/evaluators-config";
 import { type RouterOutputs, api } from "@/src/utils/api";
 import { safeExtract } from "@/src/utils/map-utils";
-import { type FilterState, singleFilter } from "@hanzo/shared";
+import { type FilterState, singleFilter } from "@hanzo/console";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useEffect, useState, useMemo } from "react";
 import { useQueryParam, StringParam, withDefault } from "use-query-params";

@@ -8,8 +8,14 @@
 import { McpError, ErrorCode } from "@modelcontextprotocol/sdk/types.js";
 import { ZodError } from "zod/v4";
 import { isUserInputError, isApiServerError } from "./errors";
-import { BaseError, UnauthorizedError, ForbiddenError, ConsoleNotFoundError, InvalidRequestError } from "@hanzo/shared";
-import { logger } from "@hanzo/shared/src/server";
+import {
+  BaseError,
+  UnauthorizedError,
+  ForbiddenError,
+  ConsoleNotFoundError,
+  InvalidRequestError,
+} from "@hanzo/console";
+import { logger } from "@hanzo/console-core/src/server";
 
 /**
  * Format an error for MCP response.

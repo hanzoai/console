@@ -8,17 +8,17 @@ import {
   TRACE_FIELD_GROUPS,
   type TraceFieldGroup,
 } from "@/src/features/public-api/types/traces";
-import { InvalidRequestError } from "@hanzo/shared";
+import { InvalidRequestError } from "@hanzo/console";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
-import { processEventBatch } from "@hanzo/shared/src/server";
+import { processEventBatch } from "@hanzo/console-core/src/server";
 import {
   eventTypes,
   logger,
   traceDeletionProcessor,
   getTracesFromEventsTableForPublicApi,
   getTracesCountFromEventsTableForPublicApi,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import { v4 } from "uuid";
 import { telemetry } from "@/src/features/telemetry";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
@@ -63,26 +63,18 @@ export default withMiddlewares({
     fn: async ({ query, auth }) => {
       // Api-performance controls.
       // 1. Reject if no date range and rejection is enabled
-      if (
-        env.HANZO_API_TRACES_REJECT_NO_DATE_RANGE === "true" &&
-        !query.fromTimestamp
-      ) {
+      if (env.HANZO_API_TRACES_REJECT_NO_DATE_RANGE === "true" && !query.fromTimestamp) {
         throw new InvalidRequestError(
           "fromTimestamp is required. Set the fromTimestamp query parameter to filter traces by date.",
         );
       }
 
       // 2. Apply default date range if configured and no fromTimestamp provided
-      const defaultDateRangeDays =
-        env.HANZO_API_TRACES_DEFAULT_DATE_RANGE_DAYS;
+      const defaultDateRangeDays = env.HANZO_API_TRACES_DEFAULT_DATE_RANGE_DAYS;
       let effectiveFromTimestamp = query.fromTimestamp ?? undefined;
       if (!query.fromTimestamp && defaultDateRangeDays) {
-        const referenceDateMs = query.toTimestamp
-          ? new Date(query.toTimestamp).getTime()
-          : Date.now();
-        effectiveFromTimestamp = new Date(
-          referenceDateMs - defaultDateRangeDays * 24 * 60 * 60 * 1000,
-        ).toISOString();
+        const referenceDateMs = query.toTimestamp ? new Date(query.toTimestamp).getTime() : Date.now();
+        effectiveFromTimestamp = new Date(referenceDateMs - defaultDateRangeDays * 24 * 60 * 60 * 1000).toISOString();
       }
 
       // 3. Apply default fields if configured and no fields query param provided
@@ -90,9 +82,7 @@ export default withMiddlewares({
       if (!query.fields && env.HANZO_API_TRACES_DEFAULT_FIELDS) {
         const parsed = env.HANZO_API_TRACES_DEFAULT_FIELDS.split(",")
           .map((f) => f.trim())
-          .filter((f): f is TraceFieldGroup =>
-            TRACE_FIELD_GROUPS.includes(f as TraceFieldGroup),
-          );
+          .filter((f): f is TraceFieldGroup => TRACE_FIELD_GROUPS.includes(f as TraceFieldGroup));
         if (parsed.length > 0) {
           effectiveFields = parsed;
         }

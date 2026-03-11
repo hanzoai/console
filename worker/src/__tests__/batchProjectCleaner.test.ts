@@ -13,8 +13,8 @@ import {
   createDatasetRunItem,
   queryDatastore,
   redis,
-} from "@hanzo/shared/src/server";
-import { prisma } from "@hanzo/shared/src/db";
+} from "@hanzo/console-core/src/server";
+import { prisma } from "@hanzo/console-core/src/db";
 import { env } from "../env";
 
 async function getDatastoreCount(table: string, projectId: string): Promise<number> {

@@ -3,7 +3,7 @@ import {
   logger,
   traceException,
   deleteIngestionEventsFromS3AndDatastoreForScores,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import { env } from "../../env";
 
 export const processDatastoreScoreDelete = async (projectId: string, scoreIds: string[]) => {

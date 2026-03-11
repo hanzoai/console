@@ -1,8 +1,4 @@
-import {
-  extractValueFromObject,
-  type BatchActionQuery,
-  type ObservationVariableMapping,
-} from "@hanzo/shared";
+import { extractValueFromObject, type BatchActionQuery, type ObservationVariableMapping } from "@hanzo/console";
 import { type RouterOutputs } from "@/src/utils/api";
 
 type ObservationPreview = RouterOutputs["observations"]["byId"];
@@ -12,11 +8,7 @@ const PROMPT_PREVIEW_CHAR_LIMIT = 2000;
 export function stringifyPreviewValue(value: unknown): string {
   if (value === null || value === undefined) return "";
   if (typeof value === "string") return value;
-  if (
-    typeof value === "number" ||
-    typeof value === "boolean" ||
-    typeof value === "bigint"
-  ) {
+  if (typeof value === "number" || typeof value === "boolean" || typeof value === "bigint") {
     return String(value);
   }
 
@@ -41,11 +33,7 @@ export function renderPromptPreviewFromObservation(params: {
   const variableValues = new Map<string, string>();
 
   for (const mapping of variableMapping) {
-    const { value } = extractValueFromObject(
-      observation,
-      mapping.selectedColumnId,
-      mapping.jsonSelector ?? undefined,
-    );
+    const { value } = extractValueFromObject(observation, mapping.selectedColumnId, mapping.jsonSelector ?? undefined);
     variableValues.set(mapping.templateVariable, stringifyPreviewValue(value));
   }
 

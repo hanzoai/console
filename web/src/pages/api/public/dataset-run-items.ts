@@ -1,4 +1,4 @@
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
 import {
@@ -8,7 +8,7 @@ import {
   PostDatasetRunItemsV1Body,
   PostDatasetRunItemsV1Response,
 } from "@/src/features/public-api/types/datasets";
-import { type JSONValue, ConsoleNotFoundError } from "@hanzo/shared";
+import { type JSONValue, ConsoleNotFoundError } from "@hanzo/console";
 import { addDatasetRunItemsToEvalQueue } from "@/src/features/evals/server/addDatasetRunItemsToEvalQueue";
 import {
   eventTypes,
@@ -16,7 +16,7 @@ import {
   processEventBatch,
   getObservationById,
   getDatasetItemById,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import { v4 } from "uuid";
 import { createOrFetchDatasetRun } from "@/src/features/public-api/server/dataset-runs";
 import {

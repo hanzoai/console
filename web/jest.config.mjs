@@ -44,7 +44,7 @@ const endToEndServerTestConfig = {
 };
 
 // To avoid the "Cannot use import statement outside a module" errors while transforming ESM.
-// jsonpath-plus is needed because @hanzo/shared barrel exports evals/utilities which imports it
+// jsonpath-plus is needed because @hanzo/console barrel exports evals/utilities which imports it
 const esModules = ["superjson", "jsonpath-plus", "@hanzo/iam"];
 
 // @hanzo/iam is ESM-only; Jest CJS resolver can't follow its subpath "import" exports.

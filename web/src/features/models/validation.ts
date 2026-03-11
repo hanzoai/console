@@ -1,5 +1,5 @@
 import { z } from "zod/v4";
-import { PricingTierConditionSchema, PricingTierInputSchema, validatePricingTiers } from "@hanzo/shared";
+import { PricingTierConditionSchema, PricingTierInputSchema, validatePricingTiers } from "@hanzo/console";
 
 export const UsageTypeSchema = z.string().regex(/^[a-zA-Z0-9_-]+$/);
 export const PriceSchema = z.number().nonnegative();

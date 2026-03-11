@@ -1,6 +1,6 @@
 import { v4 } from "uuid";
-import { JobExecutionStatus, Prisma, prisma } from "@hanzo/shared/src/db";
-import { getObservationById, getTraceById, OrgEnrichedApiKey, redis } from "@hanzo/shared/src/server";
+import { JobExecutionStatus, Prisma, prisma } from "@hanzo/console-core/src/db";
+import { getObservationById, getTraceById, OrgEnrichedApiKey, redis } from "@hanzo/console-core/src/server";
 import waitForExpect from "wait-for-expect";
 
 const generateAuth = (username: string, password: string) => {

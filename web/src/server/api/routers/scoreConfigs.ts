@@ -11,8 +11,8 @@ import {
   ScoreConfigDataType,
   validateDbScoreConfig,
   validateDbScoreConfigSafe,
-} from "@hanzo/shared";
-import { traceException } from "@hanzo/shared/src/server";
+} from "@hanzo/console";
+import { traceException } from "@hanzo/console-core/src/server";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
 
 const ScoreConfigAllInput = z.object({

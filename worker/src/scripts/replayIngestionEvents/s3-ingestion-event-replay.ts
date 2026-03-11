@@ -15,7 +15,7 @@ import * as path from "path";
 import * as readline from "readline";
 import { parse } from "csv-parse";
 import { randomUUID } from "crypto";
-import { getQueue, OtelIngestionQueue, QueueJobs, QueueName, TQueueJobTypes } from "@hanzo/shared/src/server";
+import { getQueue, OtelIngestionQueue, QueueJobs, QueueName, TQueueJobTypes } from "@hanzo/console-core/src/server";
 
 const INPUT_FILE = "events.csv";
 const OUTPUT_FILE = "events_filtered.csv";

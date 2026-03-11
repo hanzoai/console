@@ -8,14 +8,14 @@ import {
   queryDatastore,
   measureAndReturn,
   scoresTableUiColumnDefinitions,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import {
   removeObjectKeys,
   ScoreDataTypeEnum,
   type ScoreDataTypeType,
   type ScoreDomain,
   type FilterState,
-} from "@hanzo/shared";
+} from "@hanzo/console";
 
 /**
  * Converts a ScoreDomain object to API format.

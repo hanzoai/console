@@ -3,7 +3,7 @@ import { ServerInsights } from "@/src/features/insights-analytics/ServerInsights
 import type { LLMResult } from "@langchain/core/outputs";
 import { BaseCallbackHandler } from "@langchain/core/callbacks/base";
 
-import type { ChatMessage, ModelParams } from "@hanzo/shared";
+import type { ChatMessage, ModelParams } from "@hanzo/console";
 
 export class InsightsCallbackHandler extends BaseCallbackHandler {
   public name = "InsightsCallbackHandler";

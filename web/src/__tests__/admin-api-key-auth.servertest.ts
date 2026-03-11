@@ -1,8 +1,8 @@
 import { type NextApiRequest } from "next";
 import { verifyAuth } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 import { env } from "@/src/env.mjs";
-import { createOrgProjectAndApiKey, hashSecretKey, getDisplaySecretKey } from "@hanzo/shared/src/server";
+import { createOrgProjectAndApiKey, hashSecretKey, getDisplaySecretKey } from "@hanzo/console-core/src/server";
 
 describe("Admin API Key Authentication", () => {
   const ADMIN_API_KEY = "test-admin-key-123";

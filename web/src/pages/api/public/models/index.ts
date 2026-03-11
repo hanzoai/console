@@ -1,6 +1,6 @@
-import { prisma, Prisma } from "@hanzo/shared/src/db";
+import { prisma, Prisma } from "@hanzo/console-core/src/db";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
-import { clearModelCacheForProject } from "@hanzo/shared/src/server";
+import { clearModelCacheForProject } from "@hanzo/console-core/src/server";
 import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
 import {
   GetModelsV1Query,
@@ -9,7 +9,7 @@ import {
   PostModelsV1Response,
   prismaToApiModelDefinition,
 } from "@/src/features/public-api/types/models";
-import { InvalidRequestError } from "@hanzo/shared";
+import { InvalidRequestError } from "@hanzo/console";
 import { isValidPostgresRegex } from "@/src/features/models/server/isValidPostgresRegex";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
 

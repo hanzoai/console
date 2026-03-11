@@ -1,5 +1,5 @@
 import { getScoreDataTypeIcon } from "@/src/features/scores/lib/scoreColumns";
-import { isPresent, type ScoreConfigDataType, type ScoreConfigCategoryDomain } from "@hanzo/shared";
+import { isPresent, type ScoreConfigDataType, type ScoreConfigCategoryDomain } from "@hanzo/console";
 
 export const resolveConfigValue = ({ name, dataType }: { name: string; dataType: ScoreConfigDataType }) => {
   return `${getScoreDataTypeIcon(dataType)} ${name}`;

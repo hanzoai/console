@@ -1,6 +1,6 @@
 /** @jest-environment node */
 
-import { ChatMessageType, compileChatMessages, extractPlaceholderNames } from "@hanzo/shared";
+import { ChatMessageType, compileChatMessages, extractPlaceholderNames } from "@hanzo/console";
 type PromptMessage = { role: string; content: string } | { type: any; name: string };
 
 describe("compileChatMessages", () => {

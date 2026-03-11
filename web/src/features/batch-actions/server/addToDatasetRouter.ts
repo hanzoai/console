@@ -7,9 +7,9 @@ import {
   QueueJobs,
   getObservationsCountFromEventsTable,
   getObservationsTableCount,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import { TRPCError } from "@trpc/server";
-import { BatchTableNames, BatchActionType, BatchActionStatus, ActionId } from "@hanzo/shared";
+import { BatchTableNames, BatchActionType, BatchActionStatus, ActionId } from "@hanzo/console";
 import { env } from "@/src/env.mjs";
 import { CreateObservationAddToDatasetActionSchema } from "../validation";
 
@@ -29,11 +29,8 @@ export const addToDatasetRouter = createTRPCRouter({
 
         const { projectId, query, config } = input;
 
-        const useEventsTable =
-          env.HANZO_ENABLE_EVENTS_TABLE_OBSERVATIONS === "true";
-        const tableName = useEventsTable
-          ? BatchTableNames.Events
-          : BatchTableNames.Observations;
+        const useEventsTable = env.HANZO_ENABLE_EVENTS_TABLE_OBSERVATIONS === "true";
+        const tableName = useEventsTable ? BatchTableNames.Events : BatchTableNames.Observations;
 
         // Check observation count doesn't exceed maximum
         const queryOpts = {

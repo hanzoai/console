@@ -1,8 +1,4 @@
-import {
-  type FilterState,
-  singleFilter,
-  type SingleValueOption,
-} from "@hanzo/shared";
+import { type FilterState, singleFilter, type SingleValueOption } from "@hanzo/console";
 import { encodeDelimitedArray, decodeDelimitedArray } from "use-query-params";
 
 // Escape pipe characters in values to avoid conflicts with the delimiter
@@ -42,10 +38,7 @@ export function splitOnUnescapedPipe(str: string): string[] {
 }
 
 // Generic helpers for reusable encoding/decoding across feature areas
-export type GenericFilterOptions = Record<
-  string,
-  string[] | (string | SingleValueOption)[] | Record<string, string[]>
->;
+export type GenericFilterOptions = Record<string, string[] | (string | SingleValueOption)[] | Record<string, string[]>>;
 
 // Pure helper: compute UI-selected values from a filter entry and available values
 export function computeSelectedValues(
@@ -85,19 +78,12 @@ export function encodeFiltersGeneric(filters: FilterState): string {
           let encodedValue: string;
           if (f.type === "datetime") {
             encodedValue = encodeURIComponent(new Date(f.value).toISOString());
-          } else if (
-            f.type === "stringOptions" ||
-            f.type === "arrayOptions" ||
-            f.type === "categoryOptions"
-          ) {
+          } else if (f.type === "stringOptions" || f.type === "arrayOptions" || f.type === "categoryOptions") {
             // Escape pipe characters in individual values before joining with pipe delimiter
             const escapedValues = (f.value as string[]).map(escapePipeInValue);
             encodedValue = encodeURIComponent(escapedValues.join("|"));
           } else if (f.type === "positionInTrace") {
-            encodedValue =
-              f.value === undefined || f.value === null
-                ? ""
-                : encodeURIComponent(String(f.value));
+            encodedValue = f.value === undefined || f.value === null ? "" : encodeURIComponent(String(f.value));
           } else {
             encodedValue = encodeURIComponent(String(f.value));
           }
@@ -143,11 +129,7 @@ export function decodeFiltersGeneric(query: string): FilterState {
       parsedValue = Number(decodedValue);
     } else if (type === "positionInTrace") {
       parsedValue = decodedValue === "" ? undefined : Number(decodedValue);
-    } else if (
-      type === "stringOptions" ||
-      type === "arrayOptions" ||
-      type === "categoryOptions"
-    ) {
+    } else if (type === "stringOptions" || type === "arrayOptions" || type === "categoryOptions") {
       // Split on unescaped pipe characters only, then unescape each value
       parsedValue = decodedValue
         ? splitOnUnescapedPipe(decodedValue).map(unescapePipeInValue)

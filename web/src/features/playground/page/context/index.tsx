@@ -22,7 +22,7 @@ import {
   type ChatMessage,
   compileChatMessagesWithIds,
   type MessagePlaceholderValues,
-} from "@hanzo/shared";
+} from "@hanzo/console";
 
 import type { MessagesContext } from "@/src/components/ChatMessages/types";
 import type { ModelParamsContext } from "@/src/components/ModelParameters";

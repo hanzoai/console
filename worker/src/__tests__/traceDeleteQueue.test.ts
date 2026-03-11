@@ -1,6 +1,6 @@
 import { expect, describe, it, beforeEach, afterEach, vi } from "vitest";
 import { randomUUID } from "crypto";
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 import { traceDeleteProcessor } from "../queues/traceDelete";
 import {
   QueueJobs,
@@ -10,7 +10,7 @@ import {
   createTrace,
   createTracesCh,
   getTracesByIds,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import { Job } from "@hanzo/mq";
 
 describe("trace deletion queue processor", () => {

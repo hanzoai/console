@@ -13,11 +13,11 @@ import {
   PromptNameSchema,
   COMMIT_MESSAGE_MAX_LENGTH,
   PROMPT_NAME_MAX_LENGTH,
-} from "@hanzo/shared";
+} from "@hanzo/console";
 import { createPrompt as createPromptAction } from "@/src/features/prompts/server/actions/createPrompt";
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
-import { instrumentAsync } from "@hanzo/shared/src/server";
+import { instrumentAsync } from "@hanzo/console-core/src/server";
 import { SpanKind } from "@opentelemetry/api";
 
 /**

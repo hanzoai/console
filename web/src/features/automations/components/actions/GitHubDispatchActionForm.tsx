@@ -1,7 +1,7 @@
 import { Input } from "@/src/components/ui/input";
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/src/components/ui/form";
 import { type UseFormReturn } from "react-hook-form";
-import { type ActionDomain } from "@hanzo/shared";
+import { type ActionDomain } from "@hanzo/console";
 import { ExternalLink } from "lucide-react";
 import Link from "next/link";
 

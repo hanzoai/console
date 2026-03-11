@@ -1,8 +1,8 @@
-import { checkTraceExistsAndGetTimestamp, createTracesCh } from "@hanzo/shared/src/server";
-import { getTraceById, getTracesBySessionId } from "@hanzo/shared/src/server";
+import { checkTraceExistsAndGetTimestamp, createTracesCh } from "@hanzo/console-core/src/server";
+import { getTraceById, getTracesBySessionId } from "@hanzo/console-core/src/server";
 import { v4 } from "uuid";
-import { createObservation, createTrace } from "@hanzo/shared/src/server";
-import { createObservationsCh } from "@hanzo/shared/src/server";
+import { createObservation, createTrace } from "@hanzo/console-core/src/server";
+import { createObservationsCh } from "@hanzo/console-core/src/server";
 
 const projectId = "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a";
 

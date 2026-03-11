@@ -22,34 +22,17 @@ import { DatePickerWithRange } from "@/src/components/date-picker";
 import { InlineFilterBuilder } from "@/src/features/filters/components/filter-builder";
 import { useDashboardDateRange } from "@/src/hooks/useDashboardDateRange";
 import { toAbsoluteTimeRange, type DashboardDateRangeOptions } from "@/src/utils/date-range-utils";
-import { type ColumnDefinition } from "@hanzo/shared";
+import { type ColumnDefinition } from "@hanzo/console";
 import { Chart } from "@/src/features/widgets/chart-library/Chart";
 import { type DataPoint } from "@/src/features/widgets/chart-library/chart-props";
 import { Button } from "@/src/components/ui/button";
-import { type DashboardWidgetChartType } from "@hanzo/shared/src/db";
+import { type DashboardWidgetChartType } from "@hanzo/console-core/src/db";
 import { showErrorToast } from "@/src/features/notifications/showErrorToast";
-import { type FilterState } from "@hanzo/shared";
+import { type FilterState } from "@hanzo/console";
 import { isTimeSeriesChart } from "@/src/features/widgets/chart-library/utils";
-import {
-  BarChart,
-  PieChart,
-  LineChart,
-  BarChartHorizontal,
-  Hash,
-  BarChart3,
-  Table,
-  Plus,
-  X,
-} from "lucide-react";
-import {
-  buildWidgetName,
-  buildWidgetDescription,
-  formatMetricName,
-} from "@/src/features/widgets/utils";
-import {
-  MAX_PIVOT_TABLE_DIMENSIONS,
-  MAX_PIVOT_TABLE_METRICS,
-} from "@/src/features/widgets/utils/pivot-table-utils";
+import { BarChart, PieChart, LineChart, BarChartHorizontal, Hash, BarChart3, Table, Plus, X } from "lucide-react";
+import { buildWidgetName, buildWidgetDescription, formatMetricName } from "@/src/features/widgets/utils";
+import { MAX_PIVOT_TABLE_DIMENSIONS, MAX_PIVOT_TABLE_METRICS } from "@/src/features/widgets/utils/pivot-table-utils";
 import { ChartLoadingState } from "@/src/features/widgets/chart-library/ChartLoadingState";
 import { getChartLoadingStateProps } from "@/src/features/widgets/chart-library/chartLoadingStateUtils";
 
@@ -1567,11 +1550,7 @@ export function WidgetForm({
                           row_limit: rowLimit,
                         }
                 }
-                sortState={
-                  selectedChartType === "PIVOT_TABLE"
-                    ? previewSortState
-                    : undefined
-                }
+                sortState={selectedChartType === "PIVOT_TABLE" ? previewSortState : undefined}
                 onSortChange={undefined}
                 isLoading={queryResult.isPending}
               />
@@ -1596,9 +1575,7 @@ export function WidgetForm({
                     hintClassName="max-w-sm px-4"
                   />
                 ) : (
-                  <p className="text-muted-foreground">
-                    Waiting for Input / Loading...
-                  </p>
+                  <p className="text-muted-foreground">Waiting for Input / Loading...</p>
                 )}
               </div>
             </CardContent>

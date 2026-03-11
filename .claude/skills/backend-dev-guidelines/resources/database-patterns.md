@@ -34,13 +34,13 @@ Hanzo uses a **dual database architecture**:
 ### Import Pattern
 
 ```typescript
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 
 // Direct access to Prisma client
 const user = await prisma.user.findUnique({ where: { id } });
 ```
 
-**Important**: Always import from `@hanzo/shared/src/db`, not `@prisma/client` directly.
+**Important**: Always import from `@hanzo/console-core/src/db`, not `@prisma/client` directly.
 
 ### Common CRUD Operations
 
@@ -185,8 +185,8 @@ const traces = await prisma.trace.findMany({
 ### Import Pattern
 
 ```typescript
-import { queryDatastore } from "@hanzo/shared/src/server/repositories/datastore";
-import { datastoreClient } from "@hanzo/shared/src/server/datastore/client";
+import { queryDatastore } from "@hanzo/console-core/src/server/repositories/datastore";
+import { datastoreClient } from "@hanzo/console-core/src/server/datastore/client";
 ```
 
 ### Datastore Client Singleton
@@ -194,7 +194,7 @@ import { datastoreClient } from "@hanzo/shared/src/server/datastore/client";
 Datastore uses a singleton client manager that reuses connections:
 
 ```typescript
-import { datastoreClient } from "@hanzo/shared/src/server/datastore/client";
+import { datastoreClient } from "@hanzo/console-core/src/server/datastore/client";
 
 // Get client (automatically reuses existing connection)
 const client = datastoreClient();
@@ -212,7 +212,7 @@ Datastore queries use **raw SQL** with parameterized queries. Parameters use `{p
 **Simple query:**
 
 ```typescript
-import { queryDatastore } from "@hanzo/shared/src/server/repositories/datastore";
+import { queryDatastore } from "@hanzo/console-core/src/server/repositories/datastore";
 
 // ✅ GOOD: Always filter by project_id
 const rows = await queryDatastore<{ id: string; name: string }>({
@@ -242,7 +242,7 @@ const rows = await queryDatastore<{ id: string; name: string }>({
 **Streaming query (for large result sets):**
 
 ```typescript
-import { queryDatastoreStream } from "@hanzo/shared/src/server/repositories/datastore";
+import { queryDatastoreStream } from "@hanzo/console-core/src/server/repositories/datastore";
 
 // Stream results to avoid loading all rows in memory
 for await (const row of queryDatastoreStream<ObservationRecordReadType>({
@@ -262,7 +262,7 @@ for await (const row of queryDatastoreStream<ObservationRecordReadType>({
 **Upsert (insert) operation:**
 
 ```typescript
-import { upsertDatastore } from "@hanzo/shared/src/server/repositories/datastore";
+import { upsertDatastore } from "@hanzo/console-core/src/server/repositories/datastore";
 
 await upsertDatastore({
   table: "traces",
@@ -289,7 +289,7 @@ await upsertDatastore({
 **DDL/Administrative commands:**
 
 ```typescript
-import { commandDatastore } from "@hanzo/shared/src/server/repositories/datastore";
+import { commandDatastore } from "@hanzo/console-core/src/server/repositories/datastore";
 
 // Create table, alter schema, etc.
 await commandDatastore({
@@ -314,7 +314,7 @@ await commandDatastore({
 **Date handling:**
 
 ```typescript
-import { convertDateToDatastoreDateTime } from "@hanzo/shared/src/server/datastore/client";
+import { convertDateToDatastoreDateTime } from "@hanzo/console-core/src/server/datastore/client";
 
 const params = {
   startTime: convertDateToDatastoreDateTime(new Date()),
@@ -405,7 +405,7 @@ Datastore queries automatically retry on network errors (socket hang up). Custom
 import {
   queryDatastore,
   DatastoreResourceError,
-} from "@hanzo/shared/src/server/repositories/datastore";
+} from "@hanzo/console-core/src/server/repositories/datastore";
 
 try {
   const rows = await queryDatastore({ query, params });
@@ -563,7 +563,7 @@ const user = await prisma.user.findUnique({
 
 ```typescript
 import { Prisma } from "@prisma/client";
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 
 try {
   await prisma.user.create({ data: userData });
@@ -612,7 +612,7 @@ try {
 import {
   queryDatastore,
   DatastoreResourceError,
-} from "@hanzo/shared/src/server/repositories/datastore";
+} from "@hanzo/console-core/src/server/repositories/datastore";
 
 try {
   const rows = await queryDatastore({ query, params });

@@ -24,8 +24,8 @@ import {
   deleteObservationsOlderThanDays,
   deleteScoresOlderThanDays,
   deleteEventsOlderThanDays,
-} from "@hanzo/shared/src/server";
-import { prisma } from "@hanzo/shared/src/db";
+} from "@hanzo/console-core/src/server";
+import { prisma } from "@hanzo/console-core/src/db";
 import { Job } from "@hanzo/mq";
 import { projectDeleteProcessor } from "../queues/projectDelete";
 

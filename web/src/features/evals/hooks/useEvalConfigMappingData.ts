@@ -1,11 +1,8 @@
 import { type EvalFormType } from "@/src/features/evals/utils/evaluator-form-utils";
-import { EvalTargetObject, type ObservationType } from "@hanzo/shared";
+import { EvalTargetObject, type ObservationType } from "@hanzo/console";
 import { type UseFormReturn } from "react-hook-form";
 import { useRouter } from "next/router";
-import {
-  type PreviewData,
-  usePreviewData,
-} from "@/src/features/evals/hooks/usePreviewData";
+import { type PreviewData, usePreviewData } from "@/src/features/evals/hooks/usePreviewData";
 import { useEffect, useRef } from "react";
 
 type EvalConfigMappingData = {
@@ -22,30 +19,17 @@ export function useEvalConfigMappingData(
   const router = useRouter();
 
   // Get traceId and observationId from URL query parameters
-  const traceId =
-    typeof router.query.traceId === "string" ? router.query.traceId : undefined;
-  const observationId =
-    typeof router.query.observationId === "string"
-      ? router.query.observationId
-      : undefined;
+  const traceId = typeof router.query.traceId === "string" ? router.query.traceId : undefined;
+  const observationId = typeof router.query.observationId === "string" ? router.query.observationId : undefined;
 
-  const { previewData, isLoading } = usePreviewData(
-    projectId,
-    form,
-    !disabled,
-    traceId,
-    observationId,
-  );
+  const { previewData, isLoading } = usePreviewData(projectId, form, !disabled, traceId, observationId);
 
   const targetValue = form.watch("target");
   const prevTargetRef = useRef(targetValue);
 
   // drop the traceId and observation-related params from the URL query parameters when target changes
   useEffect(() => {
-    if (
-      prevTargetRef.current !== targetValue &&
-      prevTargetRef.current !== undefined
-    ) {
+    if (prevTargetRef.current !== targetValue && prevTargetRef.current !== undefined) {
       // Remove navigation-related params when target changes
       const { traceId, observationId, ...restQuery } = router.query;
 

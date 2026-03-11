@@ -11,7 +11,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/pop
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import useProjectIdFromURL from "@/src/hooks/useProjectIdFromURL";
 import { api } from "@/src/utils/api";
-import { PRODUCTION_LABEL, type Prompt } from "@hanzo/shared";
+import { PRODUCTION_LABEL, type Prompt } from "@hanzo/console";
 import { AddLabelForm } from "./AddLabelForm";
 import { LabelCommandItem } from "./LabelCommandItem";
 import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";

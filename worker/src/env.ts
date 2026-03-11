@@ -1,4 +1,4 @@
-import { removeEmptyEnvVariables } from "@hanzo/shared";
+import { removeEmptyEnvVariables } from "@hanzo/console-core";
 import { z } from "zod/v4";
 
 const EnvSchema = z.object({

@@ -1,5 +1,5 @@
-import { prisma } from "@hanzo/shared/src/db";
-import { ConsoleNotFoundError } from "@hanzo/shared";
+import { prisma } from "@hanzo/console-core/src/db";
+import { ConsoleNotFoundError } from "@hanzo/console";
 import {
   GetObservationV1Query,
   GetObservationV1Response,
@@ -11,7 +11,7 @@ import {
   enrichObservationWithModelData,
   getObservationById,
   getObservationByIdFromEventsTable,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import { env } from "@/src/env.mjs";
 
 export default withMiddlewares({

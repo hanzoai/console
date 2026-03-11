@@ -1,5 +1,5 @@
-import { prisma } from "@hanzo/shared/src/db";
-import { logger, traceException } from "@hanzo/shared/src/server";
+import { prisma } from "@hanzo/console-core/src/db";
+import { logger, traceException } from "@hanzo/console-core/src/server";
 
 export const processPostgresTraceDelete = async (projectId: string, traceIds: string[]) => {
   logger.info(`Deleting traces ${JSON.stringify(traceIds)} in project ${projectId} from Postgres`);

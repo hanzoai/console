@@ -1,8 +1,8 @@
 import { auditLog } from "@/src/features/audit-logs/auditLog";
 import { throwIfNoProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { createTRPCRouter, protectedProjectProcedure } from "@/src/server/api/trpc";
-import { ConsoleNotFoundError, optionalPaginationZod, Prisma } from "@hanzo/shared";
-import { getUserProjectRoles } from "@hanzo/shared/src/server";
+import { ConsoleNotFoundError, optionalPaginationZod, Prisma } from "@hanzo/console";
+import { getUserProjectRoles } from "@hanzo/console-core/src/server";
 import partition from "lodash/partition";
 import z from "zod/v4";
 

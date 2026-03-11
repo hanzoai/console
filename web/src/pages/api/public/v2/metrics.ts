@@ -1,9 +1,9 @@
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
 import { env } from "@/src/env.mjs";
-import { logger } from "@hanzo/shared/src/server";
+import { logger } from "@hanzo/console-core/src/server";
 import { GetMetricsV2Query, GetMetricsV2Response } from "@/src/features/public-api/types/metrics";
-import { InvalidRequestError, NotImplementedError } from "@hanzo/shared";
+import { InvalidRequestError, NotImplementedError } from "@hanzo/console";
 import { executeQuery, validateQuery } from "@/src/features/query/server/queryExecutor";
 
 const DEFAULT_ROW_LIMIT = 100;

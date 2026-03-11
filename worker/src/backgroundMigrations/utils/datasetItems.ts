@@ -1,5 +1,5 @@
-import { Prisma, prisma } from "@hanzo/shared/src/db";
-import { logger } from "@hanzo/shared/src/server";
+import { Prisma, prisma } from "@hanzo/console-core/src/db";
+import { logger } from "@hanzo/console-core/src/server";
 
 export const backfillValidToForDatasetItems = async (
   lastProcessedProjectId: string,

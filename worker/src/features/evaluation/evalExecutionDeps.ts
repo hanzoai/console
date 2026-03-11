@@ -1,13 +1,13 @@
 import { randomUUID } from "crypto";
 import { JobExecutionStatus } from "@prisma/client";
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 import {
   DefaultEvalModelService,
   fetchLLMCompletion,
   IngestionQueue,
   QueueJobs,
   ScoreEventType,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import { env } from "../../env";
 import { buildEvalScoreSchema, buildEvalMessages } from "./evalExecutionUtils";
 import { getEvalS3StorageClient } from "./s3StorageClient";

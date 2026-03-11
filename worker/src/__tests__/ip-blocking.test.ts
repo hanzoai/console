@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { isIPBlocked, isIPAddress, isHostnameBlocked } from "@hanzo/shared/src/server";
+import { isIPBlocked, isIPAddress, isHostnameBlocked } from "@hanzo/console-core/src/server";
 
 describe("IP Blocking Module", () => {
   describe("isIPBlocked", () => {

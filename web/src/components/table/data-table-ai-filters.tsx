@@ -7,7 +7,7 @@ import { useQueryProject } from "@/src/features/projects/hooks";
 import useProjectIdFromURL from "@/src/hooks/useProjectIdFromURL";
 import { useHasOrganizationAccess } from "@/src/features/rbac/utils/checkOrganizationAccess";
 import { api } from "@/src/utils/api";
-import { type FilterState } from "@hanzo/shared";
+import { type FilterState } from "@hanzo/console";
 
 interface DataTableAIFiltersProps {
   onFiltersGenerated: (filters: FilterState) => void;

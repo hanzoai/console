@@ -1,5 +1,5 @@
 /** @jest-environment node */
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 import { makeAPICall, makeZodVerifiedAPICall } from "@/src/__tests__/test-utils";
 import { PostDatasetsV2Response, PostDatasetItemsV1Response } from "@/src/features/public-api/types/datasets";
 import {
@@ -8,8 +8,8 @@ import {
   DatasetItemValidator,
   getDatasetItems,
   createDatasetItemFilterState,
-} from "@hanzo/shared/src/server";
-import { validateFieldAgainstSchema } from "@hanzo/shared";
+} from "@hanzo/console-core/src/server";
+import { validateFieldAgainstSchema } from "@hanzo/console";
 
 process.env.HANZO_DATASET_SERVICE_READ_FROM_VERSIONED_IMPLEMENTATION = "true";
 process.env.HANZO_DATASET_SERVICE_WRITE_TO_VERSIONED_IMPLEMENTATION = "true";

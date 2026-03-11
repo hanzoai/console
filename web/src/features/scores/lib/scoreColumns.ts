@@ -1,4 +1,9 @@
-import { type ScoreAggregate, type FilterCondition, type ScoreDataTypeType, type ScoreSourceType } from "@hanzo/shared";
+import {
+  type ScoreAggregate,
+  type FilterCondition,
+  type ScoreDataTypeType,
+  type ScoreSourceType,
+} from "@hanzo/console";
 
 export const scoreFilters = {
   // Filter for trace level scores

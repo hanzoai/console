@@ -1,19 +1,11 @@
-import type { TracingSearchType } from "@hanzo/shared";
-import {
-  useQueryParam,
-  withDefault,
-  StringParam,
-  ArrayParam,
-} from "use-query-params";
+import type { TracingSearchType } from "@hanzo/console";
+import { useQueryParam, withDefault, StringParam, ArrayParam } from "use-query-params";
 import { usePeekTableState } from "@/src/components/table/peek/contexts/PeekTableStateContext";
 
 export const useFullTextSearch = () => {
   const peekContext = usePeekTableState();
 
-  const [searchQuery, setSearchQuery] = useQueryParam(
-    "search",
-    withDefault(StringParam, null),
-  );
+  const [searchQuery, setSearchQuery] = useQueryParam("search", withDefault(StringParam, null));
 
   // Search type can be either "id" or "metadata". Keep it untyped here and
   // cast later to the stricter `TracingSearchType[]` to avoid type mismatch

@@ -16,7 +16,7 @@ import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAcces
 import { Button } from "@/src/components/ui/button";
 import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { useIsAuthenticatedAndProjectMember } from "@/src/features/auth/hooks";
-import { parseJsonPrioritised } from "@hanzo/shared";
+import { parseJsonPrioritised } from "@hanzo/console";
 import { ActionButton } from "@/src/components/ActionButton";
 import { type MetadataDomainClient } from "@/src/utils/clientSideDomainTypes";
 

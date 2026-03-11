@@ -1,6 +1,6 @@
-import { type EvalTemplate } from "@hanzo/shared";
+import { type EvalTemplate } from "@hanzo/console";
 
-// Define the type locally to match what's in @hanzo/shared
+// Define the type locally to match what's in @hanzo/console
 type VariableMapping = {
   templateVariable: string;
   consoleObject: "trace" | "generation" | "span" | "score" | "dataset_item";

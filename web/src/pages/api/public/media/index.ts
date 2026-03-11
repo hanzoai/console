@@ -10,9 +10,9 @@ import {
 } from "@/src/features/media/validation";
 import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
-import { ForbiddenError, InternalServerError, InvalidRequestError } from "@hanzo/shared";
-import { prisma } from "@hanzo/shared/src/db";
-import { logger, instrumentAsync } from "@hanzo/shared/src/server";
+import { ForbiddenError, InternalServerError, InvalidRequestError } from "@hanzo/console";
+import { prisma } from "@hanzo/console-core/src/db";
+import { logger, instrumentAsync } from "@hanzo/console-core/src/server";
 
 export default withMiddlewares({
   POST: createAuthedProjectAPIRoute({

@@ -1,7 +1,7 @@
 import { Cluster, Redis } from "ioredis";
 import { v4 } from "uuid";
 import { Decimal } from "decimal.js";
-import { Model, ObservationLevel, PrismaClient, Prompt } from "@hanzo/shared";
+import { Model, ObservationLevel, PrismaClient, Prompt } from "@hanzo/console-core";
 import {
   DatastoreClient,
   convertDateToDatastoreDateTime,
@@ -44,7 +44,7 @@ import {
   convertDefinitionsToMap,
   convertCallsToArrays,
   hasNoEvalConfigsCache,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 
 import { tokenCountAsync } from "../../features/tokenisation/async-usage";
 import { tokenCount } from "../../features/tokenisation/usage";

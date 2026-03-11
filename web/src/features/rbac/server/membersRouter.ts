@@ -3,8 +3,8 @@ import { createTRPCRouter, protectedOrganizationProcedure, protectedProjectProce
 import { TRPCError } from "@trpc/server";
 import * as z from "zod/v4";
 import { hasOrganizationAccess, throwIfNoOrganizationAccess } from "@/src/features/rbac/utils/checkOrganizationAccess";
-import { type FilterState, optionalPaginationZod, Prisma, type PrismaClient, Role } from "@hanzo/shared";
-import { sendMembershipInvitationEmail } from "@hanzo/shared/src/server";
+import { type FilterState, optionalPaginationZod, Prisma, type PrismaClient, Role } from "@hanzo/console";
+import { sendMembershipInvitationEmail } from "@hanzo/console-core/src/server";
 import { env } from "@/src/env.mjs";
 import { hasEntitlement } from "@/src/features/entitlements/server/hasEntitlement";
 import { throwIfExceedsLimit } from "@/src/features/entitlements/server/hasEntitlementLimit";
@@ -12,7 +12,7 @@ import { hasProjectAccess, throwIfNoProjectAccess } from "@/src/features/rbac/ut
 import { allMembersRoutes } from "@/src/features/rbac/server/allMembersRoutes";
 import { allInvitesRoutes } from "@/src/features/rbac/server/allInvitesRoutes";
 import { orderedRoles } from "@/src/features/rbac/constants/orderedRoles";
-import { getUserProjectRoles, getUserProjectRolesCount } from "@hanzo/shared/src/server";
+import { getUserProjectRoles, getUserProjectRolesCount } from "@hanzo/console-core/src/server";
 
 function buildUserSearchFilter(searchQuery: string | undefined | null) {
   if (searchQuery === undefined || searchQuery === null || searchQuery === "") {

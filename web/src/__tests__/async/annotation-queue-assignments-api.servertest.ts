@@ -1,8 +1,8 @@
 /** @jest-environment node */
 
 import { makeZodVerifiedAPICall, makeAPICall, pruneDatabase } from "@/src/__tests__/test-utils";
-import { prisma } from "@hanzo/shared/src/db";
-import { createOrgProjectAndApiKey } from "@hanzo/shared/src/server";
+import { prisma } from "@hanzo/console-core/src/db";
+import { createOrgProjectAndApiKey } from "@hanzo/console-core/src/server";
 import { v4 as uuidv4 } from "uuid";
 import {
   CreateAnnotationQueueAssignmentResponse,

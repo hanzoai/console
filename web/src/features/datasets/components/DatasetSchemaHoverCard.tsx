@@ -1,7 +1,7 @@
 import { ArrowUpRight, LockIcon, Copy, Check } from "lucide-react";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/src/components/ui/hover-card";
 import { CodeMirrorEditor } from "@/src/components/editor";
-import type { Prisma } from "@hanzo/shared";
+import type { Prisma } from "@hanzo/console";
 import { Button } from "@/src/components/ui/button";
 import { Separator } from "@/src/components/ui/separator";
 import { useMemo, useState } from "react";

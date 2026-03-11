@@ -170,7 +170,7 @@ pnpm run db:seed:examples
 
 - Available packages and their dependencies
 
-  Packages are included in the monorepo according to the `pnpm-workspace.yaml` file. Each package maintains its own dependencies defined in the `package.json`. Internal dependencies can be added as well by adding them to the package dependencies: `"@hanzo/shared": "workspace:*"`.
+  Packages are included in the monorepo according to the `pnpm-workspace.yaml` file. Each package maintains its own dependencies defined in the `package.json`. Internal dependencies can be added as well by adding them to the package dependencies: `"@hanzo/console": "workspace:*"`.
 
 - Executing commands
 

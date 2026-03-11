@@ -1,6 +1,6 @@
 /** @jest-environment node */
 
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 import { makeAPICall, makeZodVerifiedAPICall, pruneDatabase } from "@/src/__tests__/test-utils";
 import {
   DeleteModelV1Response,
@@ -8,7 +8,7 @@ import {
   GetModelsV1Response,
   PostModelsV1Response,
 } from "@/src/features/public-api/types/models";
-import { createOrgProjectAndApiKey } from "@hanzo/shared/src/server";
+import { createOrgProjectAndApiKey } from "@hanzo/console-core/src/server";
 import { v4 } from "uuid";
 
 describe("/models API Endpoints", () => {

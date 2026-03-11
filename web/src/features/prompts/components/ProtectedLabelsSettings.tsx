@@ -16,7 +16,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "
 import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
 
 import { StatusBadge } from "@/src/components/layouts/status-badge";
-import { LATEST_PROMPT_LABEL, PRODUCTION_LABEL, PromptLabelSchema } from "@hanzo/shared";
+import { LATEST_PROMPT_LABEL, PRODUCTION_LABEL, PromptLabelSchema } from "@hanzo/console";
 
 const AddLabelFormSchema = z.object({
   label: PromptLabelSchema,

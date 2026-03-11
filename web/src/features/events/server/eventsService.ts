@@ -23,8 +23,8 @@ import {
   getNumericScoresGroupedByName,
   getTracesGroupedByTags,
   getObservationsBatchIOFromEventsTable,
-} from "@hanzo/shared/src/server";
-import { type timeFilter, type FilterState } from "@hanzo/shared";
+} from "@hanzo/console-core/src/server";
+import { type timeFilter, type FilterState } from "@hanzo/console";
 import { type EventBatchIOOutput } from "@/src/features/events/server/eventsRouter";
 
 type TimeFilter = z.infer<typeof timeFilter>;

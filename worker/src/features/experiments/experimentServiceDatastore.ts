@@ -1,4 +1,4 @@
-import { DatasetItemDomain, Prisma } from "@hanzo/shared";
+import { DatasetItemDomain, Prisma } from "@hanzo/console-core";
 import {
   ChatMessage,
   createDatasetItemFilterState,
@@ -16,7 +16,7 @@ import {
   QueueJobs,
   redis,
   TraceSinkParams,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import { v4 } from "uuid";
 import z from "zod/v4";
 import {
@@ -25,7 +25,7 @@ import {
   validateAndSetupExperiment,
   type PromptExperimentConfig,
 } from "./utils";
-import { validateDatasetItem, normalizeDatasetItemInput } from "@hanzo/shared";
+import { validateDatasetItem, normalizeDatasetItemInput } from "@hanzo/console-core";
 import { randomUUID } from "crypto";
 import { createW3CTraceId } from "../utils";
 import { scheduleExperimentObservationEvals } from "./scheduleExperimentEvals";

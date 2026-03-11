@@ -7,9 +7,9 @@ import {
   PostScoreConfigResponse,
   PutScoreConfigResponse,
 } from "@/src/features/public-api/types/score-configs";
-import { ScoreConfigDataType } from "@hanzo/shared";
-import { type ScoreConfig, prisma } from "@hanzo/shared/src/db";
-import { createOrgProjectAndApiKey } from "@hanzo/shared/src/server";
+import { ScoreConfigDataType } from "@hanzo/console";
+import { type ScoreConfig, prisma } from "@hanzo/console-core/src/db";
+import { createOrgProjectAndApiKey } from "@hanzo/console-core/src/server";
 
 const configOne = [
   {

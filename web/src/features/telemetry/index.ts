@@ -1,6 +1,6 @@
 import { VERSION } from "@/src/constants";
 import { ServerInsights } from "@/src/features/insights-analytics/ServerInsights";
-import { Prisma, prisma } from "@hanzo/shared/src/db";
+import { Prisma, prisma } from "@hanzo/console-core/src/db";
 import { v4 as uuidv4 } from "uuid";
 import {
   getDatasetRunItemCountsByProjectInCreationInterval,
@@ -8,7 +8,7 @@ import {
   getScoreCountsByProjectInCreationInterval,
   getTraceCountsByProjectInCreationInterval,
   logger,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import { env } from "@/src/env.mjs";
 
 // Interval between jobs in minutes

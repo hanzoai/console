@@ -12,7 +12,7 @@ import type {
   ObservationPreviewData,
   MappingTarget,
 } from "../types";
-import { isJsonPath } from "@hanzo/shared";
+import { isJsonPath } from "@hanzo/console";
 
 type CustomMappingEditorProps = {
   config: CustomMappingConfig;

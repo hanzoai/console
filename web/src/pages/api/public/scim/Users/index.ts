@@ -1,12 +1,12 @@
 import { ApiAuthService } from "@/src/features/public-api/server/apiAuth";
 import { cors, runMiddleware } from "@/src/features/public-api/server/cors";
-import { prisma } from "@hanzo/shared/src/db";
-import { logger, redis } from "@hanzo/shared/src/server";
+import { prisma } from "@hanzo/console-core/src/db";
+import { logger, redis } from "@hanzo/console-core/src/server";
 
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { hashPassword } from "@/src/features/auth-credentials/lib/credentialsServerUtils";
 import { z } from "zod";
-import { type Role } from "@hanzo/shared";
+import { type Role } from "@hanzo/console";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   await runMiddleware(req, res, cors);

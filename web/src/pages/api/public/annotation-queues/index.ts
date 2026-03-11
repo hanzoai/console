@@ -1,4 +1,4 @@
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
 import {
@@ -7,7 +7,7 @@ import {
   GetAnnotationQueuesQuery,
   GetAnnotationQueuesResponse,
 } from "@/src/features/public-api/types/annotation-queues";
-import { InvalidRequestError, MethodNotAllowedError } from "@hanzo/shared";
+import { InvalidRequestError, MethodNotAllowedError } from "@hanzo/console";
 
 export default withMiddlewares({
   GET: createAuthedProjectAPIRoute({

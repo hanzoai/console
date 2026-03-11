@@ -3,7 +3,7 @@ import { Skeleton } from "@/src/components/ui/skeleton";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { api } from "@/src/utils/api";
 import { type RouterOutput } from "@/src/utils/types";
-import { AnnotationQueueStatus, AnnotationQueueObjectType } from "@hanzo/shared";
+import { AnnotationQueueStatus, AnnotationQueueObjectType } from "@hanzo/console";
 import { ArrowLeft, ArrowRight, SearchXIcon } from "lucide-react";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";

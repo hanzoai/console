@@ -1,22 +1,14 @@
 import { auditLog } from "@/src/features/audit-logs/auditLog";
 import { throwIfNoProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
-import {
-  createTRPCRouter,
-  protectedProjectProcedure,
-} from "@/src/server/api/trpc";
+import { createTRPCRouter, protectedProjectProcedure } from "@/src/server/api/trpc";
 import {
   BatchActionQueue,
   logger,
   QueueJobs,
   getObservationsCountFromEventsTable,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import { TRPCError } from "@trpc/server";
-import {
-  BatchTableNames,
-  BatchActionStatus,
-  ActionId,
-  EvalTargetObject,
-} from "@hanzo/shared";
+import { BatchTableNames, BatchActionStatus, ActionId, EvalTargetObject } from "@hanzo/console";
 import { env } from "@/src/env.mjs";
 import { CreateObservationBatchEvaluationActionSchema } from "../validation";
 
@@ -59,9 +51,7 @@ export const runEvaluationRouter = createTRPCRouter({
 
         if (evaluatorIds.length !== requestedEvaluatorIds.length) {
           const foundIds = new Set(evaluatorIds);
-          const missingEvaluatorIds = requestedEvaluatorIds.filter(
-            (id) => !foundIds.has(id),
-          );
+          const missingEvaluatorIds = requestedEvaluatorIds.filter((id) => !foundIds.has(id));
 
           throw new TRPCError({
             code: "BAD_REQUEST",
@@ -79,8 +69,7 @@ export const runEvaluationRouter = createTRPCRouter({
           searchType: query.searchType,
         };
 
-        const observationCount =
-          await getObservationsCountFromEventsTable(countQueryOpts);
+        const observationCount = await getObservationsCountFromEventsTable(countQueryOpts);
 
         if (observationCount > env.HANZO_MAX_HISTORIC_EVAL_CREATION_LIMIT) {
           throw new TRPCError({
@@ -92,14 +81,11 @@ export const runEvaluationRouter = createTRPCRouter({
         const userId = ctx.session.user.id;
         const batchConfig = { evaluatorIds };
 
-        logger.info(
-          "[TRPC] Creating observation-run-batched-evaluation action",
-          {
-            projectId,
-            evaluatorCount: evaluatorIds.length,
-            evaluatorIds,
-          },
-        );
+        logger.info("[TRPC] Creating observation-run-batched-evaluation action", {
+          projectId,
+          evaluatorCount: evaluatorIds.length,
+          evaluatorIds,
+        });
 
         const batchAction = await ctx.prisma.batchAction.create({
           data: {

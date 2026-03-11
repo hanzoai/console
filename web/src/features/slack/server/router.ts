@@ -1,8 +1,8 @@
 import { createTRPCRouter, protectedProjectProcedure } from "@/src/server/api/trpc";
 import { z } from "zod/v4";
-import { SlackService } from "@hanzo/shared/src/server";
+import { SlackService } from "@hanzo/console-core/src/server";
 import { throwIfNoProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
-import { logger } from "@hanzo/shared/src/server";
+import { logger } from "@hanzo/console-core/src/server";
 import { TRPCError } from "@trpc/server";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
 import { env } from "@/src/env.mjs";

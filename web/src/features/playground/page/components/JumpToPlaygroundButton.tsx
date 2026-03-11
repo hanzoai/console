@@ -31,7 +31,7 @@ import {
   type PlaceholderMessage,
   PromptType,
   isGenerationLike,
-} from "@hanzo/shared";
+} from "@hanzo/console";
 import { normalizeInput, normalizeOutput } from "@/src/utils/chatml";
 import { extractTools } from "@/src/utils/chatml/extractTools";
 import { convertChatMlToPlayground } from "@/src/utils/chatml/playgroundConverter";

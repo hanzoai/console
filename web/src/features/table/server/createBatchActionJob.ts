@@ -6,16 +6,13 @@ import {
   type BatchActionQuery,
   type ActionId,
   type BatchActionType,
-} from "@hanzo/shared";
-import { BatchActionQueue, logger, QueueJobs } from "@hanzo/shared/src/server";
+} from "@hanzo/console";
+import { BatchActionQueue, logger, QueueJobs } from "@hanzo/console-core/src/server";
 import { TRPCError } from "@trpc/server";
 
 type CreateBatchActionJob = {
   projectId: string;
-  actionId: Exclude<
-    ActionId,
-    "observation-add-to-dataset" | "observation-run-batched-evaluation"
-  >;
+  actionId: Exclude<ActionId, "observation-add-to-dataset" | "observation-run-batched-evaluation">;
   tableName: BatchExportTableName;
   actionType: BatchActionType;
   session: {

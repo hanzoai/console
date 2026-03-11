@@ -1,13 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import * as serverExports from "@hanzo/shared/src/server";
+import * as serverExports from "@hanzo/console-core/src/server";
 
 import { env } from "../../env";
-import { logger } from "@hanzo/shared/src/server";
+import { logger } from "@hanzo/console-core/src/server";
 import { DatastoreWriter, TableName } from "../DatastoreWriter";
 
 // Mock recordHistogram, recordCount, recordGauge
-vi.mock("@hanzo/shared/src/server", async (importOriginal) => {
+vi.mock("@hanzo/console-core/src/server", async (importOriginal) => {
   const original = (await importOriginal()) as {};
   return {
     ...original,

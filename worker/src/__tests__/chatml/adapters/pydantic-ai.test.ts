@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { pydanticAIAdapter, selectAdapter, SimpleChatMlArraySchema, type NormalizerContext } from "@hanzo/shared";
+import { pydanticAIAdapter, selectAdapter, SimpleChatMlArraySchema, type NormalizerContext } from "@hanzo/console-core";
 
 // Test helper
 function normalizeInput(input: unknown, ctx: NormalizerContext = {}) {

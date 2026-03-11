@@ -5,7 +5,7 @@ import { api } from "@/src/utils/api";
 import { numberFormatter } from "@/src/utils/numbers";
 import { MAX_EVENTS_FREE_PLAN } from "@/src/features/billing/constants";
 import { ExternalLink, TrendingUp } from "lucide-react";
-import type { Plan } from "@hanzo/shared";
+import type { Plan } from "@hanzo/console";
 
 /**
  * Compact billing overview widget for the org settings main page.

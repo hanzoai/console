@@ -1,5 +1,5 @@
 import { z } from "zod/v4";
-import { OpenAIToolSchema, extractAdditionalInput } from "@hanzo/shared";
+import { OpenAIToolSchema, extractAdditionalInput } from "@hanzo/console";
 import type { PlaygroundTool } from "@/src/features/playground/page/types";
 
 /**

@@ -1,6 +1,6 @@
 import { expect, describe, it, beforeEach } from "vitest";
 import { v4 as uuidv4 } from "uuid";
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 import PatchLLMToolAndLLLMSchemaAuditLogs from "../backgroundMigrations/patchLLMToolAndLLLMSchemaAuditLogs";
 
 describe("PatchLLMToolAndLLLMSchemaAuditLogs", () => {

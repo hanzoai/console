@@ -1,13 +1,13 @@
 import { v4 } from "uuid";
-import { createObservationsCh, createTracesCh } from "@hanzo/shared/src/server";
-import { createObservation, createTrace } from "@hanzo/shared/src/server";
+import { createObservationsCh, createTracesCh } from "@hanzo/console-core/src/server";
+import { createObservation, createTrace } from "@hanzo/console-core/src/server";
 import {
   getTracesTable,
   type TracesTableUiReturnType,
   type ObservationRecordInsertType,
   type TraceRecordInsertType,
-} from "@hanzo/shared/src/server";
-import { type FilterState } from "@hanzo/shared";
+} from "@hanzo/console-core/src/server";
+import { type FilterState } from "@hanzo/console";
 
 describe("Traces table API test", () => {
   it("should get a correct trace without observation", async () => {

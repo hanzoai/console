@@ -1,10 +1,6 @@
 import { api } from "@/src/utils/api";
 
-import {
-  type ScoreSourceType,
-  type FilterState,
-  type ScoreDataTypeType,
-} from "@hanzo/shared";
+import { type ScoreSourceType, type FilterState, type ScoreDataTypeType } from "@hanzo/console";
 import {
   extractTimeSeriesData,
   fillMissingValuesAndTransform,
@@ -17,11 +13,7 @@ import {
 } from "@/src/utils/date-range-utils";
 import React, { useMemo } from "react";
 import { NoDataOrLoading } from "@/src/components/NoDataOrLoading";
-import {
-  type QueryType,
-  type ViewVersion,
-  mapLegacyUiTableFilterToView,
-} from "@/src/features/query";
+import { type QueryType, type ViewVersion, mapLegacyUiTableFilterToView } from "@/src/features/query";
 import { type DatabaseRow } from "@/src/server/api/services/sqlInterface";
 import { Chart } from "@/src/features/widgets/chart-library/Chart";
 import { timeSeriesToDataPoints } from "@/src/features/dashboard/lib/chart-data-adapters";

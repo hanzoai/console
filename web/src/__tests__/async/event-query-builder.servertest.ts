@@ -1,4 +1,4 @@
-import { CTEQueryBuilder, EventsAggregationQueryBuilder } from "@hanzo/shared/src/server";
+import { CTEQueryBuilder, EventsAggregationQueryBuilder } from "@hanzo/console-core/src/server";
 
 describe("CTEQueryBuilder", () => {
   it("should compose multiple CTEs with type-safe references", () => {

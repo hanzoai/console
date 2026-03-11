@@ -1,12 +1,12 @@
-import { encrypt } from "@hanzo/shared/encryption";
+import { encrypt } from "@hanzo/console-core/encryption";
 import {
   type ActionCreate,
   type ActionConfig,
   type GitHubDispatchActionConfigWithSecrets,
   type GitHubDispatchActionCreate,
   isGitHubDispatchActionConfig,
-} from "@hanzo/shared";
-import { getActionByIdWithSecrets, validateWebhookURL } from "@hanzo/shared/src/server";
+} from "@hanzo/console";
+import { getActionByIdWithSecrets, validateWebhookURL } from "@hanzo/console-core/src/server";
 import { TRPCError } from "@trpc/server";
 
 interface GitHubDispatchConfigOptions {

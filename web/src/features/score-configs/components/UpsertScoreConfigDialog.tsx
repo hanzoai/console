@@ -28,7 +28,7 @@ import {
   type UpdateConfig,
 } from "@/src/features/score-configs/lib/upsertFormTypes";
 import { validateScoreConfigUpsertFormInput } from "@/src/features/score-configs/lib/validateScoreConfigUpsertFormInput";
-import { ScoreConfigDataType } from "@hanzo/shared";
+import { ScoreConfigDataType } from "@hanzo/console";
 
 export function UpsertScoreConfigDialog({
   projectId,

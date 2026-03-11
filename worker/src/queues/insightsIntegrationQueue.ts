@@ -1,5 +1,5 @@
 import { Processor } from "@hanzo/mq";
-import { instrumentAsync, logger, QueueJobs } from "@hanzo/shared/src/server";
+import { instrumentAsync, logger, QueueJobs } from "@hanzo/console-core/src/server";
 import { handleInsightsIntegrationSchedule } from "../features/insights/handleInsightsIntegrationSchedule";
 import { handleInsightsIntegrationProjectJob } from "../features/insights/handleInsightsIntegrationProjectJob";
 import { SpanKind } from "@opentelemetry/api";

@@ -2,8 +2,8 @@
 
 import { makeZodVerifiedAPICall, makeAPICall } from "@/src/__tests__/test-utils";
 import { z } from "zod/v4";
-import { createAndAddApiKeysToDb, createBasicAuthHeader } from "@hanzo/shared/src/server";
-import { prisma } from "@hanzo/shared/src/db";
+import { createAndAddApiKeysToDb, createBasicAuthHeader } from "@hanzo/console-core/src/server";
+import { prisma } from "@hanzo/console-core/src/db";
 import { randomUUID } from "crypto";
 
 // Schema for project response

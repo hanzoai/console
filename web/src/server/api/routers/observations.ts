@@ -1,7 +1,7 @@
 import { env } from "@/src/env.mjs";
 import { createTRPCRouter, protectedGetTraceProcedure } from "@/src/server/api/trpc";
-import { ConsoleNotFoundError, parseIO } from "@hanzo/shared";
-import { getObservationById, getObservationByIdFromEventsTable } from "@hanzo/shared/src/server";
+import { ConsoleNotFoundError, parseIO } from "@hanzo/console";
+import { getObservationById, getObservationByIdFromEventsTable } from "@hanzo/console-core/src/server";
 import { z } from "zod/v4";
 import { toDomainWithStringifiedMetadata } from "@/src/utils/clientSideDomainTypes";
 

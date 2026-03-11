@@ -5,7 +5,7 @@ import { api } from "@/src/utils/api";
 import { type ConsoleColumnDef } from "@/src/components/table/types";
 import { DataTableToolbar } from "@/src/components/table/data-table-toolbar";
 import { DataTable } from "@/src/components/table/data-table";
-import { type ScoreConfigDataType, type Prisma, type ScoreConfigCategoryDomain } from "@hanzo/shared";
+import { type ScoreConfigDataType, type Prisma, type ScoreConfigCategoryDomain } from "@hanzo/console";
 import { IOTableCell } from "../../ui/IOTableCell";
 import { usePaginationState } from "@/src/hooks/usePaginationState";
 import { isBooleanDataType, isCategoricalDataType, isNumericDataType } from "@/src/features/scores/lib/helpers";

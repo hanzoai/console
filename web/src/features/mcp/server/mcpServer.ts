@@ -15,7 +15,7 @@ import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { ListToolsRequestSchema, CallToolRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 import type { ServerContext } from "../types";
 import { toolRegistry } from "./registry";
-import { logger } from "@hanzo/shared/src/server";
+import { logger } from "@hanzo/console-core/src/server";
 
 const MCP_SERVER_NAME = "hanzo";
 const MCP_SERVER_VERSION = "0.2.0";

@@ -1,6 +1,6 @@
-import { convertQueueNameToMetricName, logger, recordDistribution, RetryBaggage } from "@hanzo/shared/src/server";
+import { convertQueueNameToMetricName, logger, recordDistribution, RetryBaggage } from "@hanzo/console-core/src/server";
 import { randomUUID } from "crypto";
-import { kyselyPrisma } from "@hanzo/shared/src/db";
+import { kyselyPrisma } from "@hanzo/console-core/src/db";
 
 const ONE_DAY_IN_MS = 24 * 60 * 60 * 1000;
 

@@ -188,11 +188,11 @@ The shared package exposes specific import paths for different use cases:
 
 | Import Path                                | Maps To                           | Use For                                                         |
 | ------------------------------------------ | --------------------------------- | --------------------------------------------------------------- |
-| `@hanzo/shared`                         | `dist/src/index.js`               | General types, schemas, utilities, constants                    |
-| `@hanzo/shared/src/db`                  | `dist/src/db.js`                  | Prisma client and database types                                |
-| `@hanzo/shared/src/server`              | `dist/src/server/index.js`        | Server-side utilities (queues, auth, services, instrumentation) |
-| `@hanzo/shared/src/server/auth/apiKeys` | `dist/src/server/auth/apiKeys.js` | API key management utilities                                    |
-| `@hanzo/shared/encryption`              | `dist/src/encryption/index.js`    | Encryption and signature utilities                              |
+| `@hanzo/console`                         | `dist/src/index.js`               | General types, schemas, utilities, constants                    |
+| `@hanzo/console-core/src/db`                  | `dist/src/db.js`                  | Prisma client and database types                                |
+| `@hanzo/console-core/src/server`              | `dist/src/server/index.js`        | Server-side utilities (queues, auth, services, instrumentation) |
+| `@hanzo/console-core/src/server/auth/apiKeys` | `dist/src/server/auth/apiKeys.js` | API key management utilities                                    |
+| `@hanzo/console-core/encryption`              | `dist/src/encryption/index.js`    | Encryption and signature utilities                              |
 
 **Usage Examples:**
 
@@ -205,11 +205,11 @@ import {
   type APIScoreV2,
   type ColumnDefinition,
   Role,
-} from "@hanzo/shared";
+} from "@hanzo/console";
 
 // Database - Prisma client and types
-import { prisma, Prisma, JobExecutionStatus } from "@hanzo/shared/src/db";
-import { type DB as Database } from "@hanzo/shared";
+import { prisma, Prisma, JobExecutionStatus } from "@hanzo/console-core/src/db";
+import { type DB as Database } from "@hanzo/console";
 
 // Server utilities - queues, services, auth, instrumentation
 import {
@@ -223,13 +223,13 @@ import {
   invalidateApiKeysForProject,
   recordIncrement,
   recordHistogram,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 
 // API key management (specific path)
-import { createAndAddApiKeysToDb } from "@hanzo/shared/src/server/auth/apiKeys";
+import { createAndAddApiKeysToDb } from "@hanzo/console-core/src/server/auth/apiKeys";
 
 // Encryption utilities
-import { encrypt, decrypt, sign, verify } from "@hanzo/shared/encryption";
+import { encrypt, decrypt, sign, verify } from "@hanzo/console-core/encryption";
 ```
 
 **What Goes Where:**
@@ -238,11 +238,11 @@ The shared package provides types, utilities, and server code used by both web a
 
 | Import Path                                | Usage                 | What's Included                                                                    |
 | ------------------------------------------ | --------------------- | ---------------------------------------------------------------------------------- |
-| `@hanzo/shared`                         | ✅ Frontend + Backend | Prisma types, Zod schemas, constants, table definitions, domain models, utilities  |
-| `@hanzo/shared/src/db`                  | 🔒 Backend only       | Prisma client instance                                                             |
-| `@hanzo/shared/src/server`              | 🔒 Backend only       | Services, repositories, queues, auth, Datastore, LLM integration, instrumentation |
-| `@hanzo/shared/src/server/auth/apiKeys` | 🔒 Backend only       | API key management (separated to avoid circular deps)                              |
-| `@hanzo/shared/encryption`              | 🔒 Backend only       | Database field encryption/decryption                                               |
+| `@hanzo/console`                         | ✅ Frontend + Backend | Prisma types, Zod schemas, constants, table definitions, domain models, utilities  |
+| `@hanzo/console-core/src/db`                  | 🔒 Backend only       | Prisma client instance                                                             |
+| `@hanzo/console-core/src/server`              | 🔒 Backend only       | Services, repositories, queues, auth, Datastore, LLM integration, instrumentation |
+| `@hanzo/console-core/src/server/auth/apiKeys` | 🔒 Backend only       | API key management (separated to avoid circular deps)                              |
+| `@hanzo/console-core/encryption`              | 🔒 Backend only       | Database field encryption/decryption                                               |
 
 **Naming Conventions:**
 
@@ -304,14 +304,14 @@ const validated = schema.parse(input);
 
 ```typescript
 // Services use Prisma directly for simple CRUD
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 
 const dataset = await prisma.dataset.findUnique({
   where: { id: datasetId, projectId }, // Always filter by projectId for tenant isolation
 });
 
 // Or use repositories for complex queries (traces, observations, scores)
-import { getTracesTable } from "@hanzo/shared/src/server";
+import { getTracesTable } from "@hanzo/console-core/src/server";
 
 const traces = await getTracesTable({
   projectId,
@@ -330,7 +330,7 @@ import {
   logger,          // Winston logger with OpenTelemetry/DataDog context
   traceException,  // Record exceptions to OpenTelemetry spans
   instrumentAsync, // Create instrumented spans
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 
 // Structured logging (includes trace_id, span_id, dd.trace_id)
 logger.info("Processing dataset", { datasetId, projectId });
@@ -464,7 +464,7 @@ import {
 import { TRPCError } from "@trpc/server";
 
 // Database
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 import type { Prisma } from "@prisma/client";
 
 // Datastore
@@ -472,14 +472,14 @@ import {
   queryDatastore,
   queryDatastoreStream,
   upsertDatastore,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 
 // Observability - OpenTelemetry + DataDog (NOT Sentry for backend)
 import {
   logger,          // Winston logger with OTEL/DataDog trace context
   traceException,  // Record exceptions to OpenTelemetry spans
   instrumentAsync, // Create instrumented spans for operations
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 
 // Config
 import { env } from "@/src/env.mjs"; // web
@@ -492,7 +492,7 @@ import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/cr
 
 // Queue Processing (Worker)
 import { Job } from "bullmq";
-import { QueueName, TQueueJobTypes } from "@hanzo/shared/src/server";
+import { QueueName, TQueueJobTypes } from "@hanzo/console-core/src/server";
 ```
 
 ---

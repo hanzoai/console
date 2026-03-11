@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { Label } from "@/src/components/ui/label";
 import { api } from "@/src/utils/api";
-import { type UIModelParams } from "@hanzo/shared";
+import { type UIModelParams } from "@hanzo/console";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 
 export const LLMApiKeyComponent = (p: { projectId: string; modelParams: UIModelParams }) => {

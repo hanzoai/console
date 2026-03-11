@@ -1,11 +1,11 @@
 import { type z } from "zod/v4";
 import { protectedProjectProcedure } from "@/src/server/api/trpc";
-import { paginationZod } from "@hanzo/shared";
+import { paginationZod } from "@hanzo/console";
 import { GenerationTableOptions } from "./utils/GenerationTableOptions";
 import { getAllGenerations } from "@/src/server/api/routers/generations/db/getAllGenerationsSqlQuery";
-import { getObservationsCountFromEventsTable, getObservationsTableCount } from "@hanzo/shared/src/server";
+import { getObservationsCountFromEventsTable, getObservationsTableCount } from "@hanzo/console-core/src/server";
 import { env } from "@/src/env.mjs";
-import { applyCommentFilters } from "@hanzo/shared/src/server";
+import { applyCommentFilters } from "@hanzo/console-core/src/server";
 
 const GetAllGenerationsInput = GenerationTableOptions.extend({
   ...paginationZod,

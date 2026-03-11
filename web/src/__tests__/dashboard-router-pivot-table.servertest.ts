@@ -17,7 +17,7 @@
  */
 
 import { randomUUID } from "crypto";
-import { createTrace, createTracesCh, createObservation, createObservationsCh } from "@hanzo/shared/src/server";
+import { createTrace, createTracesCh, createObservation, createObservationsCh } from "@hanzo/console-core/src/server";
 import { type QueryType } from "@/src/features/query/types";
 import { transformToPivotTable, type DatabaseRow } from "@/src/features/widgets/utils/pivot-table-utils";
 import { QueryBuilder } from "@/src/features/query/server/queryBuilder";

@@ -1,4 +1,4 @@
-import { createEvent, createEventsCh, queryDatastore } from "@hanzo/shared/src/server";
+import { createEvent, createEventsCh, queryDatastore } from "@hanzo/console-core/src/server";
 import { makeZodVerifiedAPICall } from "@/src/__tests__/test-utils";
 import { GetObservationsV2Response } from "@/src/features/public-api/types/observations";
 import { randomUUID } from "crypto";

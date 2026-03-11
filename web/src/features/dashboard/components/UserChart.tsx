@@ -1,5 +1,5 @@
 import { api } from "@/src/utils/api";
-import { type FilterState, getGenerationLikeTypes } from "@hanzo/shared";
+import { type FilterState, getGenerationLikeTypes } from "@hanzo/console";
 import { DashboardCard } from "@/src/features/dashboard/components/cards/DashboardCard";
 import { compactNumberFormatter } from "@/src/utils/numbers";
 import { TabComponent } from "@/src/features/dashboard/components/TabsComponent";
@@ -8,11 +8,7 @@ import { ExpandListButton } from "@/src/features/dashboard/components/cards/Chev
 import { useState } from "react";
 import { totalCostDashboardFormatted } from "@/src/features/dashboard/lib/dashboard-utils";
 import { NoDataOrLoading } from "@/src/components/NoDataOrLoading";
-import {
-  type QueryType,
-  type ViewVersion,
-  mapLegacyUiTableFilterToView,
-} from "@/src/features/query";
+import { type QueryType, type ViewVersion, mapLegacyUiTableFilterToView } from "@/src/features/query";
 import { Chart } from "@/src/features/widgets/chart-library/Chart";
 import { barListToDataPoints } from "@/src/features/dashboard/lib/chart-data-adapters";
 import { traceViewQuery } from "@/src/features/dashboard/lib/dashboard-utils";
@@ -130,18 +126,14 @@ export const UserChart = ({
 
   const totalCost = user.data?.reduce((acc, curr) => acc + (Number(curr.sum_totalCost) || 0), 0);
 
-  const totalTraces = traces.data?.reduce(
-    (acc, curr) => acc + (Number(curr[countField]) || 0),
-    0,
-  );
+  const totalTraces = traces.data?.reduce((acc, curr) => acc + (Number(curr[countField]) || 0), 0);
 
   const maxNumberOfEntries = { collapsed: 5, expanded: 20 } as const;
 
   const BAR_ROW_HEIGHT = 36;
   const CHART_AXIS_PADDING = 32;
 
-  const localUsdFormatter = (value: number) =>
-    totalCostDashboardFormatted(value);
+  const localUsdFormatter = (value: number) => totalCostDashboardFormatted(value);
 
   const data = [
     {
@@ -173,19 +165,12 @@ export const UserChart = ({
               <>
                 {item.data.length > 0 ? (
                   <div className="flex flex-col">
-                    <TotalMetric
-                      metric={item.totalMetric}
-                      description={item.metricDescription}
-                    />
+                    <TotalMetric metric={item.totalMetric} description={item.metricDescription} />
                     <div
                       className="mt-4 w-full"
                       style={{
                         minHeight: 200,
-                        height: Math.max(
-                          200,
-                          item.data.length * BAR_ROW_HEIGHT +
-                            CHART_AXIS_PADDING,
-                        ),
+                        height: Math.max(200, item.data.length * BAR_ROW_HEIGHT + CHART_AXIS_PADDING),
                       }}
                     >
                       <Chart

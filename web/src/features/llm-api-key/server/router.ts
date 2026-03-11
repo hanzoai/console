@@ -17,15 +17,15 @@ import {
   VertexAIConfigSchema,
   BEDROCK_USE_DEFAULT_CREDENTIALS,
   VERTEXAI_USE_DEFAULT_CREDENTIALS,
-} from "@hanzo/shared";
-import { encrypt, decrypt } from "@hanzo/shared/encryption";
+} from "@hanzo/console";
+import { encrypt, decrypt } from "@hanzo/console-core/encryption";
 import {
   ChatMessageType,
   fetchLLMCompletion,
   LLMAdapter,
   logger,
   decryptAndParseExtraHeaders,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import { env } from "@/src/env.mjs";
 import { TRPCError } from "@trpc/server";
 

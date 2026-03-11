@@ -32,7 +32,7 @@ import {
   DEFAULT_TRACE_ENVIRONMENT,
   setNoEvalConfigsCache,
   DatasetRunItemUpsertEventType,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import { mapTraceFilterColumn, requiresDatabaseLookup } from "./traceFilterUtils";
 import {
   Prisma,
@@ -47,8 +47,8 @@ import {
   Observation,
   DatasetItem,
   EvalTargetObject,
-} from "@hanzo/shared";
-import { kyselyPrisma, prisma } from "@hanzo/shared/src/db";
+} from "@hanzo/console-core";
+import { kyselyPrisma, prisma } from "@hanzo/console-core/src/db";
 import { createW3CTraceId } from "../utils";
 import { JSONPath } from "jsonpath-plus";
 import { UnrecoverableError } from "../../errors/UnrecoverableError";

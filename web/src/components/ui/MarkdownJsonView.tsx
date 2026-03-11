@@ -1,4 +1,4 @@
-import { OpenAIContentSchema, type OpenAIOutputAudioType } from "@hanzo/shared";
+import { OpenAIContentSchema, type OpenAIOutputAudioType } from "@hanzo/console";
 import { StringOrMarkdownSchema } from "@/src/components/schemas/MarkdownSchema";
 import { Button } from "@/src/components/ui/button";
 import { PrettyJsonView } from "@/src/components/ui/PrettyJsonView";

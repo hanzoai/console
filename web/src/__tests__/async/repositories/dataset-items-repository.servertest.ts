@@ -3,7 +3,7 @@
 process.env.HANZO_DATASET_SERVICE_READ_FROM_VERSIONED_IMPLEMENTATION = "true";
 process.env.HANZO_DATASET_SERVICE_WRITE_TO_VERSIONED_IMPLEMENTATION = "true";
 
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 import {
   createDatasetItem,
   upsertDatasetItem,
@@ -15,7 +15,7 @@ import {
   getDatasetItemVersionHistory,
   getDatasetItemChangesSinceVersion,
   getDatasetItems,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import { v4 } from "uuid";
 
 const projectId = "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a";

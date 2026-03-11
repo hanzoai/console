@@ -1,7 +1,7 @@
 import { createHash } from "crypto";
 
-import { percentile } from "@hanzo/shared";
-import { prisma } from "@hanzo/shared/src/db";
+import { percentile } from "@hanzo/console-core";
+import { prisma } from "@hanzo/console-core/src/db";
 import {
   commandDatastore,
   convertDateToDatastoreDateTime,
@@ -9,7 +9,7 @@ import {
   queryDatastore,
   recordGauge,
   recordIncrement,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import { env } from "../../env";
 import { getRetentionCutoffDate } from "../utils";
 import { PeriodicExclusiveRunner } from "../../utils/PeriodicExclusiveRunner";

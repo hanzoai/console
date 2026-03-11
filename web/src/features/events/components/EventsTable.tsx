@@ -18,7 +18,7 @@ import {
   BatchActionType,
   ActionId,
   RESOURCE_LIMIT_ERROR_MESSAGE,
-} from "@hanzo/shared";
+} from "@hanzo/console";
 import { cn } from "@/src/utils/tailwind";
 import { LevelColors } from "@/src/components/level-colors";
 import { numberFormatter, usdFormatter } from "@/src/utils/numbers";
@@ -26,7 +26,7 @@ import { useOrderByState } from "@/src/features/orderBy/hooks/useOrderByState";
 import { useRowHeightLocalStorage } from "@/src/components/table/data-table-row-height-switch";
 import { useTableDateRange } from "@/src/hooks/useTableDateRange";
 import { toAbsoluteTimeRange, type TableDateRange } from "@/src/utils/date-range-utils";
-import { type ScoreAggregate } from "@hanzo/shared";
+import { type ScoreAggregate } from "@hanzo/console";
 import TagList from "@/src/features/tag/components/TagList";
 import useColumnOrder from "@/src/features/column-visibility/hooks/useColumnOrder";
 import { BatchExportTableButton } from "@/src/components/BatchExportTableButton";

@@ -1,7 +1,7 @@
 import { api } from "@/src/utils/api";
 import { useMemo } from "react";
-import { type FilterState, AnnotationQueueObjectType } from "@hanzo/shared";
-import { type FullEventsObservations } from "@hanzo/shared/src/server";
+import { type FilterState, AnnotationQueueObjectType } from "@hanzo/console";
+import { type FullEventsObservations } from "@hanzo/console-core/src/server";
 import { showSuccessToast } from "@/src/features/notifications/showSuccessToast";
 import { joinTableCoreAndMetrics } from "@/src/components/table/utils/joinTableCoreAndMetrics";
 import { type EventBatchIOOutput } from "@/src/features/events/server/eventsRouter";
@@ -105,10 +105,7 @@ export function useEventsTableData({
 
   const errorHttpStatus = observations.error?.data?.httpStatus;
 
-  const isSilencedError =
-    observations.isError &&
-    errorHttpStatus &&
-    silentHttpCodes.includes(errorHttpStatus);
+  const isSilencedError = observations.isError && errorHttpStatus && silentHttpCodes.includes(errorHttpStatus);
 
   // Memoize joined data to prevent infinite re-renders
   // Handle loading, error, and success states

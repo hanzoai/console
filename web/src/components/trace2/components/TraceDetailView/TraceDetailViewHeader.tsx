@@ -15,7 +15,7 @@ import {
   type ScoreDomain,
   AnnotationQueueObjectType,
   ConsoleInternalTraceEnvironment,
-} from "@hanzo/shared";
+} from "@hanzo/console";
 import { type SelectionData } from "@/src/features/comments/contexts/InlineCommentSelectionContext";
 import { type WithStringifiedMetadata } from "@/src/utils/clientSideDomainTypes";
 import { type ObservationReturnTypeWithMetadata } from "@/src/server/api/routers/traces";

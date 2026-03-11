@@ -1,5 +1,5 @@
 import * as z from "zod/v4";
-import { StringNoHTML } from "@hanzo/shared";
+import { StringNoHTML } from "@hanzo/console";
 
 export const projectNameSchema = z.object({
   name: StringNoHTML.min(3, "Must have at least 3 characters").max(60, "Must have at most 60 characters"),

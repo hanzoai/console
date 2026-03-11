@@ -1,5 +1,5 @@
 // No test dependencies from shared
-jest.mock("@hanzo/shared", () => ({
+jest.mock("@hanzo/console", () => ({
   ObservationType: {
     SPAN: "SPAN",
     EVENT: "EVENT",

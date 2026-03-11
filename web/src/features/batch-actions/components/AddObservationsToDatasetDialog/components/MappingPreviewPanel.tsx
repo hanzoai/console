@@ -1,14 +1,9 @@
 import { useMemo, useEffect, useRef } from "react";
-import {
-  ArrowDown,
-  AlertCircle,
-  AlertTriangle,
-  CheckCircle2,
-} from "lucide-react";
+import { ArrowDown, AlertCircle, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { JSONView } from "@/src/components/ui/CodeJsonViewer";
 import { Skeleton } from "@/src/components/ui/skeleton";
 import type { FieldMappingConfig, SourceField, ObservationPreviewData, SchemaValidationError } from "../types";
-import { applyFieldMappingConfig, validateFieldAgainstSchema } from "@hanzo/shared";
+import { applyFieldMappingConfig, validateFieldAgainstSchema } from "@hanzo/console";
 
 type MappingPreviewPanelProps = {
   fieldLabel: string;
@@ -238,23 +233,18 @@ export function MappingPreviewPanel({
         </div>
 
         {/* Validation errors */}
-        {hasSchema &&
-          !validationResult.isValid &&
-          validationResult.errors.length > 0 && (
-            <div className="max-h-[5vh] overflow-y-auto rounded-md border border-destructive/50 bg-destructive/10 p-2">
-              <p className="mb-1 text-xs font-medium text-destructive">
-                Schema validation errors:
-              </p>
-              <ul className="space-y-0.5">
-                {validationResult.errors.map((error, idx) => (
-                  <li key={idx} className="text-xs text-destructive">
-                    <span className="font-mono">{error.path || "root"}</span>:{" "}
-                    {error.message}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+        {hasSchema && !validationResult.isValid && validationResult.errors.length > 0 && (
+          <div className="max-h-[5vh] overflow-y-auto rounded-md border border-destructive/50 bg-destructive/10 p-2">
+            <p className="mb-1 text-xs font-medium text-destructive">Schema validation errors:</p>
+            <ul className="space-y-0.5">
+              {validationResult.errors.map((error, idx) => (
+                <li key={idx} className="text-xs text-destructive">
+                  <span className="font-mono">{error.path || "root"}</span>: {error.message}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         {/* JSON path warnings */}
         {jsonPathMisses.length > 0 && config.mode !== "none" && (
@@ -264,12 +254,8 @@ export function MappingPreviewPanel({
             </p>
             <ul className="space-y-0.5">
               {jsonPathMisses.map((miss, idx) => (
-                <li
-                  key={idx}
-                  className="text-xs text-amber-600 dark:text-amber-500"
-                >
-                  <span className="font-mono">{miss.jsonPath}</span> did not
-                  match any data in {miss.sourceField}
+                <li key={idx} className="text-xs text-amber-600 dark:text-amber-500">
+                  <span className="font-mono">{miss.jsonPath}</span> did not match any data in {miss.sourceField}
                   {miss.mappingKey ? ` (key: "${miss.mappingKey}")` : ""}
                 </li>
               ))}

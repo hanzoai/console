@@ -1,5 +1,5 @@
-import { getObservationsV2FromEventsTableForPublicApi } from "@hanzo/shared/src/server";
-import { NotImplementedError } from "@hanzo/shared";
+import { getObservationsV2FromEventsTableForPublicApi } from "@hanzo/console-core/src/server";
+import { NotImplementedError } from "@hanzo/console";
 
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";

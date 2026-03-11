@@ -1,6 +1,6 @@
-import { type GetPromptsMetaType, type FilterState, promptsTableCols, type PromptType } from "@hanzo/shared";
-import { prisma } from "@hanzo/shared/src/db";
-import { tableColumnsToSqlFilterAndPrefix } from "@hanzo/shared/src/server";
+import { type GetPromptsMetaType, type FilterState, promptsTableCols, type PromptType } from "@hanzo/console";
+import { prisma } from "@hanzo/console-core/src/db";
+import { tableColumnsToSqlFilterAndPrefix } from "@hanzo/console-core/src/server";
 
 export type GetPromptsMetaParams = GetPromptsMetaType & { projectId: string };
 

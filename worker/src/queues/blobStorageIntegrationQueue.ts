@@ -1,5 +1,5 @@
 import { Processor } from "@hanzo/mq";
-import { QueueJobs, logger, instrumentAsync } from "@hanzo/shared/src/server";
+import { QueueJobs, logger, instrumentAsync } from "@hanzo/console-core/src/server";
 import { handleBlobStorageIntegrationSchedule } from "../features/blobstorage/handleBlobStorageIntegrationSchedule";
 import { handleBlobStorageIntegrationProjectJob } from "../features/blobstorage/handleBlobStorageIntegrationProjectJob";
 import { SpanKind } from "@opentelemetry/api";

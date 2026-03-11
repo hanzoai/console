@@ -11,7 +11,7 @@ import {
   createTraceScore,
   createScoresCh,
   datastoreClient,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import { randomUUID } from "crypto";
 import { env } from "@/src/env.mjs";
 

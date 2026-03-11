@@ -1,5 +1,5 @@
 import { PrettyJsonView } from "@/src/components/ui/PrettyJsonView";
-import { AnnotationQueueObjectType, type ScoreDomain, isGenerationLike } from "@hanzo/shared";
+import { AnnotationQueueObjectType, type ScoreDomain, isGenerationLike } from "@hanzo/console";
 import { Badge } from "@/src/components/ui/badge";
 import { type ObservationReturnType } from "@/src/server/api/routers/traces";
 import { api } from "@/src/utils/api";

@@ -21,7 +21,7 @@ import {
   UNCLOSED_VARIABLE_REGEX,
   PromptDependencyRegex,
   parsePromptDependencyTags,
-} from "@hanzo/shared";
+} from "@hanzo/console";
 import { lightTheme } from "@/src/components/editor/light-theme";
 import { darkTheme } from "@/src/components/editor/dark-theme";
 
@@ -229,10 +229,7 @@ export function CodeMirrorEditor({
           ? [
               EditorView.theme({
                 ".cm-gutter,.cm-content": {
-                  minHeight:
-                    typeof minHeight === "number"
-                      ? `${minHeight}px`
-                      : minHeight,
+                  minHeight: typeof minHeight === "number" ? `${minHeight}px` : minHeight,
                 },
                 ".cm-scroller": { overflow: "auto" },
               }),
@@ -243,10 +240,7 @@ export function CodeMirrorEditor({
           ? [
               EditorView.theme({
                 ".cm-scroller": {
-                  maxHeight:
-                    typeof maxHeight === "number"
-                      ? `${maxHeight}px`
-                      : maxHeight,
+                  maxHeight: typeof maxHeight === "number" ? `${maxHeight}px` : maxHeight,
                 },
               }),
             ]

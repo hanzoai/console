@@ -1,6 +1,6 @@
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
-import { logger } from "@hanzo/shared/src/server";
+import { logger } from "@hanzo/console-core/src/server";
 import { GetMetricsV1Query, GetMetricsV1Response } from "@/src/features/public-api/types/metrics";
 import { executeQuery } from "@/src/features/query/server/queryExecutor";
 

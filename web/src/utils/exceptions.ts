@@ -1,4 +1,4 @@
-import { Prisma } from "@hanzo/shared/src/db";
+import { Prisma } from "@hanzo/console-core/src/db";
 
 export function isPrismaException(e: unknown) {
   return (

@@ -31,11 +31,11 @@ import {
   OtelIngestionQueue,
   TraceUpsertQueue,
   EventPropagationQueue,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import { env } from "./env";
 import { ingestionQueueProcessorBuilder } from "./queues/ingestionQueue";
 import { BackgroundMigrationManager } from "./backgroundMigrations/backgroundMigrationManager";
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 import { DatastoreReadSkipCache } from "./utils/datastoreReadSkipCache";
 import { experimentCreateQueueProcessor } from "./queues/experimentQueue";
 import { traceDeleteProcessor } from "./queues/traceDelete";

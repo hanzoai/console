@@ -1,8 +1,8 @@
 import { ApiAuthService } from "@/src/features/public-api/server/apiAuth";
 import { type NextApiRequest } from "next";
-import { UnauthorizedError, ForbiddenError } from "@hanzo/shared";
-import { prisma } from "@hanzo/shared/src/db";
-import { type AuthHeaderValidVerificationResult, redis } from "@hanzo/shared/src/server";
+import { UnauthorizedError, ForbiddenError } from "@hanzo/console";
+import { prisma } from "@hanzo/console-core/src/db";
+import { type AuthHeaderValidVerificationResult, redis } from "@hanzo/console-core/src/server";
 
 export async function authorizePromptRequestOrThrow(req: NextApiRequest) {
   const authCheck = await new ApiAuthService(prisma, redis).verifyAuthHeaderAndReturnScope(req.headers.authorization);

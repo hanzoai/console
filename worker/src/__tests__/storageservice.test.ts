@@ -1,7 +1,7 @@
 import { expect, test, describe, beforeAll, beforeEach, afterEach } from "vitest";
 import { env } from "../env";
 import { randomUUID } from "crypto";
-import { StorageService, StorageServiceFactory } from "@hanzo/shared/src/server";
+import { StorageService, StorageServiceFactory } from "@hanzo/console-core/src/server";
 
 const { Readable } = require("stream");
 

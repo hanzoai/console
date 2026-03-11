@@ -14,7 +14,7 @@ import { api } from "@/src/utils/api";
 import { Button } from "@/src/components/ui/button";
 import { cn } from "@/src/utils/tailwind";
 import { usePlan } from "@/src/features/entitlements/hooks";
-import { isSelfHostedPlan, planLabels } from "@hanzo/shared";
+import { isSelfHostedPlan, planLabels } from "@hanzo/console";
 import { StatusBadge } from "@/src/components/layouts/status-badge";
 import { useConsoleCloudRegion } from "@/src/features/organizations/hooks";
 

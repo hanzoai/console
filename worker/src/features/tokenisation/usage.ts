@@ -1,11 +1,11 @@
-import { Model, parseJsonPrioritised } from "@hanzo/shared";
+import { Model, parseJsonPrioritised } from "@hanzo/console-core";
 import { isChatModel, isTiktokenModel } from "./types";
 import { countTokens } from "@anthropic-ai/tokenizer";
 
 import { type TiktokenModel, type Tiktoken, get_encoding, encoding_for_model } from "tiktoken";
 
 import { z } from "zod/v4";
-import { logger } from "@hanzo/shared/src/server";
+import { logger } from "@hanzo/console-core/src/server";
 
 const OpenAiTokenConfig = z.object({
   tokenizerModel: z.string().refine(isTiktokenModel, {

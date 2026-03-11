@@ -2,7 +2,7 @@ import { useState } from "react";
 import { type RouterInputs, api } from "@/src/utils/api";
 import { showErrorToast } from "@/src/features/notifications/showErrorToast";
 import { MAX_FILE_SIZE_BYTES } from "@/src/features/datasets/components/UploadDatasetCsv";
-import { type BulkDatasetItemValidationError } from "@hanzo/shared";
+import { type BulkDatasetItemValidationError } from "@hanzo/console";
 import chunk from "lodash/chunk";
 import { parseCsvClient, parseColumns, buildSchemaObject } from "@/src/features/datasets/lib/csv/helpers";
 import type { CsvColumnPreview, FieldMapping } from "@/src/features/datasets/lib/csv/types";
@@ -70,8 +70,7 @@ export function useCsvImport(options: UseCsvImportOptions) {
   const mutCreateManyDatasetItems = api.datasets.createManyDatasetItems.useMutation({});
 
   const execute = async (wrapSingleColumn: boolean): Promise<boolean> => {
-    const { csvFile, projectId, datasetId, input, expectedOutput, metadata } =
-      options;
+    const { csvFile, projectId, datasetId, input, expectedOutput, metadata } = options;
 
     if (!csvFile) return false;
     if (csvFile.size > MAX_FILE_SIZE_BYTES) {

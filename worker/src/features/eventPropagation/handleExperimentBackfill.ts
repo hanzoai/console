@@ -5,11 +5,11 @@ import {
   convertDateToDatastoreDateTime,
   datastoreClient,
   flattenJsonToPathArrays,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import { env } from "../../env";
 import { DatastoreWriter } from "../../services/DatastoreWriter";
 import { IngestionService } from "../../services/IngestionService";
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 import { chunk } from "lodash";
 
 const EXPERIMENT_BACKFILL_TIMESTAMP_KEY = "hanzo:event-propagation:experiment-backfill:last-run";

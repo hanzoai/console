@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { EvalTargetObject, availableTraceEvalVariables, availableDatasetEvalVariables } from "@hanzo/shared";
+import { EvalTargetObject, availableTraceEvalVariables, availableDatasetEvalVariables } from "@hanzo/console";
 import {
   isTraceTarget,
   isEventTarget,

@@ -1,13 +1,13 @@
 import { createTRPCRouter, protectedProjectProcedure } from "@/src/server/api/trpc";
 import { TRPCError } from "@trpc/server";
-import { ChatMessageType, fetchLLMCompletion, logger, type TraceSinkParams } from "@hanzo/shared/src/server";
+import { ChatMessageType, fetchLLMCompletion, logger, type TraceSinkParams } from "@hanzo/console-core/src/server";
 import { env } from "@/src/env.mjs";
 import { CreateNaturalLanguageFilterCompletion } from "./validation";
 import { getDefaultModelParams, parseFiltersFromCompletion, getHanzoClient } from "./utils";
 import { randomBytes } from "crypto";
 import { throwIfNoProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
-import { BEDROCK_USE_DEFAULT_CREDENTIALS } from "@hanzo/shared";
-import { encrypt } from "@hanzo/shared/encryption";
+import { BEDROCK_USE_DEFAULT_CREDENTIALS } from "@hanzo/console";
+import { encrypt } from "@hanzo/console-core/encryption";
 
 export const naturalLanguageFilterRouter = createTRPCRouter({
   createCompletion: protectedProjectProcedure

@@ -1,5 +1,5 @@
 import { type ConsoleColumnDef } from "@/src/components/table/types";
-import { type FilterState, type ColumnDefinition, type OrderByState } from "@hanzo/shared";
+import { type FilterState, type ColumnDefinition, type OrderByState } from "@hanzo/console";
 import { normalizeFilterColumnNames } from "@/src/features/filters/lib/filter-transform";
 
 /**

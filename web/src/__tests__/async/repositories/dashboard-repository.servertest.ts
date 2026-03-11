@@ -6,7 +6,7 @@ import {
   createTracesCh,
   createObservationsCh,
   createObservation,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 
 describe("orderByTimeSeries", () => {
   it("should return correct bucket size and query for 1 hour time range", () => {

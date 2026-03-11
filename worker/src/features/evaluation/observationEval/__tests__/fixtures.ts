@@ -1,7 +1,7 @@
 import { vi } from "vitest";
 import { randomUUID } from "crypto";
-import { type Prisma } from "@hanzo/shared/src/db";
-import { type ObservationForEval, EvalTargetObject } from "@hanzo/shared";
+import { type Prisma } from "@hanzo/console-core/src/db";
+import { type ObservationForEval, EvalTargetObject } from "@hanzo/console-core";
 import { type ObservationEvalConfig, type ObservationEvalSchedulerDeps } from "../types";
 import { type ObservationEvalProcessorDeps } from "../observationEvalProcessor";
 import { type EvalExecutionDeps, createMockEvalExecutionDeps } from "../../evalExecutionDeps";

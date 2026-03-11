@@ -1,11 +1,11 @@
 import { describe, expect, test, vi, beforeEach, afterEach } from "vitest";
 import { observationRetryDelayInMs, retryObservationNotFound } from "../features/evaluation/retryObservationNotFound";
-import { DatasetRunItemUpsertQueue, RetryBaggage } from "@hanzo/shared/src/server";
+import { DatasetRunItemUpsertQueue, RetryBaggage } from "@hanzo/console-core/src/server";
 import { ObservationNotFoundError } from "../errors/ObservationNotFoundError";
 
 // Mock the queue
-vi.mock("@hanzo/shared/src/server", async () => {
-  const actual = await vi.importActual("@hanzo/shared/src/server");
+vi.mock("@hanzo/console-core/src/server", async () => {
+  const actual = await vi.importActual("@hanzo/console-core/src/server");
   return {
     ...actual,
     DatasetRunItemUpsertQueue: {

@@ -4,7 +4,7 @@ import { usePlaygroundContext } from "@/src/features/playground/page/context";
 import { Button } from "@/src/components/ui/button";
 import { ScrollArea } from "@/src/components/ui/scroll-area";
 import { PlusIcon, PencilIcon, MinusCircle, BoxIcon } from "lucide-react";
-import { type LlmSchema } from "@hanzo/shared";
+import { type LlmSchema } from "@hanzo/console";
 import { api } from "@/src/utils/api";
 import useProjectIdFromURL from "@/src/hooks/useProjectIdFromURL";
 import { CreateOrEditLLMSchemaDialog } from "@/src/features/playground/page/components/CreateOrEditLLMSchemaDialog";
@@ -249,16 +249,11 @@ export const StructuredOutputSchemaSection = () => {
               <div className="mb-1 flex items-center justify-between">
                 <div className="flex min-w-0 items-center gap-1">
                   <BoxIcon className="h-4 w-4 shrink-0 text-muted-foreground" />
-                  <h3
-                    className="truncate text-sm font-medium"
-                    title={structuredOutputSchema.name}
-                  >
+                  <h3 className="truncate text-sm font-medium" title={structuredOutputSchema.name}>
                     {structuredOutputSchema.name}
                   </h3>
                   {!isSchemaSaved(structuredOutputSchema) ? (
-                    <span className="shrink-0 rounded bg-muted px-1 py-0.5 text-xs text-muted-foreground">
-                      Unsaved
-                    </span>
+                    <span className="shrink-0 rounded bg-muted px-1 py-0.5 text-xs text-muted-foreground">Unsaved</span>
                   ) : null}
                 </div>
                 <div className="flex shrink-0 items-center gap-1">

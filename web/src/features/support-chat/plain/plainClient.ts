@@ -5,7 +5,7 @@ import {
   type EventComponentInput,
 } from "@team-plain/typescript-sdk";
 import { TRPCError } from "@trpc/server";
-import { logger } from "@hanzo/shared/src/server";
+import { logger } from "@hanzo/console-core/src/server";
 import { PLAIN_MAX_FILE_SIZE_BYTES } from "./plainConstants";
 
 // Re-export for backward compatibility

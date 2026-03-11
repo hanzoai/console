@@ -1,5 +1,5 @@
-import { createEvent, createObservation, createTrace, createTracesCh } from "@hanzo/shared/src/server";
-import { createEventsCh, createObservationsCh } from "@hanzo/shared/src/server";
+import { createEvent, createObservation, createTrace, createTracesCh } from "@hanzo/console-core/src/server";
+import { createEventsCh, createObservationsCh } from "@hanzo/console-core/src/server";
 import { makeZodVerifiedAPICall } from "@/src/__tests__/test-utils";
 import { GetObservationV1Response } from "@/src/features/public-api/types/observations";
 import { v4 as uuidv4 } from "uuid";

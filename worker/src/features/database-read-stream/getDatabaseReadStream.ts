@@ -7,8 +7,8 @@ import {
   TracingSearchType,
   isPresent,
   type ScoreDataTypeType,
-} from "@hanzo/shared";
-import { prisma } from "@hanzo/shared/src/db";
+} from "@hanzo/console-core";
+import { prisma } from "@hanzo/console-core/src/db";
 import {
   FullObservationsWithScores,
   DatabaseReadStream,
@@ -25,7 +25,7 @@ import {
   getTracesByIds,
   getScoresForTraces,
   getDatasetItems,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import Decimal from "decimal.js";
 import { env } from "../../env";
 import { BatchExportTracesRow, BatchExportSessionsRow, BatchExportEventsRow } from "./types";

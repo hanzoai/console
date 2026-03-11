@@ -1,11 +1,7 @@
 import { type z } from "zod/v4";
-import { type FilterState, type singleFilter } from "@hanzo/shared";
+import { type FilterState, type singleFilter } from "@hanzo/console";
 import { usdFormatter } from "@/src/utils/numbers";
-import {
-  type QueryType,
-  type ViewVersion,
-  mapLegacyUiTableFilterToView,
-} from "@/src/features/query";
+import { type QueryType, type ViewVersion, mapLegacyUiTableFilterToView } from "@/src/features/query";
 
 // traces do not have a startTime or endTime column, so we need to map these to the timestamp column
 export const createTracesTimeFilter = (filters: FilterState, columnName = "timestamp") => {

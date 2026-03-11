@@ -2,7 +2,7 @@ import { Button } from "@/src/components/ui/button";
 import { Progress } from "@/src/components/ui/progress";
 import { api } from "@/src/utils/api";
 import { StatusBadge } from "@/src/components/layouts/status-badge";
-import { BatchActionStatus } from "@hanzo/shared";
+import { BatchActionStatus } from "@hanzo/console";
 import { Card, CardContent, CardHeader, CardTitle } from "@/src/components/ui/card";
 import Link from "next/link";
 import { Check, AlertCircle, Loader2 } from "lucide-react";

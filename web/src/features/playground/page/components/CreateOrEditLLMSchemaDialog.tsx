@@ -29,7 +29,7 @@ import { Textarea } from "@/src/components/ui/textarea";
 import { LLMSchemaNameSchema } from "@/src/features/llm-schemas/validation";
 import { api } from "@/src/utils/api";
 
-import { JSONSchemaFormSchema, type LlmSchema } from "@hanzo/shared";
+import { JSONSchemaFormSchema, type LlmSchema } from "@hanzo/console";
 import { CodeMirrorEditor } from "@/src/components/editor";
 import { showErrorToast } from "@/src/features/notifications/showErrorToast";
 

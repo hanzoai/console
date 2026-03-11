@@ -1,4 +1,4 @@
-import { type Plan, type CloudConfigSchema } from "@hanzo/shared";
+import { type Plan, type CloudConfigSchema } from "@hanzo/console";
 
 /**
  * Get the plan of the organization.

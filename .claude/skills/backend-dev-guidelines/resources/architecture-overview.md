@@ -298,11 +298,11 @@ The shared package provides types, utilities, and server code used by both web a
 
 | Import Path                                | Usage                 | What's Included                                                                    |
 | ------------------------------------------ | --------------------- | ---------------------------------------------------------------------------------- |
-| `@hanzo/shared`                         | ✅ Frontend + Backend | Prisma types, Zod schemas, constants, table definitions, domain models, utilities  |
-| `@hanzo/shared/src/db`                  | 🔒 Backend only       | Prisma client instance                                                             |
-| `@hanzo/shared/src/server`              | 🔒 Backend only       | Services, repositories, queues, auth, Datastore, LLM integration, instrumentation |
-| `@hanzo/shared/src/server/auth/apiKeys` | 🔒 Backend only       | API key management (separated to avoid circular deps)                              |
-| `@hanzo/shared/encryption`              | 🔒 Backend only       | Database field encryption/decryption                                               |
+| `@hanzo/console`                         | ✅ Frontend + Backend | Prisma types, Zod schemas, constants, table definitions, domain models, utilities  |
+| `@hanzo/console-core/src/db`                  | 🔒 Backend only       | Prisma client instance                                                             |
+| `@hanzo/console-core/src/server`              | 🔒 Backend only       | Services, repositories, queues, auth, Datastore, LLM integration, instrumentation |
+| `@hanzo/console-core/src/server/auth/apiKeys` | 🔒 Backend only       | API key management (separated to avoid circular deps)                              |
+| `@hanzo/console-core/encryption`              | 🔒 Backend only       | Database field encryption/decryption                                               |
 
 **Key Structure:**
 
@@ -336,10 +336,10 @@ import {
   Role,
   type Dataset,
   CloudConfigSchema,
-} from "@hanzo/shared";
+} from "@hanzo/console";
 
 // 🔒 Database - Backend only
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 
 // 🔒 Server utilities - Backend only
 import {
@@ -351,13 +351,13 @@ import {
   StorageService,
   fetchLLMCompletion,
   filterToPrisma,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 
 // 🔒 API keys - Backend only
-import { createAndAddApiKeysToDb } from "@hanzo/shared/src/server/auth/apiKeys";
+import { createAndAddApiKeysToDb } from "@hanzo/console-core/src/server/auth/apiKeys";
 
 // 🔒 Encryption - Backend only
-import { encrypt, decrypt } from "@hanzo/shared/encryption";
+import { encrypt, decrypt } from "@hanzo/console-core/encryption";
 ```
 
 ---
@@ -526,8 +526,8 @@ export const datasetRouter = createTRPCRouter({
 
 ```typescript
 // web/src/features/datasets/server/service.ts
-import { prisma } from "@hanzo/shared/src/db";
-import { instrumentAsync, traceException } from "@hanzo/shared/src/server";
+import { prisma } from "@hanzo/console-core/src/db";
+import { instrumentAsync, traceException } from "@hanzo/console-core/src/server";
 
 export async function createDataset(data: {
   name: string;
@@ -689,12 +689,12 @@ Hanzo uses two databases with different purposes:
 
 ```typescript
 // PostgreSQL via Prisma
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 
 const dataset = await prisma.dataset.create({ data });
 
 // Datastore via helper functions
-import { getTracesTable } from "@hanzo/shared/src/server";
+import { getTracesTable } from "@hanzo/console-core/src/server";
 
 const traces = await getTracesTable({
   projectId,
@@ -703,7 +703,7 @@ const traces = await getTracesTable({
 });
 
 // Redis via queue/cache utilities
-import { redis } from "@hanzo/shared/src/server";
+import { redis } from "@hanzo/console-core/src/server";
 
 await redis.set(`cache:${key}`, value, "EX", 3600);
 ```
@@ -780,7 +780,7 @@ import {
   logger,
   traceException,
   instrumentAsync,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 
 export async function processEvaluation(evalId: string) {
   return await instrumentAsync(

@@ -8,7 +8,7 @@ import { Input } from "@/src/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { isReservedPromptLabel } from "@/src/features/prompts/utils";
-import { PromptLabelSchema } from "@hanzo/shared";
+import { PromptLabelSchema } from "@hanzo/console";
 
 const AddLabelFormSchema = z.object({
   newLabel: PromptLabelSchema.refine(

@@ -1,4 +1,4 @@
-import { type TriggerEventAction, jsonSchemaNullable, InternalServerError } from "@hanzo/shared";
+import { type TriggerEventAction, jsonSchemaNullable, InternalServerError } from "@hanzo/console-core";
 import {
   getTriggerConfigurations,
   getActionById,
@@ -10,10 +10,10 @@ import {
   type PromptResult,
   getAutomations,
   EntityChangeEventType,
-} from "@hanzo/shared/src/server";
-import { TriggerEventSource } from "@hanzo/shared";
-import { ActionExecutionStatus, JobConfigState } from "@hanzo/shared";
-import { prisma } from "@hanzo/shared/src/db";
+} from "@hanzo/console-core/src/server";
+import { TriggerEventSource } from "@hanzo/console-core";
+import { ActionExecutionStatus, JobConfigState } from "@hanzo/console-core";
+import { prisma } from "@hanzo/console-core/src/db";
 import { v4 } from "uuid";
 
 /**

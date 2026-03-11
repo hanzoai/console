@@ -3,7 +3,7 @@
 process.env.HANZO_DATASET_SERVICE_READ_FROM_VERSIONED_IMPLEMENTATION = "true";
 process.env.HANZO_DATASET_SERVICE_WRITE_TO_VERSIONED_IMPLEMENTATION = "true";
 
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 import { makeAPICall, makeZodVerifiedAPICall } from "@/src/__tests__/test-utils";
 import { v4 } from "uuid";
 import {
@@ -37,7 +37,7 @@ import {
   createDatasetItemFilterState,
   createDatasetItem,
   getDatasetItems,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import waitForExpect from "wait-for-expect";
 
 describe("/api/public/datasets and /api/public/dataset-items API Endpoints", () => {

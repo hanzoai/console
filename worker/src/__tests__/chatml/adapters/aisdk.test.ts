@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { aisdkAdapter, normalizeInput, type NormalizerContext } from "@hanzo/shared";
+import { aisdkAdapter, normalizeInput, type NormalizerContext } from "@hanzo/console-core";
 
 describe("AI SDK Adapter", () => {
   describe("detection", () => {

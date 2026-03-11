@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { langgraphAdapter, normalizeInput } from "@hanzo/shared";
+import { langgraphAdapter, normalizeInput } from "@hanzo/console-core";
 
 describe("LangGraph Adapter", () => {
   it("should detect LangGraph via various metadata patterns", () => {

@@ -7,7 +7,7 @@ import {
   createScoresCh,
   createTraceScore,
   queryDatastore,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import { env } from "@/src/env.mjs";
 import waitForExpect from "wait-for-expect";
 

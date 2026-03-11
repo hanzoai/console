@@ -330,7 +330,7 @@ export class DatastoreClient {
 /**
  * Create a DatastoreClient with the given config.
  * For connection pooling, manage instances yourself or use DatastoreClientManager
- * from @hanzo/shared (which adds env-var-based configuration).
+ * from @hanzo/console (which adds env-var-based configuration).
  */
 export const createDatastoreClient = (config?: DatastoreClientConfig): DatastoreClient => new DatastoreClient(config);
 

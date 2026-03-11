@@ -1,8 +1,4 @@
-import {
-  type EvalTemplate,
-  EvalTargetObject,
-  type EvalTargetObject as EvalTargetObjectType,
-} from "@hanzo/shared";
+import { type EvalTemplate, EvalTargetObject, type EvalTargetObject as EvalTargetObjectType } from "@hanzo/console";
 
 export const partnerIdentifierToName = new Map([["ragas", "Ragas"]]);
 
@@ -32,10 +28,7 @@ export const getMaintainer = (
  * @returns true if the target object is legacy (trace or dataset)
  */
 export const isLegacyEvalTarget = (targetObject: string): boolean => {
-  return (
-    targetObject === EvalTargetObject.TRACE ||
-    targetObject === EvalTargetObject.DATASET
-  );
+  return targetObject === EvalTargetObject.TRACE || targetObject === EvalTargetObject.DATASET;
 };
 
 export const isTraceTarget = (targetObject: string): boolean => {
@@ -55,21 +48,15 @@ export const isExperimentTarget = (targetObject: string): boolean => {
 };
 
 export const isTraceOrEventTarget = (targetObject: string): boolean => {
-  return (
-    targetObject === EvalTargetObject.TRACE ||
-    targetObject === EvalTargetObject.EVENT
-  );
+  return targetObject === EvalTargetObject.TRACE || targetObject === EvalTargetObject.EVENT;
 };
 
 export const isTraceOrDatasetObject = (object: string): boolean => {
   return object === "trace" || object === "dataset_item";
 };
 
-export const mapLegacyToModernTarget = (
-  legacyTarget: string,
-): EvalTargetObjectType => {
+export const mapLegacyToModernTarget = (legacyTarget: string): EvalTargetObjectType => {
   if (legacyTarget === EvalTargetObject.TRACE) return EvalTargetObject.EVENT;
-  if (legacyTarget === EvalTargetObject.DATASET)
-    return EvalTargetObject.EXPERIMENT;
+  if (legacyTarget === EvalTargetObject.DATASET) return EvalTargetObject.EXPERIMENT;
   return legacyTarget as EvalTargetObjectType;
 };

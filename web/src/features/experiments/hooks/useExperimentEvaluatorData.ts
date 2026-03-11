@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from "react";
-import { type EvalTemplate } from "@hanzo/shared";
+import { type EvalTemplate } from "@hanzo/console";
 import { type RouterOutputs } from "@/src/utils/api";
 import { type PartialConfig } from "@/src/features/evals/types";
 import partition from "lodash/partition";
@@ -144,10 +144,9 @@ export function useExperimentEvaluatorData({
     [prepareEvaluatorData],
   );
 
-  const { activeEvaluators, pausedEvaluators, evaluatorTargetObjects } =
-    useMemo(() => {
-      return partitionEvaluators(evaluatorsData, datasetId);
-    }, [evaluatorsData, datasetId]);
+  const { activeEvaluators, pausedEvaluators, evaluatorTargetObjects } = useMemo(() => {
+    return partitionEvaluators(evaluatorsData, datasetId);
+  }, [evaluatorsData, datasetId]);
 
   return {
     // State

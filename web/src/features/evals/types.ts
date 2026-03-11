@@ -1,5 +1,5 @@
 import { z } from "zod/v4";
-import { JobConfigState, type JobConfiguration } from "@hanzo/shared";
+import { JobConfigState, type JobConfiguration } from "@hanzo/console";
 
 export enum EvalReferencedEvaluators {
   UPDATE = "update",
@@ -12,14 +12,7 @@ export type EvaluatorStatusType = z.infer<typeof EvaluatorStatusSchema>;
 
 export type PartialConfig = Pick<
   JobConfiguration,
-  | "scoreName"
-  | "targetObject"
-  | "filter"
-  | "variableMapping"
-  | "sampling"
-  | "delay"
-  | "timeScope"
-  | "status"
+  "scoreName" | "targetObject" | "filter" | "variableMapping" | "sampling" | "delay" | "timeScope" | "status"
 > & { id?: string };
 
 export const RAGAS_TEMPLATE_PREFIX = "__ragas__";

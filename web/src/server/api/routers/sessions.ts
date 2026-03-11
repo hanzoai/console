@@ -1,12 +1,8 @@
 import { z } from "zod/v4";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
 import { throwIfNoProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
-import { applyCommentFilters } from "@hanzo/shared/src/server";
-import {
-  createTRPCRouter,
-  protectedGetSessionProcedure,
-  protectedProjectProcedure,
-} from "@/src/server/api/trpc";
+import { applyCommentFilters } from "@hanzo/console-core/src/server";
+import { createTRPCRouter, protectedGetSessionProcedure, protectedProjectProcedure } from "@/src/server/api/trpc";
 import {
   filterAndValidateDbScoreList,
   type FilterState,
@@ -19,8 +15,8 @@ import {
   type SessionOptions,
   type ScoreDomain,
   AGGREGATABLE_SCORE_TYPES,
-} from "@hanzo/shared";
-import { Prisma } from "@hanzo/shared/src/db";
+} from "@hanzo/console";
+import { Prisma } from "@hanzo/console-core/src/db";
 import { TRPCError } from "@trpc/server";
 import Decimal from "decimal.js";
 import {
@@ -48,7 +44,7 @@ import {
   getEventsGroupedByUserId,
   getEventsGroupedByTraceTags,
   hasAnySessionFromEventsTable,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import chunk from "lodash/chunk";
 import { aggregateScores } from "@/src/features/scores/lib/aggregateScores";
 import { toDomainArrayWithStringifiedMetadata } from "@/src/utils/clientSideDomainTypes";
@@ -88,10 +84,7 @@ const handleGetSessionById = async (input: {
     });
   }
 
-  const datastoreTraces = await getTracesIdentifierForSession(
-    input.projectId,
-    input.sessionId,
-  );
+  const datastoreTraces = await getTracesIdentifierForSession(input.projectId, input.sessionId);
 
   const chunks = chunk(datastoreTraces, 500);
 
@@ -103,9 +96,7 @@ const handleGetSessionById = async (input: {
         getScoresForTraces({
           projectId: input.projectId,
           traceIds: chunk.map((t) => t.id),
-          timestamp: new Date(
-            Math.min(...chunk.map((t) => t.timestamp.getTime())),
-          ),
+          timestamp: new Date(Math.min(...chunk.map((t) => t.timestamp.getTime()))),
         }),
       ),
     ).then((results) => results.flat()),
@@ -117,9 +108,7 @@ const handleGetSessionById = async (input: {
           chunk.map((t) => t.id),
         ),
       ),
-    ).then((results) =>
-      results.reduce((sum, cost) => (sum ?? 0) + (cost ?? 0), 0),
-    ),
+    ).then((results) => results.reduce((sum, cost) => (sum ?? 0) + (cost ?? 0), 0)),
   ]);
 
   const costData = costs;
@@ -134,16 +123,10 @@ const handleGetSessionById = async (input: {
     ...postgresSession,
     traces: datastoreTraces.map((t) => ({
       ...t,
-      scores: toDomainArrayWithStringifiedMetadata(
-        validatedScores.filter((s) => s.traceId === t.id),
-      ),
+      scores: toDomainArrayWithStringifiedMetadata(validatedScores.filter((s) => s.traceId === t.id)),
     })),
     totalCost: costData ?? 0,
-    users: [
-      ...new Set(
-        datastoreTraces.map((t) => t.userId).filter((t) => t !== null),
-      ),
-    ],
+    users: [...new Set(datastoreTraces.map((t) => t.userId).filter((t) => t !== null))],
   };
 };
 
@@ -166,183 +149,155 @@ export const sessionRouter = createTRPCRouter({
     .query(async ({ input }) => {
       return await hasAnySessionFromEventsTable(input.projectId);
     }),
-  all: protectedProjectProcedure
-    .input(SessionFilterOptions)
-    .query(async ({ input, ctx }) => {
-      const { filterState, hasNoMatches } = await applyCommentFilters({
-        filterState: input.filter ?? [],
-        prisma: ctx.prisma,
-        projectId: input.projectId,
-        objectType: "SESSION",
-      });
+  all: protectedProjectProcedure.input(SessionFilterOptions).query(async ({ input, ctx }) => {
+    const { filterState, hasNoMatches } = await applyCommentFilters({
+      filterState: input.filter ?? [],
+      prisma: ctx.prisma,
+      projectId: input.projectId,
+      objectType: "SESSION",
+    });
 
-      if (hasNoMatches) {
-        return { sessions: [] };
-      }
+    if (hasNoMatches) {
+      return { sessions: [] };
+    }
 
-      const finalFilter = await getPublicSessionsFilter(
-        input.projectId,
-        filterState,
-      );
-      const sessions = await getSessionsTable({
-        projectId: input.projectId,
-        filter: finalFilter,
-        orderBy: input.orderBy,
-        page: input.page,
-        limit: input.limit,
-      });
+    const finalFilter = await getPublicSessionsFilter(input.projectId, filterState);
+    const sessions = await getSessionsTable({
+      projectId: input.projectId,
+      filter: finalFilter,
+      orderBy: input.orderBy,
+      page: input.page,
+      limit: input.limit,
+    });
 
-      const prismaSessionInfo = await ctx.prisma.traceSession.findMany({
-        where: {
-          id: {
-            in: sessions.map((s) => s.session_id),
-          },
-          projectId: input.projectId,
+    const prismaSessionInfo = await ctx.prisma.traceSession.findMany({
+      where: {
+        id: {
+          in: sessions.map((s) => s.session_id),
         },
-        select: {
-          id: true,
-          bookmarked: true,
-          public: true,
-          environment: true,
+        projectId: input.projectId,
+      },
+      select: {
+        id: true,
+        bookmarked: true,
+        public: true,
+        environment: true,
+      },
+    });
+    return {
+      sessions: sessions.map((s) => {
+        return {
+          id: s.session_id,
+          userIds: s.user_ids,
+          countTraces: s.trace_count,
+          traceTags: s.trace_tags,
+          createdAt: new Date(s.min_timestamp),
+          bookmarked: prismaSessionInfo.find((p) => p.id === s.session_id)?.bookmarked ?? false,
+          public: prismaSessionInfo.find((p) => p.id === s.session_id)?.public ?? false,
+          environment: s.trace_environment,
+        };
+      }),
+    };
+  }),
+  allFromEvents: protectedProjectProcedure.input(SessionFilterOptions).query(async ({ input, ctx }) => {
+    const { filterState, hasNoMatches } = await applyCommentFilters({
+      filterState: input.filter ?? [],
+      prisma: ctx.prisma,
+      projectId: input.projectId,
+      objectType: "SESSION",
+    });
+
+    if (hasNoMatches) {
+      return { sessions: [] };
+    }
+
+    const finalFilter = await getPublicSessionsFilter(input.projectId, filterState);
+    const sessions = await getSessionsTableFromEvents({
+      projectId: input.projectId,
+      filter: finalFilter,
+      orderBy: input.orderBy,
+      page: input.page,
+      limit: input.limit,
+    });
+
+    const prismaSessionInfo = await ctx.prisma.traceSession.findMany({
+      where: {
+        id: {
+          in: sessions.map((s) => s.session_id),
         },
-      });
-      return {
-        sessions: sessions.map((s) => {
-          return {
-            id: s.session_id,
-            userIds: s.user_ids,
-            countTraces: s.trace_count,
-            traceTags: s.trace_tags,
-            createdAt: new Date(s.min_timestamp),
-            bookmarked:
-              prismaSessionInfo.find((p) => p.id === s.session_id)
-                ?.bookmarked ?? false,
-            public:
-              prismaSessionInfo.find((p) => p.id === s.session_id)?.public ??
-              false,
-            environment: s.trace_environment,
-          };
-        }),
-      };
-    }),
-  allFromEvents: protectedProjectProcedure
-    .input(SessionFilterOptions)
-    .query(async ({ input, ctx }) => {
-      const { filterState, hasNoMatches } = await applyCommentFilters({
-        filterState: input.filter ?? [],
-        prisma: ctx.prisma,
         projectId: input.projectId,
-        objectType: "SESSION",
-      });
+      },
+      select: {
+        id: true,
+        bookmarked: true,
+        public: true,
+      },
+    });
+    return {
+      sessions: sessions.map((s) => {
+        return {
+          id: s.session_id,
+          userIds: s.user_ids,
+          countTraces: s.trace_count,
+          traceTags: s.trace_tags,
+          createdAt: new Date(s.min_timestamp),
+          bookmarked: prismaSessionInfo.find((p) => p.id === s.session_id)?.bookmarked ?? false,
+          public: prismaSessionInfo.find((p) => p.id === s.session_id)?.public ?? false,
+          environment: s.environment,
+        };
+      }),
+    };
+  }),
+  countAll: protectedProjectProcedure.input(SessionFilterOptions).query(async ({ input, ctx }) => {
+    const { filterState, hasNoMatches } = await applyCommentFilters({
+      filterState: input.filter ?? [],
+      prisma: ctx.prisma,
+      projectId: input.projectId,
+      objectType: "SESSION",
+    });
 
-      if (hasNoMatches) {
-        return { sessions: [] };
-      }
+    if (hasNoMatches) {
+      return { totalCount: 0 };
+    }
 
-      const finalFilter = await getPublicSessionsFilter(
-        input.projectId,
-        filterState,
-      );
-      const sessions = await getSessionsTableFromEvents({
-        projectId: input.projectId,
-        filter: finalFilter,
-        orderBy: input.orderBy,
-        page: input.page,
-        limit: input.limit,
-      });
+    const finalFilter = await getPublicSessionsFilter(input.projectId, filterState);
+    const count = await getSessionsTableCount({
+      projectId: input.projectId,
+      filter: finalFilter,
+      orderBy: input.orderBy,
+      page: 0,
+      limit: 1,
+    });
 
-      const prismaSessionInfo = await ctx.prisma.traceSession.findMany({
-        where: {
-          id: {
-            in: sessions.map((s) => s.session_id),
-          },
-          projectId: input.projectId,
-        },
-        select: {
-          id: true,
-          bookmarked: true,
-          public: true,
-        },
-      });
-      return {
-        sessions: sessions.map((s) => {
-          return {
-            id: s.session_id,
-            userIds: s.user_ids,
-            countTraces: s.trace_count,
-            traceTags: s.trace_tags,
-            createdAt: new Date(s.min_timestamp),
-            bookmarked:
-              prismaSessionInfo.find((p) => p.id === s.session_id)
-                ?.bookmarked ?? false,
-            public:
-              prismaSessionInfo.find((p) => p.id === s.session_id)?.public ??
-              false,
-            environment: s.environment,
-          };
-        }),
-      };
-    }),
-  countAll: protectedProjectProcedure
-    .input(SessionFilterOptions)
-    .query(async ({ input, ctx }) => {
-      const { filterState, hasNoMatches } = await applyCommentFilters({
-        filterState: input.filter ?? [],
-        prisma: ctx.prisma,
-        projectId: input.projectId,
-        objectType: "SESSION",
-      });
+    return {
+      totalCount: count,
+    };
+  }),
+  countAllFromEvents: protectedProjectProcedure.input(SessionFilterOptions).query(async ({ input, ctx }) => {
+    const { filterState, hasNoMatches } = await applyCommentFilters({
+      filterState: input.filter ?? [],
+      prisma: ctx.prisma,
+      projectId: input.projectId,
+      objectType: "SESSION",
+    });
 
-      if (hasNoMatches) {
-        return { totalCount: 0 };
-      }
+    if (hasNoMatches) {
+      return { totalCount: 0 };
+    }
 
-      const finalFilter = await getPublicSessionsFilter(
-        input.projectId,
-        filterState,
-      );
-      const count = await getSessionsTableCount({
-        projectId: input.projectId,
-        filter: finalFilter,
-        orderBy: input.orderBy,
-        page: 0,
-        limit: 1,
-      });
+    const finalFilter = await getPublicSessionsFilter(input.projectId, filterState);
+    const count = await getSessionsTableCountFromEvents({
+      projectId: input.projectId,
+      filter: finalFilter,
+      orderBy: input.orderBy,
+      page: 0,
+      limit: 1,
+    });
 
-      return {
-        totalCount: count,
-      };
-    }),
-  countAllFromEvents: protectedProjectProcedure
-    .input(SessionFilterOptions)
-    .query(async ({ input, ctx }) => {
-      const { filterState, hasNoMatches } = await applyCommentFilters({
-        filterState: input.filter ?? [],
-        prisma: ctx.prisma,
-        projectId: input.projectId,
-        objectType: "SESSION",
-      });
-
-      if (hasNoMatches) {
-        return { totalCount: 0 };
-      }
-
-      const finalFilter = await getPublicSessionsFilter(
-        input.projectId,
-        filterState,
-      );
-      const count = await getSessionsTableCountFromEvents({
-        projectId: input.projectId,
-        filter: finalFilter,
-        orderBy: input.orderBy,
-        page: 0,
-        limit: 1,
-      });
-
-      return {
-        totalCount: count,
-      };
-    }),
+    return {
+      totalCount: count,
+    };
+  }),
   metrics: protectedProjectProcedure
     .input(
       z.object({
@@ -398,11 +353,8 @@ export const sessionRouter = createTRPCRouter({
         countTraces: s.trace_count,
         traceTags: s.trace_tags,
         createdAt: new Date(s.min_timestamp),
-        bookmarked:
-          prismaSessionInfo.find((p) => p.id === s.session_id)?.bookmarked ??
-          false,
-        public:
-          prismaSessionInfo.find((p) => p.id === s.session_id)?.public ?? false,
+        bookmarked: prismaSessionInfo.find((p) => p.id === s.session_id)?.bookmarked ?? false,
+        public: prismaSessionInfo.find((p) => p.id === s.session_id)?.public ?? false,
         environment: s.trace_environment,
         trace_count: Number(s.trace_count),
         total_observations: Number(s.total_observations),
@@ -413,9 +365,7 @@ export const sessionRouter = createTRPCRouter({
         promptTokens: Number(s.session_input_usage),
         completionTokens: Number(s.session_output_usage),
         totalTokens: Number(s.session_total_usage),
-        scores: aggregateScores(
-          validatedScores.filter((score) => score.sessionId === s.session_id),
-        ),
+        scores: aggregateScores(validatedScores.filter((score) => score.sessionId === s.session_id)),
       }));
     }),
   metricsFromEvents: protectedProjectProcedure
@@ -467,11 +417,8 @@ export const sessionRouter = createTRPCRouter({
         countTraces: s.trace_count,
         traceTags: s.trace_tags,
         createdAt: new Date(s.min_timestamp),
-        bookmarked:
-          prismaSessionInfo.find((p) => p.id === s.session_id)?.bookmarked ??
-          false,
-        public:
-          prismaSessionInfo.find((p) => p.id === s.session_id)?.public ?? false,
+        bookmarked: prismaSessionInfo.find((p) => p.id === s.session_id)?.bookmarked ?? false,
+        public: prismaSessionInfo.find((p) => p.id === s.session_id)?.public ?? false,
         environment: s.environment,
         trace_count: Number(s.trace_count),
         total_observations: Number(s.total_observations),
@@ -482,9 +429,7 @@ export const sessionRouter = createTRPCRouter({
         promptTokens: Number(s.session_input_usage),
         completionTokens: Number(s.session_output_usage),
         totalTokens: Number(s.session_total_usage),
-        scores: aggregateScores(
-          validatedScores.filter((score) => score.sessionId === s.session_id),
-        ),
+        scores: aggregateScores(validatedScores.filter((score) => score.sessionId === s.session_id)),
       }));
     }),
   filterOptions: protectedProjectProcedure
@@ -525,27 +470,16 @@ export const sessionRouter = createTRPCRouter({
             }))
           : [];
 
-      const [userIds, tags, numericScoreNames, categoricalScoreNames] =
-        await Promise.all([
-          getTracesGroupedByUsers(
-            input.projectId,
-            filter,
-            undefined,
-            1000,
-            0,
-            columns,
-          ),
-          getTracesGroupedByTags({
-            projectId: input.projectId,
-            filter,
-            columns,
-          }),
-          getNumericScoresGroupedByName(input.projectId, scoreTimestampFilter),
-          getCategoricalScoresGroupedByName(
-            input.projectId,
-            scoreTimestampFilter,
-          ),
-        ]);
+      const [userIds, tags, numericScoreNames, categoricalScoreNames] = await Promise.all([
+        getTracesGroupedByUsers(input.projectId, filter, undefined, 1000, 0, columns),
+        getTracesGroupedByTags({
+          projectId: input.projectId,
+          filter,
+          columns,
+        }),
+        getNumericScoresGroupedByName(input.projectId, scoreTimestampFilter),
+        getCategoricalScoresGroupedByName(input.projectId, scoreTimestampFilter),
+      ]);
 
       return {
         userIds: userIds.map((row) => ({
@@ -594,16 +528,12 @@ export const sessionRouter = createTRPCRouter({
             }))
           : [];
 
-      const [userIds, tags, numericScoreNames, categoricalScoreNames] =
-        await Promise.all([
-          getEventsGroupedByUserId(input.projectId, eventsFilter),
-          getEventsGroupedByTraceTags(input.projectId, eventsFilter),
-          getNumericScoresGroupedByName(input.projectId, scoreTimestampFilter),
-          getCategoricalScoresGroupedByName(
-            input.projectId,
-            scoreTimestampFilter,
-          ),
-        ]);
+      const [userIds, tags, numericScoreNames, categoricalScoreNames] = await Promise.all([
+        getEventsGroupedByUserId(input.projectId, eventsFilter),
+        getEventsGroupedByTraceTags(input.projectId, eventsFilter),
+        getNumericScoresGroupedByName(input.projectId, scoreTimestampFilter),
+        getCategoricalScoresGroupedByName(input.projectId, scoreTimestampFilter),
+      ]);
 
       return {
         userIds: userIds.map((row) => ({
@@ -690,14 +620,9 @@ export const sessionRouter = createTRPCRouter({
 
       return {
         ...postgresSession,
-        users:
-          sessionMetrics?.user_ids?.filter(
-            (userId) => userId !== null && userId !== "",
-          ) ?? [],
+        users: sessionMetrics?.user_ids?.filter((userId) => userId !== null && userId !== "") ?? [],
         countTraces: sessionMetrics?.trace_count ?? 0,
-        totalCost: sessionMetrics
-          ? Number(sessionMetrics.session_total_cost)
-          : 0,
+        totalCost: sessionMetrics ? Number(sessionMetrics.session_total_cost) : 0,
         environment: sessionMetrics?.environment,
         scores: toDomainArrayWithStringifiedMetadata(validatedScores),
       };
@@ -721,9 +646,7 @@ export const sessionRouter = createTRPCRouter({
           getScoresForTraces({
             projectId: input.projectId,
             traceIds: traceChunk.map((t) => t.id),
-            timestamp: new Date(
-              Math.min(...traceChunk.map((t) => t.timestamp.getTime())),
-            ),
+            timestamp: new Date(Math.min(...traceChunk.map((t) => t.timestamp.getTime()))),
           }),
         ),
       ).then((results) => results.flat());
@@ -736,20 +659,14 @@ export const sessionRouter = createTRPCRouter({
 
       return traces.map((trace) => ({
         ...trace,
-        scores: toDomainArrayWithStringifiedMetadata(
-          validatedScores.filter((s) => s.traceId === trace.id),
-        ),
+        scores: toDomainArrayWithStringifiedMetadata(validatedScores.filter((s) => s.traceId === trace.id)),
       }));
     }),
   observationsForTraceFromEvents: protectedGetSessionProcedure
     .input(SessionTraceObservationsInput)
     .query(async ({ input }) => {
-      const positionFilter = (input.filter ?? []).find(
-        (filter) => filter.type === "positionInTrace",
-      );
-      const baseFilters = (input.filter ?? []).filter(
-        (filter) => filter.type !== "positionInTrace",
-      );
+      const positionFilter = (input.filter ?? []).find((filter) => filter.type === "positionInTrace");
+      const baseFilters = (input.filter ?? []).filter((filter) => filter.type !== "positionInTrace");
 
       const filterState: FilterState = [
         ...baseFilters,
@@ -782,12 +699,9 @@ export const sessionRouter = createTRPCRouter({
           orderBy = { column: "startTime", order: "ASC" };
           limit = 1;
         } else {
-          const fromEnd =
-            positionFilter.key === "last" ||
-            positionFilter.key === "nthFromEnd";
+          const fromEnd = positionFilter.key === "last" || positionFilter.key === "nthFromEnd";
           orderBy = { column: "startTime", order: fromEnd ? "DESC" : "ASC" };
-          const rawIndex =
-            positionFilter.key === "last" ? 1 : (positionFilter.value ?? 1);
+          const rawIndex = positionFilter.key === "last" ? 1 : (positionFilter.value ?? 1);
           const safeIndex = Math.max(1, rawIndex);
           offset = safeIndex - 1;
           limit = 1;

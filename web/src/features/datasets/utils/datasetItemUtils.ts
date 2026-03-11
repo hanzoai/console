@@ -1,5 +1,5 @@
 import { showErrorToast } from "@/src/features/notifications/showErrorToast";
-import type { Prisma } from "@hanzo/shared";
+import type { Prisma } from "@hanzo/console";
 
 /**
  * Converts a dataset item field value to a formatted JSON string.

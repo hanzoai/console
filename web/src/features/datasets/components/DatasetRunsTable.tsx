@@ -10,12 +10,12 @@ import { useEffect, useMemo, useState } from "react";
 import { compactNumberFormatter, usdFormatter } from "@/src/utils/numbers";
 import { DataTableToolbar } from "@/src/components/table/data-table-toolbar";
 import useColumnVisibility from "@/src/features/column-visibility/hooks/useColumnVisibility";
-import { type Prisma, datasetRunsTableColsWithOptions } from "@hanzo/shared";
+import { type Prisma, datasetRunsTableColsWithOptions } from "@hanzo/console";
 import { useQueryFilterState } from "@/src/features/filters/hooks/useFilterState";
 import { useDebounce } from "@/src/hooks/useDebounce";
 import { useRowHeightLocalStorage } from "@/src/components/table/data-table-row-height-switch";
 import { IOTableCell } from "@/src/components/ui/IOTableCell";
-import { type ScoreAggregate } from "@hanzo/shared";
+import { type ScoreAggregate } from "@hanzo/console";
 import { ChevronDown, Columns3, MoreVertical, Trash } from "lucide-react";
 import {
   DropdownMenu,

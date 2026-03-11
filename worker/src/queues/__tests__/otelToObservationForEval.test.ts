@@ -11,13 +11,13 @@
  * ResourceSpan -> processToEvent() -> createEventRecord() -> convertEventRecordToObservationForEval()
  */
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { OtelIngestionProcessor } from "@hanzo/shared/src/server";
+import { OtelIngestionProcessor } from "@hanzo/console-core/src/server";
 import {
   convertEventRecordToObservationForEval,
   observationForEvalSchema,
   type ObservationForEval,
-} from "@hanzo/shared";
-import { prisma } from "@hanzo/shared/src/db";
+} from "@hanzo/console-core";
+import { prisma } from "@hanzo/console-core/src/db";
 import { IngestionService } from "../../services/IngestionService";
 import * as datastoreWriterExports from "../../services/DatastoreWriter";
 

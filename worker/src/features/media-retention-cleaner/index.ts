@@ -1,4 +1,4 @@
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 import {
   getS3MediaStorageClient,
   logger,
@@ -6,7 +6,7 @@ import {
   recordIncrement,
   removeIngestionEventsFromS3AndDeleteDatastoreRefsForProject,
   traceException,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import { env } from "../../env";
 import { getRetentionCutoffDate } from "../utils";
 import { PeriodicExclusiveRunner } from "../../utils/PeriodicExclusiveRunner";

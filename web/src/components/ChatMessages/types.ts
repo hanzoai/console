@@ -1,4 +1,4 @@
-import type { ChatMessage, ChatMessageWithId, PlaceholderMessage } from "@hanzo/shared";
+import type { ChatMessage, ChatMessageWithId, PlaceholderMessage } from "@hanzo/console";
 
 export type MessagesContext = {
   messages: ChatMessageWithId[];

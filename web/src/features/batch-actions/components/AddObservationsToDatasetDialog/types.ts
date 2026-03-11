@@ -2,7 +2,7 @@ import type { RefObject } from "react";
 import type { DatasetFormRef } from "@/src/features/datasets/components/DatasetForm";
 
 // Re-export base types from shared
-export type { SourceField, MappingMode, MappingTarget, RootMappingConfig, AddToDatasetMapping } from "@hanzo/shared";
+export type { SourceField, MappingMode, MappingTarget, RootMappingConfig, AddToDatasetMapping } from "@hanzo/console";
 
 import type {
   SourceField,
@@ -10,7 +10,7 @@ import type {
   RootMappingConfig,
   KeyValueMappingEntry as SharedKeyValueMappingEntry,
   MappingTarget,
-} from "@hanzo/shared";
+} from "@hanzo/console";
 
 // Step definitions - dialog-specific
 export type DialogStep =

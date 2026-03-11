@@ -1,7 +1,7 @@
 import { z } from "zod/v4";
 import { z as zodV3 } from "zod/v3";
-import { ScoreSourceEnum, ChatMessageRole } from "@hanzo/shared";
-import { ChatMessageType, eventTypes, ScoreEventType } from "@hanzo/shared/src/server";
+import { ScoreSourceEnum, ChatMessageRole } from "@hanzo/console-core";
+import { ChatMessageType, eventTypes, ScoreEventType } from "@hanzo/console-core/src/server";
 import { compileTemplateString } from "../utils";
 import { ExtractedVariable } from "./observationEval/extractObservationVariables";
 

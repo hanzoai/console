@@ -5,8 +5,8 @@ import {
   QueueName,
   shouldSkipTraceDeletionFor,
   TQueueJobTypes,
-} from "@hanzo/shared/src/server";
-import { prisma } from "@hanzo/shared/src/db";
+} from "@hanzo/console-core/src/server";
+import { prisma } from "@hanzo/console-core/src/db";
 
 import { processDatastoreTraceDelete } from "../features/traces/processDatastoreTraceDelete";
 import { processPostgresTraceDelete } from "../features/traces/processPostgresTraceDelete";

@@ -1,5 +1,5 @@
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/src/components/ui/hover-card";
-import { type CategoricalAggregate, type AggregatedScoreData } from "@hanzo/shared";
+import { type CategoricalAggregate, type AggregatedScoreData } from "@hanzo/console";
 
 import { numberFormatter } from "@/src/utils/numbers";
 import { cn } from "@/src/utils/tailwind";
@@ -29,9 +29,7 @@ const ScoreValueCounts = ({
     <span key={value} className="inline-block">
       <span className="truncate">{value}</span>
       <span>{`: ${numberFormatter(count, 0)}`}</span>
-      {index < valueCounts.length - 1 && (
-        <span className="mr-1">{wrap ? "" : "; "}</span>
-      )}
+      {index < valueCounts.length - 1 && <span className="mr-1">{wrap ? "" : "; "}</span>}
     </span>
   ));
 };

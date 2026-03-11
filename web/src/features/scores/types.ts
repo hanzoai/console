@@ -9,7 +9,7 @@ import {
   type ScoreDomain,
   type AggregatableScoreDataType,
   ScoreConfigDataType,
-} from "@hanzo/shared";
+} from "@hanzo/console";
 import { type z } from "zod/v4";
 
 export type HistogramBin = { binLabel: string; count: number };

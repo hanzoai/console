@@ -3,9 +3,9 @@ import { type z } from "zod/v4";
 import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { isBooleanDataType } from "@/src/features/scores/lib/helpers";
-import { filterAndValidateDbScoreConfigList, validateDbScoreConfig } from "@hanzo/shared";
-import { Prisma, prisma } from "@hanzo/shared/src/db";
-import { traceException } from "@hanzo/shared/src/server";
+import { filterAndValidateDbScoreConfigList, validateDbScoreConfig } from "@hanzo/console";
+import { Prisma, prisma } from "@hanzo/console-core/src/db";
+import { traceException } from "@hanzo/console-core/src/server";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
 import {
   GetScoreConfigsQuery,

@@ -19,7 +19,7 @@ import { useInsightsCapture } from "@/src/features/insights-analytics/useInsight
 import { showErrorToast } from "@/src/features/notifications/showErrorToast";
 import { useRouter } from "next/router";
 import { getChartTypeDisplayName } from "@/src/features/widgets/chart-library/utils";
-import { type DashboardWidgetChartType } from "@hanzo/shared/src/db";
+import { type DashboardWidgetChartType } from "@hanzo/console-core/src/db";
 
 type WidgetTableRow = {
   id: string;

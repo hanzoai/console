@@ -3,8 +3,8 @@ import { throwIfNoOrganizationAccess } from "@/src/features/rbac/utils/checkOrga
 import { createTRPCRouter, protectedOrganizationProcedure } from "@/src/server/api/trpc";
 import * as z from "zod/v4";
 import { ApiAuthService } from "@/src/features/public-api/server/apiAuth";
-import { redis } from "@hanzo/shared/src/server";
-import { createAndAddApiKeysToDb } from "@hanzo/shared/src/server/auth/apiKeys";
+import { redis } from "@hanzo/console-core/src/server";
+import { createAndAddApiKeysToDb } from "@hanzo/console-core/src/server/auth/apiKeys";
 
 export const organizationApiKeysRouter = createTRPCRouter({
   byOrganizationId: protectedOrganizationProcedure

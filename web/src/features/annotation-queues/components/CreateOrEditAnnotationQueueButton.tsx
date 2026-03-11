@@ -18,7 +18,11 @@ import { Edit, PlusIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { Form } from "@/src/components/ui/form";
 import { Textarea } from "@/src/components/ui/textarea";
-import { type CreateQueueWithAssignments, CreateQueueWithAssignmentsData, type ScoreConfigDomain } from "@hanzo/shared";
+import {
+  type CreateQueueWithAssignments,
+  CreateQueueWithAssignmentsData,
+  type ScoreConfigDomain,
+} from "@hanzo/console";
 import { api } from "@/src/utils/api";
 import { MultiSelectKeyValues } from "@/src/features/scores/components/multi-select-key-values";
 import { useRouter } from "next/router";

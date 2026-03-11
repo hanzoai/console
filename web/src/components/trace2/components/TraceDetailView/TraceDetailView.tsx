@@ -2,7 +2,7 @@
  * TraceDetailView - Shows trace-level details when no observation is selected
  */
 
-import { type TraceDomain, type ScoreDomain } from "@hanzo/shared";
+import { type TraceDomain, type ScoreDomain } from "@hanzo/console";
 import { type ObservationReturnTypeWithMetadata } from "@/src/server/api/routers/traces";
 import { type WithStringifiedMetadata } from "@/src/utils/clientSideDomainTypes";
 import { TabsBar, TabsBarContent, TabsBarList, TabsBarTrigger } from "@/src/components/ui/tabs-bar";
@@ -142,8 +142,7 @@ export function TraceDetailView({ trace, observations, scores, corrections, proj
   const isLogViewVirtualized = observations.length >= TRACE_VIEW_CONFIG.logView.virtualizationThreshold;
 
   // Scores tab visibility: hide for public trace viewers and in peek mode (annotation queues)
-  const isAuthenticatedAndProjectMember =
-    useIsAuthenticatedAndProjectMember(projectId);
+  const isAuthenticatedAndProjectMember = useIsAuthenticatedAndProjectMember(projectId);
   const showScoresTab = isAuthenticatedAndProjectMember;
 
   // Handle tab change

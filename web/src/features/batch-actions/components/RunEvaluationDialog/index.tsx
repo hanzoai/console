@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { EvalTargetObject, type BatchActionQuery } from "@hanzo/shared";
+import { EvalTargetObject, type BatchActionQuery } from "@hanzo/console";
 import { api } from "@/src/utils/api";
 import {
   Dialog,
@@ -36,13 +36,10 @@ type RunEvaluationDialogProps = {
 type DialogStep = "select-evaluator" | "confirm";
 
 export function RunEvaluationDialog(props: RunEvaluationDialogProps) {
-  const { projectId, selectedObservationIds, query, selectAll, totalCount } =
-    props;
+  const { projectId, selectedObservationIds, query, selectAll, totalCount } = props;
 
   const [step, setStep] = useState<DialogStep>("select-evaluator");
-  const [selectedEvaluatorIds, setSelectedEvaluatorIds] = useState<string[]>(
-    [],
-  );
+  const [selectedEvaluatorIds, setSelectedEvaluatorIds] = useState<string[]>([]);
   const [evaluatorSearchQuery, setEvaluatorSearchQuery] = useState("");
   const [showCreateDialog, setShowCreateDialog] = useState(false);
 
@@ -51,12 +48,11 @@ export function RunEvaluationDialog(props: RunEvaluationDialogProps) {
     targetObject: EvalTargetObject.EVENT,
   });
 
-  const runEvaluationMutation =
-    api.batchAction.runEvaluation.create.useMutation({
-      onError: (error) => {
-        showErrorToast("Failed to schedule evaluation", error.message);
-      },
-    });
+  const runEvaluationMutation = api.batchAction.runEvaluation.create.useMutation({
+    onError: (error) => {
+      showErrorToast("Failed to schedule evaluation", error.message);
+    },
+  });
 
   const displayCount = selectAll ? totalCount : selectedObservationIds.length;
 
@@ -68,31 +64,22 @@ export function RunEvaluationDialog(props: RunEvaluationDialogProps) {
       startTime: props.exampleObservation.startTime ?? null,
     },
     {
-      enabled: Boolean(
-        props.exampleObservation.id && props.exampleObservation.traceId,
-      ),
+      enabled: Boolean(props.exampleObservation.id && props.exampleObservation.traceId),
     },
   );
 
   const eligibleEvaluators = useMemo(() => {
-    return (evaluatorsQuery.data ?? []).filter(
-      (evaluator) => evaluator.targetObject === EvalTargetObject.EVENT,
-    );
+    return (evaluatorsQuery.data ?? []).filter((evaluator) => evaluator.targetObject === EvalTargetObject.EVENT);
   }, [evaluatorsQuery.data]);
 
   const selectedEvaluators = useMemo(
-    () =>
-      eligibleEvaluators.filter((evaluator) =>
-        selectedEvaluatorIds.includes(evaluator.id),
-      ),
+    () => eligibleEvaluators.filter((evaluator) => selectedEvaluatorIds.includes(evaluator.id)),
     [eligibleEvaluators, selectedEvaluatorIds],
   );
 
   const toggleEvaluatorSelection = (evaluatorId: string) => {
     setSelectedEvaluatorIds((previous) =>
-      previous.includes(evaluatorId)
-        ? previous.filter((id) => id !== evaluatorId)
-        : [...previous, evaluatorId],
+      previous.includes(evaluatorId) ? previous.filter((id) => id !== evaluatorId) : [...previous, evaluatorId],
     );
   };
 
@@ -188,20 +175,11 @@ export function RunEvaluationDialog(props: RunEvaluationDialogProps) {
             )}
 
             {step === "select-evaluator" ? (
-              <Button
-                onClick={() => setStep("confirm")}
-                disabled={selectedEvaluators.length === 0}
-              >
-                Continue{" "}
-                {selectedEvaluators.length > 0
-                  ? `with ${selectedEvaluators.length} evaluator(s)`
-                  : null}
+              <Button onClick={() => setStep("confirm")} disabled={selectedEvaluators.length === 0}>
+                Continue {selectedEvaluators.length > 0 ? `with ${selectedEvaluators.length} evaluator(s)` : null}
               </Button>
             ) : (
-              <Button
-                onClick={onSubmit}
-                loading={runEvaluationMutation.isPending}
-              >
+              <Button onClick={onSubmit} loading={runEvaluationMutation.isPending}>
                 Run Evaluation
               </Button>
             )}
@@ -209,11 +187,7 @@ export function RunEvaluationDialog(props: RunEvaluationDialogProps) {
         </DialogContent>
       </Dialog>
 
-      <CreateEvaluatorDialog
-        projectId={projectId}
-        open={showCreateDialog}
-        onOpenChange={setShowCreateDialog}
-      />
+      <CreateEvaluatorDialog projectId={projectId} open={showCreateDialog} onOpenChange={setShowCreateDialog} />
     </>
   );
 }

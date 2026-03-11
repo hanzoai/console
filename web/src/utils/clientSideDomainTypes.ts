@@ -1,4 +1,4 @@
-import { type MetadataDomain } from "@hanzo/shared";
+import { type MetadataDomain } from "@hanzo/console";
 
 /**
  * Metadata serialized as string for client-side consumption.

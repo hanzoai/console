@@ -24,12 +24,12 @@ import {
   type ColumnDefinition,
   type availableDatasetEvalVariables,
   JobConfigState,
-} from "@hanzo/shared";
+} from "@hanzo/console";
 import { z } from "zod/v4";
 import { useEffect, useMemo, useState, memo } from "react";
 import { api } from "@/src/utils/api";
 import { InlineFilterBuilder, type ColumnDefinitionWithAlert } from "@/src/features/filters/components/filter-builder";
-import { type EvalTemplate, variableMapping, observationVariableMapping } from "@hanzo/shared";
+import { type EvalTemplate, variableMapping, observationVariableMapping } from "@hanzo/console";
 import { useRouter } from "next/router";
 import { Slider } from "@/src/components/ui/slider";
 import { Card } from "@/src/components/ui/card";
@@ -44,7 +44,7 @@ import {
   type ConsoleObject,
 } from "@/src/features/evals/utils/evaluator-form-utils";
 import { validateAndTransformVariableMapping } from "@/src/features/evals/utils/variable-mapping-validation";
-import { EvalTargetObject } from "@hanzo/shared";
+import { EvalTargetObject } from "@hanzo/console";
 import { ExecutionCountTooltip } from "@/src/features/evals/components/execution-count-tooltip";
 import { Suspense, lazy } from "react";
 import { getDateFromOption, type TableDateRange } from "@/src/utils/date-range-utils";

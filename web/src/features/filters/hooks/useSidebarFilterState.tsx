@@ -1,7 +1,7 @@
 import type React from "react";
 import { useCallback, useMemo, useEffect, useRef } from "react";
 import { StringParam, useQueryParam, withDefault } from "use-query-params";
-import { type FilterState, singleFilter, type SingleValueOption, type ColumnDefinition } from "@hanzo/shared";
+import { type FilterState, singleFilter, type SingleValueOption, type ColumnDefinition } from "@hanzo/console";
 import { computeSelectedValues, encodeFiltersGeneric, decodeFiltersGeneric } from "../lib/filter-query-encoding";
 import { normalizeFilterColumnNames } from "../lib/filter-transform";
 import useSessionStorage from "@/src/components/useSessionStorage";

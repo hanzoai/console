@@ -6,8 +6,8 @@ import {
   BatchExportTableName,
   exportOptions,
   ConsoleNotFoundError,
-} from "@hanzo/shared";
-import { prisma } from "@hanzo/shared/src/db";
+} from "@hanzo/console-core";
+import { prisma } from "@hanzo/console-core/src/db";
 import {
   StorageServiceFactory,
   sendBatchExportSuccessEmail,
@@ -17,7 +17,7 @@ import {
   getCurrentSpan,
   applyCommentFilters,
   type CommentObjectType,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import { env } from "../../env";
 import { getDatabaseReadStreamPaginated } from "../database-read-stream/getDatabaseReadStream";
 import { getObservationStream } from "../database-read-stream/observation-stream";

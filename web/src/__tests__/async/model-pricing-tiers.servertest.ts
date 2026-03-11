@@ -1,7 +1,7 @@
 /** @jest-environment node */
 
 import { randomUUID } from "crypto";
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 import { makeAPICall, makeZodVerifiedAPICall } from "@/src/__tests__/test-utils";
 import { GetModelV1Response, GetModelsV1Response, PostModelsV1Response } from "@/src/features/public-api/types/models";
 
@@ -10,8 +10,8 @@ import {
   validatePricingTiers,
   validatePricingMethod,
   type PricingTierInput,
-} from "@hanzo/shared";
-import { createOrgProjectAndApiKey } from "@hanzo/shared/src/server";
+} from "@hanzo/console";
+import { createOrgProjectAndApiKey } from "@hanzo/console-core/src/server";
 
 describe("validation methods", () => {
   describe("validateRegexPattern", () => {

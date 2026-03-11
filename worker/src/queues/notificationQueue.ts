@@ -1,6 +1,6 @@
 import { Job } from "@hanzo/mq";
 
-import { logger, QueueName, TQueueJobTypes } from "@hanzo/shared/src/server";
+import { logger, QueueName, TQueueJobTypes } from "@hanzo/console-core/src/server";
 import { handleCommentMentionNotification } from "../features/notifications/commentMentionHandler";
 
 export const notificationQueueProcessor = async (job: Job<TQueueJobTypes[QueueName.NotificationQueue]>) => {

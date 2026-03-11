@@ -1,6 +1,6 @@
-import { InvalidRequestError, ConsoleNotFoundError } from "@hanzo/shared";
-import { prisma, type Prompt } from "@hanzo/shared/src/db";
-import { PromptService, redis, logger } from "@hanzo/shared/src/server";
+import { InvalidRequestError, ConsoleNotFoundError } from "@hanzo/console";
+import { prisma, type Prompt } from "@hanzo/console-core/src/db";
+import { PromptService, redis, logger } from "@hanzo/console-core/src/server";
 
 export type DeletePromptParams = {
   promptName: string;

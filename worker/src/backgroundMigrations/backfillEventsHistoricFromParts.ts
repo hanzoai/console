@@ -1,11 +1,11 @@
 import { IBackgroundMigration } from "./IBackgroundMigration";
-import { datastoreClient, commandDatastore, logger, queryDatastore } from "@hanzo/shared/src/server";
-import { prisma } from "@hanzo/shared/src/db";
+import { datastoreClient, commandDatastore, logger, queryDatastore } from "@hanzo/console-core/src/server";
+import { prisma } from "@hanzo/console-core/src/db";
 import { env } from "../env";
 import { parseArgs } from "node:util";
 import { BaseChunkTodo, ConcurrentQueryManager, generateQueryId } from "./backfillEventsHistoric";
 
-import { getQueryError, pollQueryStatus, sleep } from "@hanzo/shared/src/server";
+import { getQueryError, pollQueryStatus, sleep } from "@hanzo/console-core/src/server";
 
 // This is hard-coded in our migrations and uniquely identifies the row in background_migrations table
 const backgroundMigrationId = "d08146bd-3841-4ed3-a42c-5f43ff94b14e";

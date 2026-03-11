@@ -2,11 +2,11 @@ import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
 import { Job } from "@hanzo/mq";
 import { JobExecutionStatus } from "@prisma/client";
 import { llmAsJudgeExecutionQueueProcessor } from "../evalQueue";
-import { QueueName, type TQueueJobTypes } from "@hanzo/shared/src/server";
+import { QueueName, type TQueueJobTypes } from "@hanzo/console-core/src/server";
 import { UnrecoverableError } from "../../errors/UnrecoverableError";
 
 // Mock prisma
-vi.mock("@hanzo/shared/src/db", () => ({
+vi.mock("@hanzo/console-core/src/db", () => ({
   prisma: {
     jobExecution: {
       update: vi.fn(),
@@ -20,8 +20,8 @@ vi.mock("../../features/evaluation/observationEval", () => ({
 }));
 
 // Mock logger and span
-vi.mock("@hanzo/shared/src/server", async () => {
-  const actual = await vi.importActual("@hanzo/shared/src/server");
+vi.mock("@hanzo/console-core/src/server", async () => {
+  const actual = await vi.importActual("@hanzo/console-core/src/server");
   return {
     ...actual,
     logger: {
@@ -58,9 +58,9 @@ vi.mock("../../errors/UnrecoverableError", async () => {
   };
 });
 
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 import { processObservationEval } from "../../features/evaluation/observationEval";
-import { isLLMCompletionError, traceException } from "@hanzo/shared/src/server";
+import { isLLMCompletionError, traceException } from "@hanzo/console-core/src/server";
 import { retryLLMRateLimitError } from "../../features/utils";
 import { isUnrecoverableError } from "../../errors/UnrecoverableError";
 
@@ -113,7 +113,7 @@ describe("llmAsJudgeExecutionQueueProcessor", () => {
 
     it("should set span attributes for tracing", async () => {
       const mockSpan = { setAttribute: vi.fn() };
-      const { getCurrentSpan } = await import("@hanzo/shared/src/server");
+      const { getCurrentSpan } = await import("@hanzo/console-core/src/server");
       (getCurrentSpan as Mock).mockReturnValue(mockSpan);
       (processObservationEval as Mock).mockResolvedValue(undefined);
 
@@ -318,7 +318,7 @@ describe("llmAsJudgeExecutionQueueProcessor", () => {
   describe("retry baggage tracking", () => {
     it("should track retry attempt in span attributes", async () => {
       const mockSpan = { setAttribute: vi.fn() };
-      const { getCurrentSpan } = await import("@hanzo/shared/src/server");
+      const { getCurrentSpan } = await import("@hanzo/console-core/src/server");
       (getCurrentSpan as Mock).mockReturnValue(mockSpan);
       (processObservationEval as Mock).mockResolvedValue(undefined);
 
@@ -332,7 +332,7 @@ describe("llmAsJudgeExecutionQueueProcessor", () => {
 
     it("should default to 0 when retry baggage is missing", async () => {
       const mockSpan = { setAttribute: vi.fn() };
-      const { getCurrentSpan } = await import("@hanzo/shared/src/server");
+      const { getCurrentSpan } = await import("@hanzo/console-core/src/server");
       (getCurrentSpan as Mock).mockReturnValue(mockSpan);
       (processObservationEval as Mock).mockResolvedValue(undefined);
 
@@ -347,7 +347,7 @@ describe("llmAsJudgeExecutionQueueProcessor", () => {
 
   describe("null span handling", () => {
     it("should handle null span gracefully", async () => {
-      const { getCurrentSpan } = await import("@hanzo/shared/src/server");
+      const { getCurrentSpan } = await import("@hanzo/console-core/src/server");
       (getCurrentSpan as Mock).mockReturnValue(null);
       (processObservationEval as Mock).mockResolvedValue(undefined);
 

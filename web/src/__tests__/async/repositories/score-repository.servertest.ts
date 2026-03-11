@@ -1,4 +1,4 @@
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 import {
   createScoresCh,
   getScoreById,
@@ -17,7 +17,7 @@ import {
   createDatasetRunScore,
   createSessionScore,
   createOrgProjectAndApiKey,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import { v4 } from "uuid";
 
 describe("Datastore Scores Repository Test", () => {

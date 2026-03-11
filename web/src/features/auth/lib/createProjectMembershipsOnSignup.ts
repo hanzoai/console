@@ -1,6 +1,6 @@
 import { env } from "@/src/env.mjs";
-import { prisma, Role } from "@hanzo/shared/src/db";
-import { logger } from "@hanzo/shared/src/server";
+import { prisma, Role } from "@hanzo/console-core/src/db";
+import { logger } from "@hanzo/console-core/src/server";
 import { ServerInsights } from "@/src/features/insights-analytics/ServerInsights";
 
 export async function createProjectMembershipsOnSignup(user: { id: string; email: string | null }) {

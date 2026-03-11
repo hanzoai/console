@@ -1,8 +1,8 @@
 import { disconnectQueues } from "@/src/__tests__/test-utils";
 import { appRouter } from "@/src/server/api/root";
 import { createInnerTRPCContext } from "@/src/server/api/trpc";
-import { prisma } from "@hanzo/shared/src/db";
-import { createOrgProjectAndApiKey } from "@hanzo/shared/src/server";
+import { prisma } from "@hanzo/console-core/src/db";
+import { createOrgProjectAndApiKey } from "@hanzo/console-core/src/server";
 import type { Session } from "next-auth";
 import { v4 } from "uuid";
 import waitForExpect from "wait-for-expect";

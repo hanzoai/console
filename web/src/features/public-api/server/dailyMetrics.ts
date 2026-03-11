@@ -1,11 +1,11 @@
-import { convertApiProvidedFilterToDatastoreFilter } from "@hanzo/shared/src/server";
+import { convertApiProvidedFilterToDatastoreFilter } from "@hanzo/console-core/src/server";
 import {
   convertDateToDatastoreDateTime,
   queryDatastore,
   TRACE_TO_OBSERVATIONS_INTERVAL,
   type DateTimeFilter,
   measureAndReturn,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 
 type QueryType = {
   page: number;

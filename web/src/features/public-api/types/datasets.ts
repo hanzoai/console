@@ -10,8 +10,8 @@ import {
   removeObjectKeys,
   type DatasetRunItemDomain,
   type DatasetItemDomain,
-} from "@hanzo/shared";
-import { DatasetJSONSchema } from "@hanzo/shared/src/server";
+} from "@hanzo/console";
+import { DatasetJSONSchema } from "@hanzo/console-core/src/server";
 import { z } from "zod/v4";
 
 /**

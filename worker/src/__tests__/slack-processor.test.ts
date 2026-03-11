@@ -1,15 +1,15 @@
 import { describe, it, expect, beforeEach, beforeAll, afterAll, vi } from "vitest";
 import { v4 } from "uuid";
-import { ActionExecutionStatus, JobConfigState, PromptDomain, SlackActionConfig } from "@hanzo/shared";
-import { createOrgProjectAndApiKey } from "@hanzo/shared/src/server";
-import { prisma } from "@hanzo/shared/src/db";
-import { encrypt } from "@hanzo/shared/encryption";
+import { ActionExecutionStatus, JobConfigState, PromptDomain, SlackActionConfig } from "@hanzo/console-core";
+import { createOrgProjectAndApiKey } from "@hanzo/console-core/src/server";
+import { prisma } from "@hanzo/console-core/src/db";
+import { encrypt } from "@hanzo/console-core/encryption";
 import { executeWebhook } from "../queues/webhooks";
-import type { WebhookInput } from "@hanzo/shared/src/server";
+import type { WebhookInput } from "@hanzo/console-core/src/server";
 
 // Mock SlackService
-vi.mock("@hanzo/shared/src/server", async () => {
-  const actual = await vi.importActual("@hanzo/shared/src/server");
+vi.mock("@hanzo/console-core/src/server", async () => {
+  const actual = await vi.importActual("@hanzo/console-core/src/server");
   return {
     ...actual,
     SlackService: {
@@ -29,7 +29,7 @@ describe("Slack Processor", () => {
 
   beforeAll(async () => {
     // Import mocked SlackService
-    const { SlackService } = await import("@hanzo/shared/src/server");
+    const { SlackService } = await import("@hanzo/console-core/src/server");
 
     // Create mock service instance
     mockSlackService = {
@@ -132,7 +132,7 @@ describe("Slack Processor", () => {
 
   describe("executeSlack function", () => {
     it("should execute slack action successfully", async () => {
-      const { SlackService } = await import("@hanzo/shared/src/server");
+      const { SlackService } = await import("@hanzo/console-core/src/server");
 
       // Get the full prompt for the payload
       const fullPrompt = await prisma.prompt.findUnique({
@@ -206,14 +206,14 @@ describe("Slack Processor", () => {
       await expect(executeWebhook(slackInput)).resolves.toBeUndefined();
 
       // Verify that no SlackService calls were made
-      const { SlackService } = await import("@hanzo/shared/src/server");
+      const { SlackService } = await import("@hanzo/console-core/src/server");
       expect(SlackService.getInstance).not.toHaveBeenCalled();
       expect(mockSlackService.getWebClientForProject).not.toHaveBeenCalled();
       expect(mockSlackService.sendMessage).not.toHaveBeenCalled();
     });
 
     it("should use custom template when provided", async () => {
-      const { SlackService } = await import("@hanzo/shared/src/server");
+      const { SlackService } = await import("@hanzo/console-core/src/server");
 
       // Update action to include custom message template
       const customTemplate = [
@@ -278,7 +278,7 @@ describe("Slack Processor", () => {
     });
 
     it("should fallback to default message on template error", async () => {
-      const { SlackService } = await import("@hanzo/shared/src/server");
+      const { SlackService } = await import("@hanzo/console-core/src/server");
 
       // Update action with invalid JSON template
       await prisma.action.update({
@@ -339,7 +339,7 @@ describe("Slack Processor", () => {
     });
 
     it("should disable trigger after 4 consecutive failures", async () => {
-      const { SlackService } = await import("@hanzo/shared/src/server");
+      const { SlackService } = await import("@hanzo/console-core/src/server");
 
       // Mock SlackService to throw errors
       mockSlackService.sendMessage.mockRejectedValue(new Error("Slack API error"));
@@ -400,7 +400,7 @@ describe("Slack Processor", () => {
     });
 
     it("should handle SlackService errors gracefully", async () => {
-      const { SlackService } = await import("@hanzo/shared/src/server");
+      const { SlackService } = await import("@hanzo/console-core/src/server");
 
       // Mock SlackService to throw an error
       mockSlackService.getWebClientForProject.mockRejectedValue(new Error("Failed to get Slack client"));

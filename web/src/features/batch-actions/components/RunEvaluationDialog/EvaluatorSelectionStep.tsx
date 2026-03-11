@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { observationVariableMappingList } from "@hanzo/shared";
+import { observationVariableMappingList } from "@hanzo/console";
 import { type RouterOutputs } from "@/src/utils/api";
 import { Button } from "@/src/components/ui/button";
 import { Card, CardContent } from "@/src/components/ui/card";
@@ -73,9 +73,7 @@ export function EvaluatorSelectionStep(props: EvaluatorSelectionStepProps) {
       return "Preview unavailable for the current selection.";
     }
 
-    const mappingResult = observationVariableMappingList.safeParse(
-      evaluator.variableMapping,
-    );
+    const mappingResult = observationVariableMappingList.safeParse(evaluator.variableMapping);
 
     if (!mappingResult.success) {
       return "Evaluator mapping is not valid for observation preview.";
@@ -102,8 +100,7 @@ export function EvaluatorSelectionStep(props: EvaluatorSelectionStepProps) {
         ) : eligibleEvaluators.length === 0 ? (
           <Card>
             <CardContent className="p-4 text-sm text-muted-foreground">
-              No observation-scoped evaluators found. Create a new
-              observation-scoped evaluator and it will appear here.
+              No observation-scoped evaluators found. Create a new observation-scoped evaluator and it will appear here.
             </CardContent>
           </Card>
         ) : (
@@ -114,9 +111,7 @@ export function EvaluatorSelectionStep(props: EvaluatorSelectionStepProps) {
                 className="pr-10"
                 placeholder="Search evaluators..."
                 value={evaluatorSearchQuery}
-                onChange={(event) =>
-                  onSearchQueryChange(event.currentTarget.value)
-                }
+                onChange={(event) => onSearchQueryChange(event.currentTarget.value)}
               />
               {evaluatorSearchQuery.length > 0 ? (
                 <Button
@@ -141,10 +136,7 @@ export function EvaluatorSelectionStep(props: EvaluatorSelectionStepProps) {
                       previewContent={getPromptPreview(evaluator)}
                       trigger={
                         <div>
-                          <Badge
-                            variant="secondary"
-                            className="flex items-center gap-1 pr-1"
-                          >
+                          <Badge variant="secondary" className="flex items-center gap-1 pr-1">
                             <span>{evaluator.scoreName}</span>
                             <button
                               type="button"
@@ -160,18 +152,14 @@ export function EvaluatorSelectionStep(props: EvaluatorSelectionStepProps) {
                     />
                   ))
                 ) : (
-                  <p className="text-xs text-muted-foreground">
-                    No evaluators selected
-                  </p>
+                  <p className="text-xs text-muted-foreground">No evaluators selected</p>
                 )}
               </div>
             </div>
 
             {filteredEvaluators.length === 0 ? (
               <div className="flex min-h-0 flex-1 items-center justify-center rounded-md border">
-                <p className="p-4 text-sm text-muted-foreground">
-                  No evaluators match your search.
-                </p>
+                <p className="p-4 text-sm text-muted-foreground">No evaluators match your search.</p>
               </div>
             ) : (
               <div className="min-h-0 flex-1 overflow-y-auto rounded-md border">
@@ -182,12 +170,9 @@ export function EvaluatorSelectionStep(props: EvaluatorSelectionStepProps) {
                       onClick={() => onToggleEvaluator(item.id)}
                     >
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-medium">
-                          {item.scoreName}
-                        </p>
+                        <p className="truncate text-sm font-medium">{item.scoreName}</p>
                         <p className="truncate text-[11px] text-muted-foreground">
-                          Template:{" "}
-                          {item.evalTemplate?.name ?? "Deleted template"}
+                          Template: {item.evalTemplate?.name ?? "Deleted template"}
                         </p>
                       </div>
                       <EvaluatorPromptPreview
@@ -216,9 +201,7 @@ export function EvaluatorSelectionStep(props: EvaluatorSelectionStepProps) {
                         className="mr-1"
                       />
                     </div>
-                    {index < array.length - 1 ? (
-                      <div className="border-b border-border/50" />
-                    ) : null}
+                    {index < array.length - 1 ? <div className="border-b border-border/50" /> : null}
                   </div>
                 ))}
               </div>
@@ -227,12 +210,7 @@ export function EvaluatorSelectionStep(props: EvaluatorSelectionStepProps) {
         )}
       </div>
 
-      <Button
-        variant="outline"
-        size="default"
-        className="h-9 w-full"
-        onClick={onCreateEvaluator}
-      >
+      <Button variant="outline" size="default" className="h-9 w-full" onClick={onCreateEvaluator}>
         <Plus className="mr-1 h-4 w-4" />
         Create new Evaluator
       </Button>

@@ -1,7 +1,7 @@
 import { generateBatchActionId } from "./helpers";
 import { createTRPCRouter, protectedProjectProcedure } from "@/src/server/api/trpc";
-import { GetIsBatchActionInProgressSchema } from "@hanzo/shared";
-import { BatchActionQueue, logger } from "@hanzo/shared/src/server";
+import { GetIsBatchActionInProgressSchema } from "@hanzo/console";
+import { BatchActionQueue, logger } from "@hanzo/console-core/src/server";
 import { TRPCError } from "@trpc/server";
 
 const WAITING_JOBS = ["waiting", "delayed", "active"];

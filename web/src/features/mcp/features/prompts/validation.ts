@@ -13,7 +13,7 @@ import {
   PROMPT_LABEL_REGEX_ERROR,
   COMMIT_MESSAGE_MAX_LENGTH,
   LATEST_PROMPT_LABEL,
-} from "@hanzo/shared";
+} from "@hanzo/console";
 
 /**
  * Prompt name parameter

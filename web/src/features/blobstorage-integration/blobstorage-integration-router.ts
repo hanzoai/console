@@ -3,7 +3,7 @@ import { z } from "zod/v4";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
 import { throwIfNoProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { createTRPCRouter, protectedProjectProcedure } from "@/src/server/api/trpc";
-import { encrypt } from "@hanzo/shared/encryption";
+import { encrypt } from "@hanzo/console-core/encryption";
 import { blobStorageIntegrationFormSchema } from "@/src/features/blobstorage-integration/types";
 import { TRPCError } from "@trpc/server";
 import {
@@ -11,10 +11,10 @@ import {
   BlobStorageIntegrationProcessingQueue,
   QueueJobs,
   StorageServiceFactory,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import { randomUUID } from "crypto";
-import { decrypt } from "@hanzo/shared/encryption";
-import { type BlobStorageIntegration, BlobStorageIntegrationType, BlobStorageExportMode } from "@hanzo/shared";
+import { decrypt } from "@hanzo/console-core/encryption";
+import { type BlobStorageIntegration, BlobStorageIntegrationType, BlobStorageExportMode } from "@hanzo/console";
 import { env } from "@/src/env.mjs";
 
 export const blobStorageIntegrationRouter = createTRPCRouter({

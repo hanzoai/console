@@ -12,10 +12,10 @@ import {
   getDatasetItemIdsWithRunData,
   createDatasetItem,
   createManyDatasetItems,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import { v4 } from "uuid";
-import { prisma } from "@hanzo/shared/src/db";
-import { createObservation, createTraceScore, createTrace } from "@hanzo/shared/src/server";
+import { prisma } from "@hanzo/console-core/src/db";
+import { createObservation, createTraceScore, createTrace } from "@hanzo/console-core/src/server";
 import { enrichAndMapToDatasetItemId, getRunItemsByRunIdOrItemId } from "@/src/features/datasets/server/service";
 import { aggregateScores, composeAggregateScoreKey } from "@/src/features/scores/lib/aggregateScores";
 

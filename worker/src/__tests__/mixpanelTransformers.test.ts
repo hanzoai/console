@@ -10,7 +10,7 @@ import type {
   AnalyticsGenerationEvent,
   AnalyticsScoreEvent,
   AnalyticsObservationEvent,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 
 describe("Mixpanel transformers", () => {
   const projectId = "test-project-id";

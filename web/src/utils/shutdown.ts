@@ -4,8 +4,8 @@
 // NEVER call process.exit() in this process. Kubernetes should kill the container: https://kostasbariotis.com/why-you-should-not-use-process-exit/
 // We wait for 110 seconds to allow the app to finish processing requests. There is no native way to do this in Next.js.
 
-import { DatastoreClientManager, logger, redis } from "@hanzo/shared/src/server";
-import { prisma } from "@hanzo/shared/src/db";
+import { DatastoreClientManager, logger, redis } from "@hanzo/console-core/src/server";
+import { prisma } from "@hanzo/console-core/src/db";
 import { RateLimitService } from "@/src/features/public-api/server/RateLimitService";
 
 const TIMEOUT = 110_000;

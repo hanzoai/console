@@ -26,7 +26,7 @@ import type {
 import { KeyValueFilterBuilder } from "@/src/components/table/key-value-filter-builder";
 import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
 import { DataTableAIFilters } from "@/src/components/table/data-table-ai-filters";
-import { type FilterState } from "@hanzo/shared";
+import { type FilterState } from "@hanzo/console";
 import { useConsoleCloudRegion } from "@/src/features/organizations/hooks";
 
 interface ControlsContextType {

@@ -1,7 +1,7 @@
 import { useEmptyScoreConfigs } from "@/src/features/scores/hooks/useEmptyConfigs";
 import { type ScoreConfigSelection } from "@/src/features/scores/types";
 import { api } from "@/src/utils/api";
-import { type ScoreConfigDomain } from "@hanzo/shared";
+import { type ScoreConfigDomain } from "@hanzo/console";
 
 /**
  * Prepares score configs for the AnnotationForm based on selection mode.

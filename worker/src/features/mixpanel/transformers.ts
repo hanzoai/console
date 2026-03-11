@@ -4,7 +4,7 @@ import type {
   AnalyticsGenerationEvent,
   AnalyticsScoreEvent,
   AnalyticsObservationEvent,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 
 // UUID v5 namespace for Mixpanel (different from Insights)
 const MIXPANEL_UUID_NAMESPACE = "8f7c3e42-9a1b-4d5f-8e2a-1c6b9d3f4e7a";

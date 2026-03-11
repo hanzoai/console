@@ -4,8 +4,8 @@ import {
   convertScoreToPublicApi,
   type ScoreQueryType,
 } from "@/src/features/public-api/server/scores";
-import { AGGREGATABLE_SCORE_TYPES, type ScoreSourceType } from "@hanzo/shared";
-import { _handleGetScoreById } from "@hanzo/shared/src/server";
+import { AGGREGATABLE_SCORE_TYPES, type ScoreSourceType } from "@hanzo/console";
+import { _handleGetScoreById } from "@hanzo/console-core/src/server";
 
 export class ScoresApiService {
   constructor(private readonly apiVersion: "v1" | "v2") {}

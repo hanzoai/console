@@ -1,7 +1,7 @@
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 
 import { env } from "../env";
-import { logger } from "@hanzo/shared/src/server";
+import { logger } from "@hanzo/console-core/src/server";
 export const pruneDatabase = async () => {
   if (!env.DATABASE_URL.includes("localhost:5432")) {
     throw new Error("You cannot prune database unless running on localhost.");

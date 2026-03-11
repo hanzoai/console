@@ -2,7 +2,7 @@
 
 import type { Session } from "next-auth";
 import { pruneDatabase } from "@/src/__tests__/test-utils";
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 import { appRouter } from "@/src/server/api/root";
 import { createInnerTRPCContext } from "@/src/server/api/trpc";
 

@@ -1,8 +1,8 @@
 import { makeZodVerifiedAPICall } from "@/src/__tests__/test-utils";
 import { v4 } from "uuid";
-import { prisma } from "@hanzo/shared/src/db";
-import { createTracesCh, createOrgProjectAndApiKey } from "@hanzo/shared/src/server";
-import { createTrace } from "@hanzo/shared/src/server";
+import { prisma } from "@hanzo/console-core/src/db";
+import { createTracesCh, createOrgProjectAndApiKey } from "@hanzo/console-core/src/server";
+import { createTrace } from "@hanzo/console-core/src/server";
 import { GetSessionsV1Response, GetSessionV1Response } from "@/src/features/public-api/types/sessions";
 
 const projectId = "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a";

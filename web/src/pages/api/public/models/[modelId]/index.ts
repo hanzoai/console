@@ -1,5 +1,5 @@
-import { prisma } from "@hanzo/shared/src/db";
-import { ConsoleNotFoundError } from "@hanzo/shared";
+import { prisma } from "@hanzo/console-core/src/db";
+import { ConsoleNotFoundError } from "@hanzo/console";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
 import {
@@ -10,7 +10,7 @@ import {
   prismaToApiModelDefinition,
 } from "@/src/features/public-api/types/models";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
-import { clearModelCacheForProject } from "@hanzo/shared/src/server";
+import { clearModelCacheForProject } from "@hanzo/console-core/src/server";
 
 export default withMiddlewares({
   GET: createAuthedProjectAPIRoute({

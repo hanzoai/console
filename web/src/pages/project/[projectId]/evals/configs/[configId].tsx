@@ -1,4 +1,4 @@
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 import { type GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 

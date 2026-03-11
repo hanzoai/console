@@ -1,9 +1,6 @@
 import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
 import { JobExecutionStatus } from "@prisma/client";
-import {
-  processObservationEval,
-  type ObservationEvalProcessorDeps,
-} from "../observationEvalProcessor";
+import { processObservationEval, type ObservationEvalProcessorDeps } from "../observationEvalProcessor";
 import {
   createTestObservation,
   createMockJobExecution,
@@ -14,7 +11,7 @@ import {
 import { UnrecoverableError } from "../../../../errors/UnrecoverableError";
 
 // Mock prisma
-vi.mock("@hanzo/shared/src/db", () => ({
+vi.mock("@hanzo/console-core/src/db", () => ({
   prisma: {
     jobExecution: {
       findFirst: vi.fn(),
@@ -32,8 +29,8 @@ vi.mock("../../evalService", () => ({
 }));
 
 // Mock logger
-vi.mock("@hanzo/shared/src/server", async () => {
-  const actual = await vi.importActual("@hanzo/shared/src/server");
+vi.mock("@hanzo/console-core/src/server", async () => {
+  const actual = await vi.importActual("@hanzo/console-core/src/server");
   return {
     ...actual,
     logger: {
@@ -46,7 +43,7 @@ vi.mock("@hanzo/shared/src/server", async () => {
   };
 });
 
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 import { executeLLMAsJudgeEvaluation } from "../../evalService";
 
 describe("processObservationEval", () => {
@@ -96,12 +93,10 @@ describe("processObservationEval", () => {
 
       const deps = createMockProcessorDeps();
 
-      await expect(
-        processObservationEval({ event: baseEvent, deps }),
-      ).rejects.toThrow(UnrecoverableError);
-      await expect(
-        processObservationEval({ event: baseEvent, deps }),
-      ).rejects.toThrow("Job configuration or template not found");
+      await expect(processObservationEval({ event: baseEvent, deps })).rejects.toThrow(UnrecoverableError);
+      await expect(processObservationEval({ event: baseEvent, deps })).rejects.toThrow(
+        "Job configuration or template not found",
+      );
     });
 
     it("should throw UnrecoverableError when evalTemplate is null", async () => {
@@ -118,15 +113,11 @@ describe("processObservationEval", () => {
       });
 
       (prisma.jobExecution.findFirst as Mock).mockResolvedValue(job);
-      (prisma.jobConfiguration.findFirst as Mock).mockResolvedValue(
-        configWithoutTemplate,
-      );
+      (prisma.jobConfiguration.findFirst as Mock).mockResolvedValue(configWithoutTemplate);
 
       const deps = createMockProcessorDeps();
 
-      await expect(
-        processObservationEval({ event: baseEvent, deps }),
-      ).rejects.toThrow(UnrecoverableError);
+      await expect(processObservationEval({ event: baseEvent, deps })).rejects.toThrow(UnrecoverableError);
     });
   });
 
@@ -147,15 +138,13 @@ describe("processObservationEval", () => {
       (prisma.jobConfiguration.findFirst as Mock).mockResolvedValue(config);
 
       const deps: ObservationEvalProcessorDeps = {
-        downloadObservationFromS3: vi
-          .fn()
-          .mockRejectedValue(new Error("S3 connection failed")),
+        downloadObservationFromS3: vi.fn().mockRejectedValue(new Error("S3 connection failed")),
       };
 
       // S3 connection errors should be retryable (not UnrecoverableError)
-      await expect(
-        processObservationEval({ event: baseEvent, deps }),
-      ).rejects.toThrow("Failed to download observation from S3");
+      await expect(processObservationEval({ event: baseEvent, deps })).rejects.toThrow(
+        "Failed to download observation from S3",
+      );
     });
 
     it("should throw UnrecoverableError when S3 data is invalid JSON", async () => {
@@ -174,15 +163,11 @@ describe("processObservationEval", () => {
       (prisma.jobConfiguration.findFirst as Mock).mockResolvedValue(config);
 
       const deps: ObservationEvalProcessorDeps = {
-        downloadObservationFromS3: vi
-          .fn()
-          .mockResolvedValue("not valid json {"),
+        downloadObservationFromS3: vi.fn().mockResolvedValue("not valid json {"),
       };
 
       // Invalid JSON is a permanent error - should be UnrecoverableError
-      await expect(
-        processObservationEval({ event: baseEvent, deps }),
-      ).rejects.toThrow(UnrecoverableError);
+      await expect(processObservationEval({ event: baseEvent, deps })).rejects.toThrow(UnrecoverableError);
     });
 
     it("should throw UnrecoverableError when S3 data fails schema validation", async () => {
@@ -203,15 +188,11 @@ describe("processObservationEval", () => {
       // Missing required fields - valid JSON but invalid schema
       const invalidObservation = { id: "obs-123", someField: "value" };
       const deps: ObservationEvalProcessorDeps = {
-        downloadObservationFromS3: vi
-          .fn()
-          .mockResolvedValue(JSON.stringify(invalidObservation)),
+        downloadObservationFromS3: vi.fn().mockResolvedValue(JSON.stringify(invalidObservation)),
       };
 
       // Schema validation failures are permanent - should be UnrecoverableError
-      await expect(
-        processObservationEval({ event: baseEvent, deps }),
-      ).rejects.toThrow(UnrecoverableError);
+      await expect(processObservationEval({ event: baseEvent, deps })).rejects.toThrow(UnrecoverableError);
     });
   });
 
@@ -234,9 +215,7 @@ describe("processObservationEval", () => {
         id: "config-123",
         projectId,
         evalTemplateId: "template-456",
-        variableMapping: [
-          { templateVariable: "output", selectedColumnId: "output" },
-        ],
+        variableMapping: [{ templateVariable: "output", selectedColumnId: "output" }],
         evalTemplate: template,
       });
       const observation = createTestObservation({
@@ -251,9 +230,7 @@ describe("processObservationEval", () => {
       (prisma.jobConfiguration.findFirst as Mock).mockResolvedValue(config);
 
       const deps = createMockProcessorDeps({
-        downloadObservationFromS3: vi
-          .fn()
-          .mockResolvedValue(JSON.stringify(observation)),
+        downloadObservationFromS3: vi.fn().mockResolvedValue(JSON.stringify(observation)),
       });
 
       await processObservationEval({ event: baseEvent, deps });
@@ -297,9 +274,7 @@ describe("processObservationEval", () => {
       (prisma.jobConfiguration.findFirst as Mock).mockResolvedValue(config);
 
       const deps = createMockProcessorDeps({
-        downloadObservationFromS3: vi
-          .fn()
-          .mockResolvedValue(JSON.stringify(observation)),
+        downloadObservationFromS3: vi.fn().mockResolvedValue(JSON.stringify(observation)),
       });
 
       await processObservationEval({ event: baseEvent, deps });
@@ -336,9 +311,7 @@ describe("processObservationEval", () => {
       (prisma.jobConfiguration.findFirst as Mock).mockResolvedValue(config);
 
       const deps = createMockProcessorDeps({
-        downloadObservationFromS3: vi
-          .fn()
-          .mockResolvedValue(JSON.stringify(observation)),
+        downloadObservationFromS3: vi.fn().mockResolvedValue(JSON.stringify(observation)),
       });
 
       await processObservationEval({ event: baseEvent, deps });
@@ -379,9 +352,7 @@ describe("processObservationEval", () => {
       (prisma.jobConfiguration.findFirst as Mock).mockResolvedValue(config);
 
       // Without injected deps, it will try to use real S3 which should fail
-      await expect(
-        processObservationEval({ event: baseEvent }),
-      ).rejects.toThrow();
+      await expect(processObservationEval({ event: baseEvent })).rejects.toThrow();
     });
   });
 });

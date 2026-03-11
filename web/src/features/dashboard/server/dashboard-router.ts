@@ -12,7 +12,7 @@ import {
   getObservationUsageByTypeByTime,
   DashboardService,
   DashboardDefinitionSchema,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import { type DatabaseRow } from "@/src/server/api/services/sqlInterface";
 import { type QueryType, query as customQuery, viewVersions } from "@/src/features/query/types";
 import { mapLegacyUiTableFilterToView } from "@/src/features/query/dashboardUiTableToViewMapping";
@@ -23,7 +23,7 @@ import {
   InvalidRequestError,
   singleFilter,
   type FilterState,
-} from "@hanzo/shared";
+} from "@hanzo/console";
 import { throwIfNoProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { executeQuery } from "@/src/features/query/server/queryExecutor";
 

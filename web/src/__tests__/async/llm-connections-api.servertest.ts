@@ -1,14 +1,14 @@
 /** @jest-environment node */
 
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 import { makeAPICall, makeZodVerifiedAPICall } from "@/src/__tests__/test-utils";
 import {
   GetLlmConnectionsV1Response,
   PutLlmConnectionV1Response,
 } from "@/src/features/public-api/types/llm-connections";
-import { createOrgProjectAndApiKey } from "@hanzo/shared/src/server";
-import { LLMAdapter } from "@hanzo/shared";
-import { encrypt } from "@hanzo/shared/encryption";
+import { createOrgProjectAndApiKey } from "@hanzo/console-core/src/server";
+import { LLMAdapter } from "@hanzo/console";
+import { encrypt } from "@hanzo/console-core/encryption";
 
 // Generate truly unique provider names for tests to avoid conflicts
 const generateUniqueProvider = (baseName: string) =>

@@ -1,17 +1,13 @@
 import { RightAlignedCell } from "@/src/features/dashboard/components/RightAlignedCell";
 import { DashboardCard } from "@/src/features/dashboard/components/cards/DashboardCard";
 import { DashboardTable } from "@/src/features/dashboard/components/cards/DashboardTable";
-import { type FilterState, getGenerationLikeTypes } from "@hanzo/shared";
+import { type FilterState, getGenerationLikeTypes } from "@hanzo/console";
 import { api } from "@/src/utils/api";
 
 import { formatIntervalSeconds } from "@/src/utils/dates";
 import { truncate } from "@/src/utils/string";
 import { Popup } from "@/src/components/layouts/doc-popup";
-import {
-  type QueryType,
-  type ViewVersion,
-  mapLegacyUiTableFilterToView,
-} from "@/src/features/query";
+import { type QueryType, type ViewVersion, mapLegacyUiTableFilterToView } from "@/src/features/query";
 
 export const LatencyTables = ({
   projectId,

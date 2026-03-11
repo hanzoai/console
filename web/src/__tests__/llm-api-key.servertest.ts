@@ -2,11 +2,11 @@
 
 import type { Session } from "next-auth";
 import { pruneDatabase } from "@/src/__tests__/test-utils";
-import { LLMAdapter } from "@hanzo/shared";
-import { prisma } from "@hanzo/shared/src/db";
+import { LLMAdapter } from "@hanzo/console";
+import { prisma } from "@hanzo/console-core/src/db";
 import { appRouter } from "@/src/server/api/root";
 import { createInnerTRPCContext } from "@/src/server/api/trpc";
-import { decrypt } from "@hanzo/shared/encryption";
+import { decrypt } from "@hanzo/console-core/encryption";
 
 describe("llmApiKey.all RPC", () => {
   const projectId = "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a";

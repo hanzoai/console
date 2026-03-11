@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import { createTrace, createTracesCh, createObservation, createObservationsCh } from "@hanzo/shared/src/server";
+import { createTrace, createTracesCh, createObservation, createObservationsCh } from "@hanzo/console-core/src/server";
 import { type QueryType } from "@/src/features/query/types";
 import { executeQuery } from "@/src/features/query/server/queryExecutor";
 

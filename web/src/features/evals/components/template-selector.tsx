@@ -1,19 +1,8 @@
-import { type EvalTemplate } from "@hanzo/shared";
+import { type EvalTemplate } from "@hanzo/console";
 
-import {
-  CheckIcon,
-  ChevronDown,
-  Cog,
-  ExternalLink,
-  AlertCircle,
-  ExternalLinkIcon,
-} from "lucide-react";
+import { CheckIcon, ChevronDown, Cog, ExternalLink, AlertCircle, ExternalLinkIcon } from "lucide-react";
 import { Badge } from "@/src/components/ui/badge";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/src/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
 import {
   InputCommand,
   InputCommandEmpty,
@@ -65,12 +54,7 @@ export const TemplateSelector = ({
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [search, setSearch] = useState("");
   const isFullyReleased = useIsObservationEvalsFullyReleased();
-  const {
-    activeTemplates,
-    isTemplateActive,
-    isTemplateInactive,
-    handleRowClick,
-  } = useExperimentEvaluatorSelection({
+  const { activeTemplates, isTemplateActive, isTemplateInactive, handleRowClick } = useExperimentEvaluatorSelection({
     projectId: projectId,
     datasetId: datasetId,
     initialActiveTemplateIds: activeTemplateIds,
@@ -190,9 +174,7 @@ export const TemplateSelector = ({
                         const isActive = isTemplateActive(latestTemplate.id);
                         const isInactive = isTemplateInactive(latestTemplate.id);
                         const isInvalid = isTemplateInvalid(latestTemplate);
-                        const isLegacy =
-                          evaluatorTargetObjects?.[latestTemplate.id] ===
-                          "dataset";
+                        const isLegacy = evaluatorTargetObjects?.[latestTemplate.id] === "dataset";
 
                         return (
                           <InputCommandItem
@@ -263,9 +245,7 @@ export const TemplateSelector = ({
                       const isActive = isTemplateActive(latestTemplate.id);
                       const isInactive = isTemplateInactive(latestTemplate.id);
                       const isInvalid = isTemplateInvalid(latestTemplate);
-                      const isLegacy =
-                        evaluatorTargetObjects?.[latestTemplate.id] ===
-                        "dataset";
+                      const isLegacy = evaluatorTargetObjects?.[latestTemplate.id] === "dataset";
 
                       return (
                         <InputCommandItem
@@ -277,9 +257,7 @@ export const TemplateSelector = ({
                         >
                           {isActive ? <CheckIcon className="mr-2 h-4 w-4" /> : <div className="mr-2 h-4 w-4" />}
                           <div className="mr-1">{name}</div>
-                          <MaintainerTooltip
-                            maintainer={getMaintainer(latestTemplate)}
-                          />
+                          <MaintainerTooltip maintainer={getMaintainer(latestTemplate)} />
                           {isFullyReleased && isLegacy && (
                             <Badge variant="outline" className="ml-2 text-xs">
                               legacy

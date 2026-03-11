@@ -1,4 +1,4 @@
-import { type EventsObservation, type TraceDomain } from "@hanzo/shared";
+import { type EventsObservation, type TraceDomain } from "@hanzo/console";
 import { type ObservationReturnTypeWithMetadata } from "@/src/server/api/routers/traces";
 import { type WithStringifiedMetadata } from "@/src/utils/clientSideDomainTypes";
 

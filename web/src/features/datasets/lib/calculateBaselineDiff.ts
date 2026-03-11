@@ -1,4 +1,4 @@
-import { type AggregatedScoreData } from "@hanzo/shared";
+import { type AggregatedScoreData } from "@hanzo/console";
 import type Decimal from "decimal.js";
 
 export type NumericDiff = {

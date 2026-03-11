@@ -4,7 +4,7 @@ import { auditLog } from "@/src/features/audit-logs/auditLog";
 import { throwIfNoProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { throwIfNoEntitlement } from "@/src/features/entitlements/server/hasEntitlement";
 import { createTRPCRouter, protectedProjectProcedure } from "@/src/server/api/trpc";
-import { type Prompt, Prisma } from "@hanzo/shared/src/db";
+import { type Prompt, Prisma } from "@hanzo/console-core/src/db";
 import { createPrompt, duplicatePrompt } from "../actions/createPrompt";
 import { checkHasProtectedLabels } from "../utils/checkHasProtectedLabels";
 import {
@@ -17,8 +17,8 @@ import {
   PromptType,
   StringNoHTMLNonEmpty,
   TracingSearchType,
-} from "@hanzo/shared";
-import { orderBy, singleFilter } from "@hanzo/shared";
+} from "@hanzo/console";
+import { orderBy, singleFilter } from "@hanzo/console";
 import {
   orderByToPrismaSql,
   PromptService,
@@ -29,7 +29,7 @@ import {
   getObservationsWithPromptName,
   getObservationMetricsForPrompts,
   getAggregatedScoresForPrompts,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import { aggregateScores } from "@/src/features/scores/lib/aggregateScores";
 import { TRPCError } from "@trpc/server";
 import { promptChangeEventSourcing } from "@/src/features/prompts/server/promptChangeEventSourcing";
@@ -112,8 +112,8 @@ export const promptRouter = createTRPCRouter({
 
     const filterCondition = tableColumnsToSqlFilterAndPrefix(input.filter ?? [], promptsTableCols, "prompts");
 
-      // pathFilter: SQL WHERE clause to filter prompts by folder (e.g., "AND p.name LIKE 'folder/%'")
-      const pathFilter = buildPathPrefixFilter(input.pathPrefix);
+    // pathFilter: SQL WHERE clause to filter prompts by folder (e.g., "AND p.name LIKE 'folder/%'")
+    const pathFilter = buildPathPrefixFilter(input.pathPrefix);
 
     const searchFilter = buildPromptSearchFilter(input.searchQuery, input.searchType);
 
@@ -398,9 +398,7 @@ export const promptRouter = createTRPCRouter({
 
         // Prisma translates `startsWith` to SQL LIKE on PostgreSQL, so `%` and `_`
         // must be escaped when the prefix should be interpreted literally.
-        const escapedPathPrefix = pathPrefix
-          ? escapeSqlLikePattern(pathPrefix)
-          : undefined;
+        const escapedPathPrefix = pathPrefix ? escapeSqlLikePattern(pathPrefix) : undefined;
 
         // fetch prompts before deletion to enable audit logging
         const prompts = await ctx.prisma.prompt.findMany({

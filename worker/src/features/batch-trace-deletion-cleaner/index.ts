@@ -1,5 +1,5 @@
-import { prisma } from "@hanzo/shared/src/db";
-import { logger, recordIncrement, traceException } from "@hanzo/shared/src/server";
+import { prisma } from "@hanzo/console-core/src/db";
+import { logger, recordIncrement, traceException } from "@hanzo/console-core/src/server";
 import { env } from "../../env";
 import { PeriodicExclusiveRunner } from "../../utils/PeriodicExclusiveRunner";
 import { processDatastoreTraceDelete } from "../traces/processDatastoreTraceDelete";

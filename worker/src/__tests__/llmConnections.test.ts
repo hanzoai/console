@@ -1,7 +1,7 @@
 import { describe, test, expect } from "vitest";
-import { fetchLLMCompletion } from "@hanzo/shared/src/server";
-import { encrypt } from "@hanzo/shared/encryption";
-import { ChatMessageType, LLMAdapter } from "@hanzo/shared";
+import { fetchLLMCompletion } from "@hanzo/console-core/src/server";
+import { encrypt } from "@hanzo/console-core/encryption";
+import { ChatMessageType, LLMAdapter } from "@hanzo/console-core";
 import { z } from "zod/v4";
 
 /**
@@ -413,9 +413,7 @@ describe("LLM Connection Tests", () => {
           max_tokens: 10,
         },
         llmConnection: {
-          secretKey: encrypt(
-            process.env.HANZO_LLM_CONNECTION_ANTHROPIC_KEY!,
-          ),
+          secretKey: encrypt(process.env.HANZO_LLM_CONNECTION_ANTHROPIC_KEY!),
         },
       });
 

@@ -1,6 +1,6 @@
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/src/components/ui/hover-card";
 import { SelectItem } from "@/src/components/ui/select";
-import { Role } from "@hanzo/shared";
+import { Role } from "@hanzo/console";
 import { HoverCardPortal } from "@radix-ui/react-hover-card";
 import {
   organizationRoleAccessRights,

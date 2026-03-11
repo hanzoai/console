@@ -1,8 +1,8 @@
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 import {
   getObservationsFromEventsTableForPublicApi,
   getObservationsCountFromEventsTableForPublicApi,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import { env } from "@/src/env.mjs";
 
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";

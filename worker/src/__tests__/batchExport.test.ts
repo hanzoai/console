@@ -13,9 +13,9 @@ import {
   createEvent,
   createEventsCh,
   getEventsForBlobStorageExport,
-} from "@hanzo/shared/src/server";
-import { BatchExportTableName, DatasetStatus } from "@hanzo/shared";
-import { prisma } from "@hanzo/shared/src/db";
+} from "@hanzo/console-core/src/server";
+import { BatchExportTableName, DatasetStatus } from "@hanzo/console-core";
+import { prisma } from "@hanzo/console-core/src/db";
 import { getDatabaseReadStreamPaginated } from "../features/database-read-stream/getDatabaseReadStream";
 import { getObservationStream } from "../features/database-read-stream/observation-stream";
 import { getTraceStream } from "../features/database-read-stream/trace-stream";

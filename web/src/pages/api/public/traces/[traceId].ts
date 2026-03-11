@@ -7,15 +7,15 @@ import {
   DeleteTraceV1Query,
   DeleteTraceV1Response,
 } from "@/src/features/public-api/types/traces";
-import { filterAndValidateDbTraceScoreList, ConsoleNotFoundError } from "@hanzo/shared";
-import { prisma } from "@hanzo/shared/src/db";
+import { filterAndValidateDbTraceScoreList, ConsoleNotFoundError } from "@hanzo/console";
+import { prisma } from "@hanzo/console-core/src/db";
 import {
   getObservationsForTrace,
   getScoresForTraces,
   getTraceById,
   traceException,
   traceDeletionProcessor,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import Decimal from "decimal.js";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
 

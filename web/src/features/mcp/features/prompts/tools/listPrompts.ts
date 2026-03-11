@@ -10,22 +10,18 @@ import { defineTool } from "../../../core/define-tool";
 import { ParamPromptName, ParamPromptLabel, ParamPromptTag } from "../validation";
 import { ParamLimit, ParamPage } from "../../../core/validation";
 import { getPromptsMeta } from "@/src/features/prompts/server/actions/getPromptsMeta";
-import { instrumentAsync } from "@hanzo/shared/src/server";
+import { instrumentAsync } from "@hanzo/console-core/src/server";
 import { SpanKind } from "@opentelemetry/api";
 
 const ParamFromUpdatedAt = z.iso
   .datetime({ offset: true })
   .optional()
-  .describe(
-    "Filter prompts updated at or after this timestamp (ISO 8601 with timezone, e.g. 2026-02-02T00:00:00Z)",
-  );
+  .describe("Filter prompts updated at or after this timestamp (ISO 8601 with timezone, e.g. 2026-02-02T00:00:00Z)");
 
 const ParamToUpdatedAt = z.iso
   .datetime({ offset: true })
   .optional()
-  .describe(
-    "Filter prompts updated at or before this timestamp (ISO 8601 with timezone, e.g. 2026-02-02T00:00:00Z)",
-  );
+  .describe("Filter prompts updated at or before this timestamp (ISO 8601 with timezone, e.g. 2026-02-02T00:00:00Z)");
 
 /**
  * Base schema for listPrompts tool (no refinements needed)
@@ -43,22 +39,20 @@ const ListPromptsBaseSchema = z.object({
 /**
  * Full input schema with runtime validations
  */
-const ListPromptsInputSchema = ListPromptsBaseSchema.superRefine(
-  (data, ctx) => {
-    if (data.fromUpdatedAt && data.toUpdatedAt) {
-      const fromMs = Date.parse(data.fromUpdatedAt);
-      const toMs = Date.parse(data.toUpdatedAt);
+const ListPromptsInputSchema = ListPromptsBaseSchema.superRefine((data, ctx) => {
+  if (data.fromUpdatedAt && data.toUpdatedAt) {
+    const fromMs = Date.parse(data.fromUpdatedAt);
+    const toMs = Date.parse(data.toUpdatedAt);
 
-      if (Number.isFinite(fromMs) && Number.isFinite(toMs) && fromMs > toMs) {
-        ctx.addIssue({
-          code: "custom",
-          path: ["fromUpdatedAt"],
-          message: "fromUpdatedAt must be <= toUpdatedAt",
-        });
-      }
+    if (Number.isFinite(fromMs) && Number.isFinite(toMs) && fromMs > toMs) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["fromUpdatedAt"],
+        message: "fromUpdatedAt must be <= toUpdatedAt",
+      });
     }
-  },
-);
+  }
+});
 
 /**
  * listPrompts tool definition and handler
@@ -80,11 +74,8 @@ export const [listPromptsTool, handleListPrompts] = defineTool({
   baseSchema: ListPromptsBaseSchema,
   inputSchema: ListPromptsInputSchema,
   handler: async (input, context) => {
-    return await instrumentAsync(
-      { name: "mcp.prompts.list", spanKind: SpanKind.INTERNAL },
-      async (span) => {
-        const { name, label, tag, fromUpdatedAt, toUpdatedAt, page, limit } =
-          input;
+    return await instrumentAsync({ name: "mcp.prompts.list", spanKind: SpanKind.INTERNAL }, async (span) => {
+      const { name, label, tag, fromUpdatedAt, toUpdatedAt, page, limit } = input;
 
       // Set span attributes for observability
       span.setAttributes({
@@ -95,33 +86,33 @@ export const [listPromptsTool, handleListPrompts] = defineTool({
         "mcp.pagination_limit": limit ?? 50,
       });
 
-        if (name) {
-          span.setAttribute("mcp.filter_name", name);
-        }
-        if (label) {
-          span.setAttribute("mcp.filter_label", label);
-        }
-        if (tag) {
-          span.setAttribute("mcp.filter_tag", tag);
-        }
-        if (fromUpdatedAt) {
-          span.setAttribute("mcp.filter_fromUpdatedAt", fromUpdatedAt);
-        }
-        if (toUpdatedAt) {
-          span.setAttribute("mcp.filter_toUpdatedAt", toUpdatedAt);
-        }
+      if (name) {
+        span.setAttribute("mcp.filter_name", name);
+      }
+      if (label) {
+        span.setAttribute("mcp.filter_label", label);
+      }
+      if (tag) {
+        span.setAttribute("mcp.filter_tag", tag);
+      }
+      if (fromUpdatedAt) {
+        span.setAttribute("mcp.filter_fromUpdatedAt", fromUpdatedAt);
+      }
+      if (toUpdatedAt) {
+        span.setAttribute("mcp.filter_toUpdatedAt", toUpdatedAt);
+      }
 
-        // Fetch prompts metadata using existing service
-        const result = await getPromptsMeta({
-          projectId: context.projectId, // Auto-injected from authenticated API key
-          name,
-          label,
-          tag,
-          fromUpdatedAt,
-          toUpdatedAt,
-          page, // Default handled by Zod schema
-          limit, // Default handled by Zod schema
-        });
+      // Fetch prompts metadata using existing service
+      const result = await getPromptsMeta({
+        projectId: context.projectId, // Auto-injected from authenticated API key
+        name,
+        label,
+        tag,
+        fromUpdatedAt,
+        toUpdatedAt,
+        page, // Default handled by Zod schema
+        limit, // Default handled by Zod schema
+      });
 
       // Set result count for observability
       span.setAttribute("mcp.result_count", result.data.length);

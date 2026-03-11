@@ -6,9 +6,9 @@ import {
   TriggerEventSource,
   TriggerEventAction,
   PromptType,
-} from "@hanzo/shared";
-import { createOrgProjectAndApiKey, redis, EntityChangeEventType } from "@hanzo/shared/src/server";
-import { ActionType, prisma } from "@hanzo/shared/src/db";
+} from "@hanzo/console-core";
+import { createOrgProjectAndApiKey, redis, EntityChangeEventType } from "@hanzo/console-core/src/server";
+import { ActionType, prisma } from "@hanzo/console-core/src/db";
 import { promptVersionProcessor } from "../features/entityChange/promptVersionProcessor";
 
 describe("promptVersionChangeWorker", () => {

@@ -1,10 +1,10 @@
 /** @jest-environment node */
 
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 import { disconnectQueues, makeAPICall } from "@/src/__tests__/test-utils";
 import { v4 as uuidv4, v4 } from "uuid";
-import { PromptSchema, type ValidatedPrompt, type ChatMessage, type Prompt, PromptType } from "@hanzo/shared";
-import { parsePromptDependencyTags } from "@hanzo/shared";
+import { PromptSchema, type ValidatedPrompt, type ChatMessage, type Prompt, PromptType } from "@hanzo/console";
+import { parsePromptDependencyTags } from "@hanzo/console";
 import { generateId, nanoid } from "ai";
 
 import { type PromptsMetaResponse } from "@/src/features/prompts/server/actions/getPromptsMeta";
@@ -13,7 +13,7 @@ import {
   getObservationById,
   MAX_PROMPT_NESTING_DEPTH,
   ChatMessageType,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import { randomUUID } from "node:crypto";
 import waitForExpect from "wait-for-expect";
 import { createPrompt } from "@/src/features/prompts/server/actions/createPrompt";

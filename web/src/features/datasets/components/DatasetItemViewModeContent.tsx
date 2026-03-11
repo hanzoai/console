@@ -1,4 +1,4 @@
-import type { DatasetItemDomain } from "@hanzo/shared";
+import type { DatasetItemDomain } from "@hanzo/console";
 import { stringifyDatasetItemData, type DatasetSchema } from "../utils/datasetItemUtils";
 import { DatasetItemFields } from "@/src/features/datasets/components/DatasetItemFields";
 

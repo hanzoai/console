@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { uuid, z } from "zod/v4";
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 import {
   datastoreClient,
   ObservationEvent,
@@ -15,12 +15,12 @@ import {
   traceRecordReadSchema,
   TraceRecordReadType,
   createIngestionEventSchema,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import { pruneDatabase } from "../../../__tests__/utils";
 import waitForExpect from "wait-for-expect";
 import { DatastoreWriter, TableName } from "../../DatastoreWriter";
 import { IngestionService } from "../../IngestionService";
-import { ModelUsageUnit, ScoreSourceEnum } from "@hanzo/shared";
+import { ModelUsageUnit, ScoreSourceEnum } from "@hanzo/console-core";
 import { Cluster } from "ioredis";
 import { env } from "../../../env";
 

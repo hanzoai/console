@@ -8,7 +8,7 @@ import {
   TraceUpsertQueue,
   IngestionEvent,
   OtelIngestionQueue,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import { AdminApiAuthService } from "@/src/features/admin-api/server/adminApiAuth";
 
 /* 

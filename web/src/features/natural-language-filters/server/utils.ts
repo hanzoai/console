@@ -1,7 +1,7 @@
-import { LLMAdapter } from "@hanzo/shared/src/server";
-import { Hanzo } from "@hanzo/console/src/index";
+import { LLMAdapter } from "@hanzo/console-core/src/server";
+import { Hanzo } from "@hanzo/console-core/src/index";
 import { env } from "@/src/env.mjs";
-import { type FilterCondition, singleFilter } from "@hanzo/shared";
+import { type FilterCondition, singleFilter } from "@hanzo/console";
 import { z } from "zod/v4";
 
 let hanzoClient: Hanzo | null = null;

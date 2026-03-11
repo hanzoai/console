@@ -617,7 +617,7 @@ All requests (tRPC and public API) propagate OpenTelemetry context with Hanzo-sp
 ### Context Propagation Pattern
 
 ```typescript
-import { contextWithHanzoProps } from "@hanzo/shared/src/server";
+import { contextWithHanzoProps } from "@hanzo/console-core/src/server";
 import * as opentelemetry from "@opentelemetry/api";
 
 // Create context with Hanzo baggage

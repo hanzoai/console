@@ -1,5 +1,5 @@
 import { api } from "@/src/utils/api";
-import { type FilterState } from "@hanzo/shared";
+import { type FilterState } from "@hanzo/console";
 import { createTracesTimeFilter } from "@/src/features/dashboard/lib/dashboard-utils";
 import {
   type DashboardDateRangeAggregationOption,
@@ -8,11 +8,7 @@ import {
 import React, { useMemo } from "react";
 import { DashboardCategoricalScoreAdapter } from "@/src/features/scores/adapters";
 import { type ScoreData } from "@/src/features/scores/types";
-import {
-  type QueryType,
-  type ViewVersion,
-  mapLegacyUiTableFilterToView,
-} from "@/src/features/query";
+import { type QueryType, type ViewVersion, mapLegacyUiTableFilterToView } from "@/src/features/query";
 import { type DatabaseRow } from "@/src/server/api/services/sqlInterface";
 import { Chart } from "@/src/features/widgets/chart-library/Chart";
 import { scoreChartDataToDataPoints } from "@/src/features/dashboard/lib/chart-data-adapters";
@@ -97,12 +93,7 @@ export function CategoricalScoreChart(props: {
   }, [scores.data, props.agg]);
 
   if (isEmptyChart({ data: chartData })) {
-    return (
-      <NoDataOrLoading
-        isLoading={scores.isLoading}
-        className="min-h-[9rem] flex-1"
-      />
-    );
+    return <NoDataOrLoading isLoading={scores.isLoading} className="min-h-[9rem] flex-1" />;
   }
   return (
     <div className="h-80 w-full shrink-0">

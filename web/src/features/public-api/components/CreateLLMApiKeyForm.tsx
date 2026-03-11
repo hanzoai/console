@@ -9,7 +9,7 @@ import {
   type LlmApiKeys,
   BEDROCK_USE_DEFAULT_CREDENTIALS,
   VERTEXAI_USE_DEFAULT_CREDENTIALS,
-} from "@hanzo/shared";
+} from "@hanzo/console";
 import { ChevronDown, PlusIcon, TrashIcon } from "lucide-react";
 import { z } from "zod/v4";
 import { Button } from "@/src/components/ui/button";

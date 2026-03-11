@@ -7,7 +7,7 @@ import {
   isLLMCompletionError,
   logger,
   traceException,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import { retryLLMRateLimitError } from "../features/utils";
 import { delayInMs } from "./utils/delays";
 import { createExperimentJobDatastore } from "../features/experiments/experimentServiceDatastore";

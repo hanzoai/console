@@ -1,4 +1,4 @@
-import { type Prisma } from "@hanzo/shared";
+import { type Prisma } from "@hanzo/console";
 
 export const getFormattedPayload = (payload: Prisma.JsonValue | undefined): string => {
   if (!payload) return "{}";

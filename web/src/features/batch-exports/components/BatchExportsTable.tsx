@@ -3,7 +3,7 @@ import { type ConsoleColumnDef } from "@/src/components/table/types";
 import { type Row, type CellContext } from "@tanstack/react-table";
 import { api } from "@/src/utils/api";
 import { safeExtract } from "@/src/utils/map-utils";
-import { type BatchExport } from "@hanzo/shared";
+import { type BatchExport } from "@hanzo/console";
 import { StatusBadge } from "@/src/components/layouts/status-badge";
 import { NumberParam, useQueryParams, withDefault } from "use-query-params";
 import { ActionButton } from "@/src/components/ActionButton";

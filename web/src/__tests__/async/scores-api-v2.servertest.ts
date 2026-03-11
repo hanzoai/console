@@ -4,16 +4,16 @@ import {
   createTrace,
   createSessionScore,
   createDatasetRunScore,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import {
   createObservationsCh,
   createScoresCh,
   createTracesCh,
   createOrgProjectAndApiKey,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import { makeZodVerifiedAPICall } from "@/src/__tests__/test-utils";
-import { GetScoreResponseV2, GetScoresResponseV2 } from "@hanzo/shared";
-import { prisma } from "@hanzo/shared/src/db";
+import { GetScoreResponseV2, GetScoresResponseV2 } from "@hanzo/console";
+import { prisma } from "@hanzo/console-core/src/db";
 import { v4 } from "uuid";
 import { z } from "zod/v4";
 
@@ -1292,9 +1292,7 @@ describe("/api/public/v2/scores API Endpoint", () => {
             }),
           ]),
         );
-        expect(
-          getScore.body.data.find((s: any) => s.id === sId3),
-        ).toBeUndefined();
+        expect(getScore.body.data.find((s: any) => s.id === sId3)).toBeUndefined();
       });
     });
 

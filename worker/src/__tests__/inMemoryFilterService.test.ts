@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { InMemoryFilterService } from "@hanzo/shared/src/server";
+import { InMemoryFilterService } from "@hanzo/console-core/src/server";
 
 describe("InMemoryFilterService", () => {
   const mockData = {

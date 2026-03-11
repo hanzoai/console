@@ -8,7 +8,7 @@ import { Button } from "@/src/components/ui/button";
 import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/src/components/ui/dialog";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { useDatasetItemValidation } from "../hooks/useDatasetItemValidation";
-import type { DatasetItemDomain } from "@hanzo/shared";
+import type { DatasetItemDomain } from "@hanzo/console";
 import { DatasetItemFields } from "./DatasetItemFields";
 import { stringifyDatasetItemData, type DatasetSchema } from "../utils/datasetItemUtils";
 

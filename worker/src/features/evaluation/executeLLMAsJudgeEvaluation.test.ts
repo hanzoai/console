@@ -4,7 +4,7 @@ import { executeLLMAsJudgeEvaluation } from "./evalService";
 import { createMockEvalExecutionDeps } from "./evalExecutionDeps";
 import { UnrecoverableError } from "../../errors/UnrecoverableError";
 import { ExtractedVariable } from "./observationEval/extractObservationVariables";
-import { EvalTargetObject } from "@hanzo/shared";
+import { EvalTargetObject } from "@hanzo/console-core";
 
 /**
  * Unit tests for executeLLMAsJudgeEvaluation with mocked dependencies.
@@ -108,8 +108,7 @@ describe("executeLLMAsJudgeEvaluation", () => {
     });
 
   /** Creates a mock for callLLM with a successful response */
-  const mockSuccessfulLLMCall = (score: number, reasoning: string) =>
-    vi.fn().mockResolvedValue({ score, reasoning });
+  const mockSuccessfulLLMCall = (score: number, reasoning: string) => vi.fn().mockResolvedValue({ score, reasoning });
 
   /** Creates standard deps with all mocks for a successful execution flow */
   const createSuccessfulDeps = (
@@ -277,9 +276,7 @@ describe("executeLLMAsJudgeEvaluation", () => {
         }),
       });
 
-      await expect(
-        executeLLMAsJudgeEvaluation(createExecutionParams({ deps })),
-      ).rejects.toThrow(UnrecoverableError);
+      await expect(executeLLMAsJudgeEvaluation(createExecutionParams({ deps }))).rejects.toThrow(UnrecoverableError);
     });
 
     it("should throw UnrecoverableError if output schema invalid", async () => {
@@ -309,9 +306,7 @@ describe("executeLLMAsJudgeEvaluation", () => {
         }),
       });
 
-      await expect(
-        executeLLMAsJudgeEvaluation(createExecutionParams({ deps })),
-      ).rejects.toThrow(UnrecoverableError);
+      await expect(executeLLMAsJudgeEvaluation(createExecutionParams({ deps }))).rejects.toThrow(UnrecoverableError);
     });
 
     it("should throw UnrecoverableError for missing LLM response fields", async () => {
@@ -323,9 +318,7 @@ describe("executeLLMAsJudgeEvaluation", () => {
         }),
       });
 
-      await expect(
-        executeLLMAsJudgeEvaluation(createExecutionParams({ deps })),
-      ).rejects.toThrow(UnrecoverableError);
+      await expect(executeLLMAsJudgeEvaluation(createExecutionParams({ deps }))).rejects.toThrow(UnrecoverableError);
     });
   });
 
@@ -337,9 +330,9 @@ describe("executeLLMAsJudgeEvaluation", () => {
         uploadScore: vi.fn().mockRejectedValue(new Error("S3 upload failed")),
       });
 
-      await expect(
-        executeLLMAsJudgeEvaluation(createExecutionParams({ deps })),
-      ).rejects.toThrow("Failed to write score");
+      await expect(executeLLMAsJudgeEvaluation(createExecutionParams({ deps }))).rejects.toThrow(
+        "Failed to write score",
+      );
     });
 
     it("should throw error if score ingestion queue fails", async () => {
@@ -347,14 +340,12 @@ describe("executeLLMAsJudgeEvaluation", () => {
         fetchModelConfig: mockValidFetchModelConfig(),
         callLLM: mockSuccessfulLLMCall(0.8, "Good"),
         uploadScore: vi.fn(),
-        enqueueScoreIngestion: vi
-          .fn()
-          .mockRejectedValue(new Error("Queue unavailable")),
+        enqueueScoreIngestion: vi.fn().mockRejectedValue(new Error("Queue unavailable")),
       });
 
-      await expect(
-        executeLLMAsJudgeEvaluation(createExecutionParams({ deps })),
-      ).rejects.toThrow("Failed to write score");
+      await expect(executeLLMAsJudgeEvaluation(createExecutionParams({ deps }))).rejects.toThrow(
+        "Failed to write score",
+      );
     });
   });
 
@@ -372,9 +363,7 @@ describe("executeLLMAsJudgeEvaluation", () => {
       });
 
       // Should not throw - falls back to raw template
-      await executeLLMAsJudgeEvaluation(
-        createExecutionParams({ template: templateWithBadPrompt, deps }),
-      );
+      await executeLLMAsJudgeEvaluation(createExecutionParams({ template: templateWithBadPrompt, deps }));
 
       expect(uploadScore).toHaveBeenCalled();
     });
@@ -406,8 +395,7 @@ describe("executeLLMAsJudgeEvaluation", () => {
         expect.objectContaining({
           messages: expect.arrayContaining([
             expect.objectContaining({
-              content:
-                "Compare input: What is 2+2? with output: The answer is 4",
+              content: "Compare input: What is 2+2? with output: The answer is 4",
             }),
           ]),
         }),
@@ -490,10 +478,7 @@ describe("executeLLMAsJudgeEvaluation", () => {
 
   describe("execution metadata", () => {
     it("should include dataset item ID in metadata when present", async () => {
-      const callLLM = mockSuccessfulLLMCall(
-        0.75,
-        "Dataset evaluation complete",
-      );
+      const callLLM = mockSuccessfulLLMCall(0.75, "Dataset evaluation complete");
       const uploadScore = vi.fn();
       const deps = createSuccessfulDeps({ callLLM, uploadScore });
 
@@ -531,10 +516,7 @@ describe("executeLLMAsJudgeEvaluation", () => {
     });
 
     it("should include observation ID in metadata when present", async () => {
-      const callLLM = mockSuccessfulLLMCall(
-        0.85,
-        "Observation evaluation complete",
-      );
+      const callLLM = mockSuccessfulLLMCall(0.85, "Observation evaluation complete");
       const uploadScore = vi.fn();
       const deps = createSuccessfulDeps({ callLLM, uploadScore });
 
@@ -579,9 +561,7 @@ describe("executeLLMAsJudgeEvaluation", () => {
       const uploadScore = vi.fn();
       const deps = createSuccessfulDeps({ callLLM, uploadScore });
 
-      await executeLLMAsJudgeEvaluation(
-        createExecutionParams({ job: fullJob, deps }),
-      );
+      await executeLLMAsJudgeEvaluation(createExecutionParams({ job: fullJob, deps }));
 
       const expectedMetadata = {
         job_execution_id: jobExecutionId,
@@ -701,29 +681,24 @@ describe("executeLLMAsJudgeEvaluation", () => {
     it("should propagate LLM exception for BullMQ retry", async () => {
       const deps = createMockEvalExecutionDeps({
         fetchModelConfig: mockValidFetchModelConfig(),
-        callLLM: vi
-          .fn()
-          .mockRejectedValue(new Error("LLM service unavailable")),
+        callLLM: vi.fn().mockRejectedValue(new Error("LLM service unavailable")),
       });
 
-      await expect(
-        executeLLMAsJudgeEvaluation(createExecutionParams({ deps })),
-      ).rejects.toThrow("LLM service unavailable");
+      await expect(executeLLMAsJudgeEvaluation(createExecutionParams({ deps }))).rejects.toThrow(
+        "LLM service unavailable",
+      );
     });
 
     it("should propagate rate limit errors from LLM", async () => {
       const rateLimitError = new Error("Rate limit exceeded");
-      (rateLimitError as unknown as { isRetryable: boolean }).isRetryable =
-        true;
+      (rateLimitError as unknown as { isRetryable: boolean }).isRetryable = true;
 
       const deps = createMockEvalExecutionDeps({
         fetchModelConfig: mockValidFetchModelConfig(),
         callLLM: vi.fn().mockRejectedValue(rateLimitError),
       });
 
-      await expect(
-        executeLLMAsJudgeEvaluation(createExecutionParams({ deps })),
-      ).rejects.toThrow("Rate limit exceeded");
+      await expect(executeLLMAsJudgeEvaluation(createExecutionParams({ deps }))).rejects.toThrow("Rate limit exceeded");
     });
   });
 
@@ -734,14 +709,12 @@ describe("executeLLMAsJudgeEvaluation", () => {
         callLLM: mockSuccessfulLLMCall(0.8, "Good"),
         uploadScore: vi.fn(),
         enqueueScoreIngestion: vi.fn(),
-        updateJobExecution: vi
-          .fn()
-          .mockRejectedValue(new Error("Database connection lost")),
+        updateJobExecution: vi.fn().mockRejectedValue(new Error("Database connection lost")),
       });
 
-      await expect(
-        executeLLMAsJudgeEvaluation(createExecutionParams({ deps })),
-      ).rejects.toThrow("Database connection lost");
+      await expect(executeLLMAsJudgeEvaluation(createExecutionParams({ deps }))).rejects.toThrow(
+        "Database connection lost",
+      );
     });
 
     it("should have persisted score before job update fails", async () => {
@@ -753,9 +726,7 @@ describe("executeLLMAsJudgeEvaluation", () => {
         callLLM: mockSuccessfulLLMCall(0.8, "Good"),
         uploadScore,
         enqueueScoreIngestion,
-        updateJobExecution: vi
-          .fn()
-          .mockRejectedValue(new Error("Database connection lost")),
+        updateJobExecution: vi.fn().mockRejectedValue(new Error("Database connection lost")),
       });
 
       try {

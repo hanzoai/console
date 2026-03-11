@@ -4,10 +4,10 @@ import { getPromptByName } from "@/src/features/prompts/server/actions/getPrompt
 import { deletePrompt } from "@/src/features/prompts/server/actions/deletePrompt";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { authorizePromptRequestOrThrow } from "../utils/authorizePromptRequest";
-import { GetPromptByNameSchema, ConsoleNotFoundError, PRODUCTION_LABEL } from "@hanzo/shared";
+import { GetPromptByNameSchema, ConsoleNotFoundError, PRODUCTION_LABEL } from "@hanzo/console";
 import { RateLimitService } from "@/src/features/public-api/server/RateLimitService";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 
 const getPromptNameHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   const authCheck = await authorizePromptRequestOrThrow(req);

@@ -4,13 +4,13 @@ import {
   type availableTraceEvalVariables,
   type EvalTemplate,
   observationEvalVariableColumns,
-} from "@hanzo/shared";
+} from "@hanzo/console";
 import { Card } from "@/src/components/ui/card";
 import { JSONView } from "@/src/components/ui/CodeJsonViewer";
 import DocPopup from "@/src/components/layouts/doc-popup";
 import { cn } from "@/src/utils/tailwind";
 import { type EvalFormType, fieldHasJsonSelectorOption } from "@/src/features/evals/utils/evaluator-form-utils";
-import { EvalTargetObject } from "@hanzo/shared";
+import { EvalTargetObject } from "@hanzo/console";
 import { VariableMappingDescription } from "@/src/features/evals/components/eval-form-descriptions";
 import { EvaluationPromptPreview, getVariableColor } from "@/src/features/evals/components/evaluation-prompt-preview";
 import { Skeleton } from "@/src/components/ui/skeleton";

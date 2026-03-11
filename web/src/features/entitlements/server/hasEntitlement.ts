@@ -1,7 +1,7 @@
 import { entitlementAccess, type Entitlement } from "@/src/features/entitlements/constants/entitlements";
 import { TRPCError } from "@trpc/server";
 import { type User } from "next-auth";
-import { type Plan } from "@hanzo/shared";
+import { type Plan } from "@hanzo/console";
 
 type HasEntitlementParams = {
   entitlement: Entitlement;

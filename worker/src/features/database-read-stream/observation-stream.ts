@@ -4,7 +4,7 @@ import {
   type ScoreDataTypeType,
   TimeFilter,
   TracingSearchType,
-} from "@hanzo/shared";
+} from "@hanzo/console-core";
 import {
   getDistinctScoreNames,
   queryDatastoreStream,
@@ -18,8 +18,8 @@ import {
   datastoreSearchCondition,
   convertObservation,
   shouldSkipObservationsFinal,
-} from "@hanzo/shared/src/server";
-import { prisma } from "@hanzo/shared/src/db";
+} from "@hanzo/console-core/src/server";
+import { prisma } from "@hanzo/console-core/src/db";
 import { Readable } from "stream";
 import { env } from "../../env";
 import { getChunkWithFlattenedScores, prepareScoresForOutput } from "./getDatabaseReadStream";

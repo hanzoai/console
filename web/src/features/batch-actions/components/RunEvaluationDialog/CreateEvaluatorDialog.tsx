@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { EvalTargetObject } from "@hanzo/shared";
+import { EvalTargetObject } from "@hanzo/console";
 import { api } from "@/src/utils/api";
 import {
   Dialog,
@@ -48,28 +48,18 @@ export function CreateEvaluatorDialog(props: CreateEvaluatorDialogProps) {
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="max-h-[90vh] max-w-screen-md pb-0">
         <DialogHeader>
-          <DialogTitle>
-            Create Evaluator for batched observation runs
-          </DialogTitle>
-          <DialogDescription>
-            This form creates an evaluator for batched observation runs.
-          </DialogDescription>
+          <DialogTitle>Create Evaluator for batched observation runs</DialogTitle>
+          <DialogDescription>This form creates an evaluator for batched observation runs.</DialogDescription>
         </DialogHeader>
 
         <DialogBody className="max-h-[72vh] overflow-y-auto pb-0 pr-1">
           {!templateId ? (
             <div className="space-y-4 px-1 pb-1">
-              <p className="text-sm text-muted-foreground">
-                Select an evaluator template to configure.
-              </p>
+              <p className="text-sm text-muted-foreground">Select an evaluator template to configure.</p>
               {templatesQuery.isLoading ? (
-                <p className="text-sm text-muted-foreground">
-                  Loading templates...
-                </p>
+                <p className="text-sm text-muted-foreground">Loading templates...</p>
               ) : templatesQuery.isError ? (
-                <p className="text-sm text-destructive">
-                  Failed to load templates: {templatesQuery.error.message}
-                </p>
+                <p className="text-sm text-destructive">Failed to load templates: {templatesQuery.error.message}</p>
               ) : (
                 <div className="max-h-[55vh] overflow-y-auto rounded-md border p-2">
                   <EvaluatorSelector
@@ -83,11 +73,7 @@ export function CreateEvaluatorDialog(props: CreateEvaluatorDialogProps) {
             </div>
           ) : (
             <div className="pb-1">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setTemplateId(null)}
-              >
+              <Button variant="ghost" size="sm" onClick={() => setTemplateId(null)}>
                 <ChevronLeft className="mr-1 h-4 w-4" />
                 Back to template selection
               </Button>
@@ -107,8 +93,7 @@ export function CreateEvaluatorDialog(props: CreateEvaluatorDialogProps) {
                   });
                   showSuccessToast({
                     title: "Evaluator created",
-                    description:
-                      "Select it in the previous step to run it on selected observations.",
+                    description: "Select it in the previous step to run it on selected observations.",
                   });
                 }}
                 preprocessFormValues={(values) => ({

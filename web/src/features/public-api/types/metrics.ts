@@ -1,5 +1,5 @@
-import { InvalidRequestError, paginationMetaResponseZod, publicApiPaginationZod, singleFilter } from "@hanzo/shared";
-import { stringDateTime } from "@hanzo/shared/src/server";
+import { InvalidRequestError, paginationMetaResponseZod, publicApiPaginationZod, singleFilter } from "@hanzo/console";
+import { stringDateTime } from "@hanzo/console-core/src/server";
 import { z } from "zod/v4";
 import { dimension, granularities, metric, views, viewsV2 } from "@/src/features/query";
 

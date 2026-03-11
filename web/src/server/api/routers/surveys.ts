@@ -2,7 +2,7 @@ import { z } from "zod/v4";
 import { createTRPCRouter, authenticatedProcedure } from "@/src/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { SurveyName } from "@prisma/client";
-import { logger } from "@hanzo/shared/src/server";
+import { logger } from "@hanzo/console-core/src/server";
 
 const surveyResponseSchema = z.object({
   surveyName: z.nativeEnum(SurveyName),
@@ -17,9 +17,7 @@ export const surveysRouter = createTRPCRouter({
       // cross-tenant data association. If no orgId is provided, skip the check.
       let validatedOrgId = input.orgId;
       if (validatedOrgId) {
-        const isMember = ctx.session.user.organizations.some(
-          (org) => org.id === validatedOrgId,
-        );
+        const isMember = ctx.session.user.organizations.some((org) => org.id === validatedOrgId);
         if (!isMember) {
           // Silently drop the orgId rather than leaking membership info
           validatedOrgId = undefined;

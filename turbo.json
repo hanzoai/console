@@ -60,7 +60,7 @@
     },
     "type-check": {
       "cache": false,
-      "dependsOn": ["db:generate", "@hanzo/shared#build"]
+      "dependsOn": ["db:generate", "@hanzo/console-core#build"]
     },
     "test": {
       "dependsOn": ["^test", "db:generate"],

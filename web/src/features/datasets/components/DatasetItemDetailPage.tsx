@@ -6,7 +6,7 @@ import { api } from "@/src/utils/api";
 import { ListTree, MoreVertical, Pencil, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { DatasetStatus } from "@hanzo/shared";
+import { DatasetStatus } from "@hanzo/console";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import {

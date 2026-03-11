@@ -17,9 +17,9 @@ import {
   type ObservationRecordInsertType,
   type EventRecordInsertType,
   type ScoreRecordInsertType,
-} from "@hanzo/shared/src/server";
-import { getGenerationLikeTypes, type FilterCondition } from "@hanzo/shared";
-import { prisma } from "@hanzo/shared/src/db";
+} from "@hanzo/console-core/src/server";
+import { getGenerationLikeTypes, type FilterCondition } from "@hanzo/console";
+import { prisma } from "@hanzo/console-core/src/db";
 import { appRouter } from "@/src/server/api/root";
 import { createInnerTRPCContext } from "@/src/server/api/trpc";
 import type { Session } from "next-auth";

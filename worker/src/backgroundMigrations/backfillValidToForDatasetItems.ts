@@ -1,6 +1,6 @@
 import { IBackgroundMigration } from "./IBackgroundMigration";
-import { logger } from "@hanzo/shared/src/server";
-import { prisma, Prisma } from "@hanzo/shared/src/db";
+import { logger } from "@hanzo/console-core/src/server";
+import { prisma, Prisma } from "@hanzo/console-core/src/db";
 import { parseArgs } from "node:util";
 import { backfillValidToForDatasetItems } from "./utils/datasetItems";
 

@@ -1,8 +1,8 @@
 /** @jest-environment node */
 
 // Mock queue operations to avoid Redis dependency in tests
-jest.mock("@hanzo/shared/src/server", () => {
-  const actual = jest.requireActual("@hanzo/shared/src/server");
+jest.mock("@hanzo/console-core/src/server", () => {
+  const actual = jest.requireActual("@hanzo/console-core/src/server");
   return {
     ...actual,
     // Mock queue getInstance to return a no-op queue
@@ -21,7 +21,7 @@ jest.mock("@hanzo/shared/src/server", () => {
   };
 });
 
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 import { nanoid } from "nanoid";
 import { createMcpTestSetup, createPromptInDb, verifyAuditLog } from "./mcp-helpers";
 

@@ -13,7 +13,7 @@
  * All preferences are managed via ViewPreferencesContext and persisted to localStorage.
  */
 
-import { ObservationLevel } from "@hanzo/shared";
+import { ObservationLevel } from "@hanzo/console";
 import { Settings2 } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import {

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { api } from "@/src/utils/api";
 import { useState } from "react";
-import { type EvalTemplate } from "@hanzo/shared/src/db";
+import { type EvalTemplate } from "@hanzo/console-core/src/db";
 
 export function useTemplateValidation({
   projectId,

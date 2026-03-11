@@ -4,16 +4,16 @@ import {
   createTrace,
   createSessionScore,
   getScoresByIds,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import {
   createObservationsCh,
   createScoresCh,
   createTracesCh,
   createOrgProjectAndApiKey,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import { makeAPICall, makeZodVerifiedAPICall } from "@/src/__tests__/test-utils";
-import { DeleteScoreResponseV1, GetScoreResponseV1, GetScoresResponseV1 } from "@hanzo/shared";
-import { prisma } from "@hanzo/shared/src/db";
+import { DeleteScoreResponseV1, GetScoreResponseV1, GetScoresResponseV1 } from "@hanzo/console";
+import { prisma } from "@hanzo/console-core/src/db";
 import { v4 } from "uuid";
 import { z } from "zod/v4";
 import waitForExpect from "wait-for-expect";

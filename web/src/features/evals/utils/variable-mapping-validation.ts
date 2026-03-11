@@ -1,5 +1,5 @@
 import { z } from "zod/v4";
-import { variableMapping, observationVariableMapping, type EvalTargetObject } from "@hanzo/shared";
+import { variableMapping, observationVariableMapping, type EvalTargetObject } from "@hanzo/console";
 import { isEventTarget, isExperimentTarget } from "@/src/features/evals/utils/typeHelpers";
 
 type FormMappingValue = {

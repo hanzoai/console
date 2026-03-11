@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { api } from "@/src/utils/api";
 import { type UseFormReturn } from "react-hook-form";
-import { extractVariables, PromptType, extractPlaceholderNames, type PromptMessage } from "@hanzo/shared";
+import { extractVariables, PromptType, extractPlaceholderNames, type PromptMessage } from "@hanzo/console";
 
 type ExperimentPromptDataProps = {
   projectId: string;

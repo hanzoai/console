@@ -5,7 +5,7 @@ import { SupportOrUpgradePage } from "@/src/features/billing/components/SupportO
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { AnnotationQueueItemPage } from "@/src/features/annotation-queues/components/AnnotationQueueItemPage";
 import { api } from "@/src/utils/api";
-import { AnnotationQueueObjectType } from "@hanzo/shared";
+import { AnnotationQueueObjectType } from "@hanzo/console";
 import { Goal, Network } from "lucide-react";
 import Page from "@/src/components/layouts/page";
 

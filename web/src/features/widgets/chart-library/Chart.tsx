@@ -8,12 +8,12 @@ import HorizontalBarChart from "@/src/features/widgets/chart-library/HorizontalB
 import VerticalBarChart from "@/src/features/widgets/chart-library/VerticalBarChart";
 import PieChart from "@/src/features/widgets/chart-library/PieChart";
 import HistogramChart from "@/src/features/widgets/chart-library/HistogramChart";
-import { type DashboardWidgetChartType } from "@hanzo/shared/src/db";
+import { type DashboardWidgetChartType } from "@hanzo/console-core/src/db";
 import { Button } from "@/src/components/ui/button";
 import { AlertCircle } from "lucide-react";
 import { BigNumber } from "@/src/features/widgets/chart-library/BigNumber";
 import { PivotTable } from "@/src/features/widgets/chart-library/PivotTable";
-import { type OrderByState } from "@hanzo/shared";
+import { type OrderByState } from "@hanzo/console";
 
 export const Chart = ({
   chartType,
@@ -55,8 +55,7 @@ export const Chart = ({
     return data.map((item) => {
       if (!item.time_dimension) return { ...item, time_dimension: undefined };
       const value = item.time_dimension;
-      const looksLikeIso =
-        value.includes("T") || /^\d{4}-\d{2}-\d{2}$/.test(value);
+      const looksLikeIso = value.includes("T") || /^\d{4}-\d{2}-\d{2}$/.test(value);
       if (!looksLikeIso) {
         return { ...item, time_dimension: value };
       }
@@ -138,12 +137,7 @@ export const Chart = ({
           />
         );
       case "HISTOGRAM":
-        return (
-          <HistogramChart
-            data={renderedData}
-            subtleFill={chartConfig?.subtle_fill}
-          />
-        );
+        return <HistogramChart data={renderedData} subtleFill={chartConfig?.subtle_fill} />;
       case "NUMBER": {
         return <BigNumber data={renderedData} />;
       }

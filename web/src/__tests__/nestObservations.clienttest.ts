@@ -1,5 +1,5 @@
 // Mock shared dependencies
-jest.mock("@hanzo/shared", () => ({
+jest.mock("@hanzo/console", () => ({
   ObservationLevel: {
     DEBUG: "DEBUG",
     DEFAULT: "DEFAULT",

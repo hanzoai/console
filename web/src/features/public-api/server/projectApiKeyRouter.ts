@@ -3,9 +3,9 @@ import { throwIfNoProjectAccess } from "@/src/features/rbac/utils/checkProjectAc
 import { createTRPCRouter, protectedProjectProcedure } from "@/src/server/api/trpc";
 import * as z from "zod/v4";
 import { ApiAuthService } from "@/src/features/public-api/server/apiAuth";
-import { redis } from "@hanzo/shared/src/server";
-import { createAndAddApiKeysToDb } from "@hanzo/shared/src/server/auth/apiKeys";
-import { StringNoHTML } from "@hanzo/shared";
+import { redis } from "@hanzo/console-core/src/server";
+import { createAndAddApiKeysToDb } from "@hanzo/console-core/src/server/auth/apiKeys";
+import { StringNoHTML } from "@hanzo/console";
 
 export const projectApiKeysRouter = createTRPCRouter({
   byProjectId: protectedProjectProcedure

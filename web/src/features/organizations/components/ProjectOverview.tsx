@@ -12,7 +12,7 @@ import { Fragment } from "react";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import { createOrganizationRoute, createProjectRoute } from "@/src/features/setup/setupRoutes";
-import { isCloudPlan, planLabels } from "@hanzo/shared";
+import { isCloudPlan, planLabels } from "@hanzo/console";
 import ContainerPage from "@/src/components/layouts/container-page";
 import { type User } from "next-auth";
 

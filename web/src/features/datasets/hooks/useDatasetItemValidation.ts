@@ -1,6 +1,6 @@
 import { useMemo } from "react";
-import { validateFieldAgainstSchema } from "@hanzo/shared";
-import type { Prisma } from "@hanzo/shared";
+import { validateFieldAgainstSchema } from "@hanzo/console";
+import type { Prisma } from "@hanzo/console";
 
 type Dataset = {
   id: string;

@@ -5,7 +5,7 @@ import {
   AnnotationQueueObjectType,
   isGenerationLike,
   ConsoleInternalTraceEnvironment,
-} from "@hanzo/shared";
+} from "@hanzo/console";
 import { AggUsageBadge } from "@/src/components/token-usage-badge";
 import { Badge } from "@/src/components/ui/badge";
 import { type ObservationReturnTypeWithMetadata } from "@/src/server/api/routers/traces";

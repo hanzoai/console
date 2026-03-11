@@ -5,9 +5,9 @@ import {
   getLastEventLogPrimaryKey,
   insertIntoS3RefsTableFromEventLog,
   logger,
-} from "@hanzo/shared/src/server";
+} from "@hanzo/console-core/src/server";
 import { parseArgs } from "node:util";
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@hanzo/console-core/src/db";
 import { env } from "../env";
 
 // This is hard-coded in our migrations and uniquely identifies the row in background_migrations table

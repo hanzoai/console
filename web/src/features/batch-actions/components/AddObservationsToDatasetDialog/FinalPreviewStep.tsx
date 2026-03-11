@@ -4,8 +4,8 @@ import { AlertTriangle, Pencil } from "lucide-react";
 import { JSONView } from "@/src/components/ui/CodeJsonViewer";
 import { cn } from "@/src/utils/tailwind";
 import type { FinalPreviewStepProps, DialogStep } from "./types";
-import { applyFullMapping } from "@hanzo/shared";
-import type { MappingError } from "@hanzo/shared";
+import { applyFullMapping } from "@hanzo/console";
+import type { MappingError } from "@hanzo/console";
 
 export function FinalPreviewStep({ dataset, mapping, observationData, totalCount, onEditStep }: FinalPreviewStepProps) {
   // Compute the full preview
@@ -63,8 +63,7 @@ export function FinalPreviewStep({ dataset, mapping, observationData, totalCount
                 Some JSON paths did not match the preview observation
               </p>
               <p className="text-xs text-amber-600/80 dark:text-amber-500/80">
-                Observations with failed mappings will be skipped during
-                processing.
+                Observations with failed mappings will be skipped during processing.
               </p>
               <div className="flex flex-wrap gap-2 pt-1">
                 {Object.entries(errorsByField).map(([field]) => (
@@ -78,9 +77,7 @@ export function FinalPreviewStep({ dataset, mapping, observationData, totalCount
                       if (step) onEditStep(step);
                     }}
                   >
-                    Edit{" "}
-                    {field === "expectedOutput" ? "expected output" : field}{" "}
-                    mapping
+                    Edit {field === "expectedOutput" ? "expected output" : field} mapping
                   </Button>
                 ))}
               </div>
@@ -139,22 +136,13 @@ function PreviewCard({ label, data, onEdit, errors }: PreviewCardProps) {
   const hasErrors = errors && errors.length > 0;
 
   return (
-    <div
-      className={cn("rounded-lg border", hasErrors && "border-amber-500/50")}
-    >
+    <div className={cn("rounded-lg border", hasErrors && "border-amber-500/50")}>
       <div className="flex items-center justify-between border-b bg-muted/30 px-4 py-2">
         <span className="flex items-center gap-1.5 text-sm font-medium">
-          {hasErrors && (
-            <AlertTriangle className="h-3.5 w-3.5 text-amber-600 dark:text-amber-500" />
-          )}
+          {hasErrors && <AlertTriangle className="h-3.5 w-3.5 text-amber-600 dark:text-amber-500" />}
           {label}
         </span>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onEdit}
-          className="h-7 gap-1 text-xs"
-        >
+        <Button variant="ghost" size="sm" onClick={onEdit} className="h-7 gap-1 text-xs">
           <Pencil className="h-3 w-3" />
           Edit
         </Button>
@@ -169,9 +157,8 @@ function PreviewCard({ label, data, onEdit, errors }: PreviewCardProps) {
       {hasErrors && (
         <div className="border-t border-amber-500/50 bg-amber-50 px-4 py-2 dark:bg-amber-950/30">
           <p className="text-xs text-amber-600 dark:text-amber-500">
-            {errors.length} path{errors.length !== 1 ? "s" : ""} did not match
-            in preview observation. These items will be skipped during
-            processing.
+            {errors.length} path{errors.length !== 1 ? "s" : ""} did not match in preview observation. These items will
+            be skipped during processing.
           </p>
         </div>
       )}

@@ -1,6 +1,6 @@
 import { api } from "@/src/utils/api";
 import { useMemo } from "react";
-import { type FilterState, type TimeFilter } from "@hanzo/shared";
+import { type FilterState, type TimeFilter } from "@hanzo/console";
 
 type UseEventsFilterOptionsParams = {
   projectId: string;
@@ -72,8 +72,7 @@ export function useEventsFilterOptions({
       experimentDatasetId: filterOptions.data?.experimentDatasetId ?? undefined,
       experimentId: filterOptions.data?.experimentId ?? undefined,
       experimentName: filterOptions.data?.experimentName ?? undefined,
-      hasParentObservation:
-        filterOptions.data?.hasParentObservation ?? undefined,
+      hasParentObservation: filterOptions.data?.hasParentObservation ?? undefined,
       toolNames: filterOptions.data?.toolNames ?? undefined,
       calledToolNames: filterOptions.data?.calledToolNames ?? undefined,
       toolDefinitions: [],
