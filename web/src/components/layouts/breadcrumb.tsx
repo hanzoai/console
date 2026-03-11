@@ -85,7 +85,7 @@ const BreadcrumbComponent = ({
               {organization?.name ?? "Organization"}
               {isCloudPlan(organization?.plan) && organization.id !== env.NEXT_PUBLIC_DEMO_ORG_ID && (
                 <Badge className="ml-1 px-1 py-0 text-xs font-normal" variant="secondary">
-                  {planLabels[organization.plan]}
+                  {planLabels[organization.plan as keyof typeof planLabels]}
                 </Badge>
               )}
               <ChevronDownIcon className="h-4 w-4" />
