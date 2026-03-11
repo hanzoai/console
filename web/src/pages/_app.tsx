@@ -21,7 +21,8 @@ import { useEffect, useRef } from "react";
 import { useRouter } from "next/router";
 
 import insights from "@hanzo/insights";
-import { PostHogProvider as InsightsProvider } from "@hanzo/insights-react";
+// PostHogProvider from @hanzo/insights-react crashes with React 19 — use global insights client directly
+// import { PostHogProvider as InsightsProvider } from "@hanzo/insights-react";
 import prexit from "prexit";
 
 // Custom polyfills not yet available in `next-core`:
@@ -124,31 +125,29 @@ const MyApp: AppType<{ session: Session | null }> = ({ Component, pageProps: { s
       <QueryParamProvider adapter={NextAdapterPages} options={{ enableBatching: true }}>
         <TooltipProvider>
           <CommandMenuProvider>
-            <InsightsProvider client={insights}>
-              <SessionProvider
-                session={session}
-                refetchOnWindowFocus={true}
-                refetchInterval={5 * 60} // 5 minutes
-                basePath={`${env.NEXT_PUBLIC_BASE_PATH ?? ""}/api/auth`}
-              >
-                <DetailPageListsProvider>
-                  <MarkdownContextProvider>
-                    <ThemeProvider attribute="class" enableSystem disableTransitionOnChange>
-                      <ScoreCacheProvider>
-                        <CorrectionCacheProvider>
-                          <SupportDrawerProvider defaultOpen={false}>
-                            <AppLayout>
-                              <Component {...pageProps} />
-                              <UserTracking />
-                            </AppLayout>
-                          </SupportDrawerProvider>
-                        </CorrectionCacheProvider>
-                      </ScoreCacheProvider>
-                    </ThemeProvider>
-                  </MarkdownContextProvider>
-                </DetailPageListsProvider>
-              </SessionProvider>
-            </InsightsProvider>
+            <SessionProvider
+              session={session}
+              refetchOnWindowFocus={true}
+              refetchInterval={5 * 60} // 5 minutes
+              basePath={`${env.NEXT_PUBLIC_BASE_PATH ?? ""}/api/auth`}
+            >
+              <DetailPageListsProvider>
+                <MarkdownContextProvider>
+                  <ThemeProvider attribute="class" enableSystem disableTransitionOnChange>
+                    <ScoreCacheProvider>
+                      <CorrectionCacheProvider>
+                        <SupportDrawerProvider defaultOpen={false}>
+                          <AppLayout>
+                            <Component {...pageProps} />
+                            <UserTracking />
+                          </AppLayout>
+                        </SupportDrawerProvider>
+                      </CorrectionCacheProvider>
+                    </ScoreCacheProvider>
+                  </ThemeProvider>
+                </MarkdownContextProvider>
+              </DetailPageListsProvider>
+            </SessionProvider>
           </CommandMenuProvider>
         </TooltipProvider>
       </QueryParamProvider>

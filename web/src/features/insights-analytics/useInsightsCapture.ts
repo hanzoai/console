@@ -1,5 +1,4 @@
-import { type CaptureResult, type CaptureOptions } from "@hanzo/insights";
-import { usePostHog as useInsights } from "@hanzo/insights-react";
+import insights, { type CaptureResult, type CaptureOptions } from "@hanzo/insights";
 
 // resource:action, only use snake_case
 // Exported to silence @typescript-eslint/no-unused-vars v8 warning
@@ -183,8 +182,6 @@ type EventName = {
 }[keyof typeof events];
 
 export const useInsightsCapture = () => {
-  const insights = useInsights();
-
   function capture(
     eventName: EventName,
     properties?: Record<string, any> | null,
