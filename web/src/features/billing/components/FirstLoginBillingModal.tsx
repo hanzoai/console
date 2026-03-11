@@ -5,13 +5,13 @@
  * via billing.hanzo.ai/topup to unlock the $5 trial credit.
  *
  * Dismissed permanently via localStorage (per user ID).
- * Also dismisses automatically when billing.hanzo.ai sends a topup-complete postMessage.
+ * Opens billing in a new tab instead of iframe (billing.hanzo.ai blocks framing).
  */
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/src/components/ui/dialog";
 import { Button } from "@/src/components/ui/button";
-import { X } from "lucide-react";
+import { ExternalLink, CreditCard } from "lucide-react";
 
 const BILLING_URL = process.env.NEXT_PUBLIC_BILLING_URL ?? "https://billing.hanzo.ai";
 const STORAGE_KEY_PREFIX = "hanzo:billing:card-captured:";
@@ -50,7 +50,6 @@ function isSkipExpired(userId: string) {
 export function FirstLoginBillingModal() {
   const { data: session, status } = useSession();
   const [open, setOpen] = useState(false);
-  const iframeRef = useRef<HTMLIFrameElement>(null);
 
   const userId = session?.user?.id ?? session?.user?.email ?? "";
 
@@ -63,12 +62,12 @@ export function FirstLoginBillingModal() {
     // Skipped recently
     if (hasSkipped(userId) && !isSkipExpired(userId)) return;
 
-    // First authenticated session → show modal after short delay
+    // First authenticated session -> show modal after short delay
     const timer = setTimeout(() => setOpen(true), 1500);
     return () => clearTimeout(timer);
   }, [status, userId]);
 
-  // Listen for success postMessage from billing iframe
+  // Listen for topup-complete postMessage (fired when user returns from billing tab)
   useEffect(() => {
     const handler = (event: MessageEvent) => {
       if (event.origin !== BILLING_URL.replace(/\/$/, "")) return;
@@ -86,9 +85,15 @@ export function FirstLoginBillingModal() {
     setOpen(false);
   }
 
-  if (!userId || !open) return null;
+  function handleOpenBilling() {
+    const billingUrl = `${BILLING_URL}/topup?userId=${encodeURIComponent(userId)}&credit=500`;
+    window.open(billingUrl, "_blank", "noopener,noreferrer");
+    // Mark as captured optimistically — user opened billing
+    if (userId) markCapture(userId);
+    setOpen(false);
+  }
 
-  const iframeSrc = `${BILLING_URL}/topup?userId=${encodeURIComponent(userId)}&embed=1&credit=500`;
+  if (!userId || !open) return null;
 
   return (
     <Dialog
@@ -97,39 +102,34 @@ export function FirstLoginBillingModal() {
         if (!v) handleSkip();
       }}
     >
-      <DialogContent className="max-w-lg p-0 overflow-hidden gap-0">
-        <DialogHeader className="px-6 pt-6 pb-4 border-b">
+      <DialogContent className="max-w-md">
+        <DialogHeader>
           <DialogTitle className="text-lg font-semibold">Claim your $5 trial credit</DialogTitle>
           <DialogDescription className="text-sm text-muted-foreground mt-1">
             Add a payment method to activate your free $5 credit and unlock full access to Hanzo Cloud.
           </DialogDescription>
-          <button
-            onClick={handleSkip}
-            className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-          >
-            <X className="h-4 w-4" />
-            <span className="sr-only">Close</span>
-          </button>
         </DialogHeader>
 
-        <div className="relative w-full" style={{ height: 480 }}>
-          <iframe
-            ref={iframeRef}
-            src={iframeSrc}
-            className="absolute inset-0 w-full h-full border-0"
-            title="Add payment method"
-            allow="payment"
-            sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
-          />
-        </div>
+        <div className="flex flex-col gap-4 py-4">
+          <div className="flex items-start gap-3 rounded-lg border p-4 bg-muted/30">
+            <CreditCard className="h-5 w-5 mt-0.5 text-muted-foreground shrink-0" />
+            <div className="text-sm">
+              <p>You&apos;ll be taken to our secure billing portal to add a payment method.</p>
+              <p className="text-muted-foreground mt-1">
+                Secured by Square. Your card details are never stored on our servers.
+              </p>
+            </div>
+          </div>
 
-        <div className="px-6 py-4 border-t flex items-center justify-between bg-muted/30">
-          <p className="text-xs text-muted-foreground">
-            Secured by Square. Your card details are never stored on our servers.
-          </p>
-          <Button variant="ghost" size="sm" onClick={handleSkip} className="text-muted-foreground">
-            Skip for now
-          </Button>
+          <div className="flex items-center justify-between gap-3">
+            <Button variant="ghost" size="sm" onClick={handleSkip} className="text-muted-foreground">
+              Skip for now
+            </Button>
+            <Button onClick={handleOpenBilling} className="gap-2">
+              Add payment method
+              <ExternalLink className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
