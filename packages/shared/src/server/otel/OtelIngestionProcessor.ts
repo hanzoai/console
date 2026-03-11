@@ -118,7 +118,7 @@ const observationTypeMapper = new ObservationTypeMapperRegistry();
  * for converting OTEL spans to Hanzo events.
  */
 export class OtelIngestionProcessor {
-  private static readonly OTEL_CONVERSION_FAILURE_METRIC = "langfuse.ingestion.otel.conversion_failure";
+  private static readonly OTEL_CONVERSION_FAILURE_METRIC = "console.ingestion.otel.conversion_failure";
 
   private seenTraces: Set<string> = new Set();
   private isInitialized = false;

@@ -4215,36 +4215,36 @@ describe("events_traces traceName filter", () => {
     };
 
     it("should include rootEventCondition subquery when window is within threshold", async () => {
-      const originalValue = env.LANGFUSE_ROOT_EVENT_CONDITION_MAX_WINDOW_HOURS;
+      const originalValue = env.CONSOLE_ROOT_EVENT_CONDITION_MAX_WINDOW_HOURS;
       try {
         // 168 hours (7 days) threshold, 72-hour window → should include subquery
-        (env as any).LANGFUSE_ROOT_EVENT_CONDITION_MAX_WINDOW_HOURS = 168;
+        (env as any).CONSOLE_ROOT_EVENT_CONDITION_MAX_WINDOW_HOURS = 168;
         const builder = new QueryBuilder(undefined, "v2");
         const { query: sql } = await builder.build(tracesV2Query, randomUUID());
         expect(sql).toContain("IN (SELECT trace_id");
       } finally {
-        (env as any).LANGFUSE_ROOT_EVENT_CONDITION_MAX_WINDOW_HOURS = originalValue;
+        (env as any).CONSOLE_ROOT_EVENT_CONDITION_MAX_WINDOW_HOURS = originalValue;
       }
     });
 
     it("should skip rootEventCondition subquery when window exceeds threshold", async () => {
-      const originalValue = env.LANGFUSE_ROOT_EVENT_CONDITION_MAX_WINDOW_HOURS;
+      const originalValue = env.CONSOLE_ROOT_EVENT_CONDITION_MAX_WINDOW_HOURS;
       try {
         // 24-hour threshold, 72-hour window → should skip subquery
-        (env as any).LANGFUSE_ROOT_EVENT_CONDITION_MAX_WINDOW_HOURS = 24;
+        (env as any).CONSOLE_ROOT_EVENT_CONDITION_MAX_WINDOW_HOURS = 24;
         const builder = new QueryBuilder(undefined, "v2");
         const { query: sql } = await builder.build(tracesV2Query, randomUUID());
         expect(sql).not.toContain("IN (SELECT trace_id");
       } finally {
-        (env as any).LANGFUSE_ROOT_EVENT_CONDITION_MAX_WINDOW_HOURS = originalValue;
+        (env as any).CONSOLE_ROOT_EVENT_CONDITION_MAX_WINDOW_HOURS = originalValue;
       }
     });
 
     it("should always include rootEventCondition subquery when threshold is 0", async () => {
-      const originalValue = env.LANGFUSE_ROOT_EVENT_CONDITION_MAX_WINDOW_HOURS;
+      const originalValue = env.CONSOLE_ROOT_EVENT_CONDITION_MAX_WINDOW_HOURS;
       try {
         // 0 = always apply, even for a very wide window
-        (env as any).LANGFUSE_ROOT_EVENT_CONDITION_MAX_WINDOW_HOURS = 0;
+        (env as any).CONSOLE_ROOT_EVENT_CONDITION_MAX_WINDOW_HOURS = 0;
         const builder = new QueryBuilder(undefined, "v2");
         const { query: sql } = await builder.build(
           {
@@ -4256,7 +4256,7 @@ describe("events_traces traceName filter", () => {
         );
         expect(sql).toContain("IN (SELECT trace_id");
       } finally {
-        (env as any).LANGFUSE_ROOT_EVENT_CONDITION_MAX_WINDOW_HOURS = originalValue;
+        (env as any).CONSOLE_ROOT_EVENT_CONDITION_MAX_WINDOW_HOURS = originalValue;
       }
     });
   });
