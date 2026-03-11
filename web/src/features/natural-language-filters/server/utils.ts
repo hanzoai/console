@@ -1,5 +1,5 @@
 import { LLMAdapter } from "@hanzo/console-core/src/server";
-import { Hanzo } from "@hanzo/console-core/src/index";
+import { Hanzo } from "@hanzo/console";
 import { env } from "@/src/env.mjs";
 import { type FilterCondition, singleFilter } from "@hanzo/console-core";
 import { z } from "zod/v4";

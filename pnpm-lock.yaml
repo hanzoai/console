@@ -420,6 +420,9 @@ importers:
       '@ferrucc-io/emoji-picker':
         specifier: ^0.0.47
         version: 0.0.47(@babel/core@7.28.5)(@babel/template@7.28.6)(@types/react@19.2.3)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@24.3.0)(typescript@5.9.2)))
+      '@hanzo/console':
+        specifier: workspace:*
+        version: link:../packages/console-js
       '@hanzo/console-core':
         specifier: workspace:*
         version: link:../packages/shared
