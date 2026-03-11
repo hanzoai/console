@@ -59,9 +59,9 @@
     --sidebar-border: 0 0% 20%;
     --sidebar-ring: 0 0% 40%;
 
-    /* Hanzo Brand Red #fd4444 */
-    --primary-accent: 0 98% 63%;
-    --hover-primary-accent: 0 90% 55%;
+    /* Hanzo Brand Monochrome #e4e4e7 */
+    --primary-accent: 240 5% 90%;
+    --hover-primary-accent: 240 4% 83%;
 
     --muted-green: 84 81% 44%;
     --muted-magenta: 330 90% 70%;
