@@ -1,5 +1,5 @@
 import { prisma } from "@hanzo/console-core/src/db";
-import { ConsoleNotFoundError } from "@hanzo/console";
+import { ConsoleNotFoundError } from "@hanzo/console-core";
 import {
   GetDatasetV2Query,
   GetDatasetV2Response,

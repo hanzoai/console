@@ -18,7 +18,7 @@ import {
   type EventRecordInsertType,
   type ScoreRecordInsertType,
 } from "@hanzo/console-core/src/server";
-import { getGenerationLikeTypes, type FilterCondition } from "@hanzo/console";
+import { getGenerationLikeTypes, type FilterCondition } from "@hanzo/console-core";
 import { prisma } from "@hanzo/console-core/src/db";
 import { appRouter } from "@/src/server/api/root";
 import { createInnerTRPCContext } from "@/src/server/api/trpc";

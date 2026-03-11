@@ -25,7 +25,7 @@ import {
   useDatasetCompareFields,
 } from "@/src/features/datasets/contexts/DatasetCompareFieldsContext";
 import { useColumnFilterState } from "@/src/features/filters/hooks/useColumnFilterState";
-import { type Prisma } from "@hanzo/console";
+import { type Prisma } from "@hanzo/console-core";
 import { type EnrichedDatasetRunItem } from "@hanzo/console-core/src/server";
 import { usePeekNavigation } from "@/src/components/table/peek/hooks/usePeekNavigation";
 import { PeekViewTraceDetail } from "@/src/components/table/peek/peek-trace-detail";

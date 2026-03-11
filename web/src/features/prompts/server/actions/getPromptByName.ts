@@ -1,4 +1,4 @@
-import { InvalidRequestError, PRODUCTION_LABEL, type Prompt } from "@hanzo/console";
+import { InvalidRequestError, PRODUCTION_LABEL, type Prompt } from "@hanzo/console-core";
 import { PromptService, redis, recordIncrement } from "@hanzo/console-core/src/server";
 import { prisma } from "@hanzo/console-core/src/db";
 

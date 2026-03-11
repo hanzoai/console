@@ -4,8 +4,8 @@ import { AlertTriangle, Pencil } from "lucide-react";
 import { JSONView } from "@/src/components/ui/CodeJsonViewer";
 import { cn } from "@/src/utils/tailwind";
 import type { FinalPreviewStepProps, DialogStep } from "./types";
-import { applyFullMapping } from "@hanzo/console";
-import type { MappingError } from "@hanzo/console";
+import { applyFullMapping } from "@hanzo/console-core";
+import type { MappingError } from "@hanzo/console-core";
 
 export function FinalPreviewStep({ dataset, mapping, observationData, totalCount, onEditStep }: FinalPreviewStepProps) {
   // Compute the full preview

@@ -1,5 +1,5 @@
 import { api } from "@/src/utils/api";
-import { type ScoreSourceType, type FilterState, type ScoreDataTypeType } from "@hanzo/console";
+import { type ScoreSourceType, type FilterState, type ScoreDataTypeType } from "@hanzo/console-core";
 import { type ViewVersion } from "@/src/features/query";
 import { createTracesTimeFilter } from "@/src/features/dashboard/lib/dashboard-utils";
 import React from "react";

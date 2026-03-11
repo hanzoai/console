@@ -25,7 +25,7 @@ import {
   ScoreSourceEnum,
   ScoreDataTypeEnum,
   CORRECTION_NAME,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 import {
   getScoresGroupedByNameSourceType,
   getScoresUiCount,

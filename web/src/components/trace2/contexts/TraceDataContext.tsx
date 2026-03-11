@@ -12,7 +12,7 @@
  */
 
 import { createContext, useContext, useMemo, type ReactNode } from "react";
-import { type TraceDomain, type ScoreDomain } from "@hanzo/console";
+import { type TraceDomain, type ScoreDomain } from "@hanzo/console-core";
 import { type ObservationReturnTypeWithMetadata } from "@/src/server/api/routers/traces";
 import { type WithStringifiedMetadata } from "@/src/utils/clientSideDomainTypes";
 import { type TreeNode, type TraceSearchListItem } from "../lib/types";

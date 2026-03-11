@@ -1,6 +1,6 @@
 import { ApiAuthService } from "@/src/features/public-api/server/apiAuth";
 import { type NextApiRequest } from "next";
-import { UnauthorizedError, ForbiddenError } from "@hanzo/console";
+import { UnauthorizedError, ForbiddenError } from "@hanzo/console-core";
 import { prisma } from "@hanzo/console-core/src/db";
 import { type AuthHeaderValidVerificationResult, redis } from "@hanzo/console-core/src/server";
 

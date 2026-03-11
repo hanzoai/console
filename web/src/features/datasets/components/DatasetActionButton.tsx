@@ -5,7 +5,7 @@ import { useState, forwardRef } from "react";
 import { DialogTrigger } from "@radix-ui/react-dialog";
 import { DatasetForm } from "@/src/features/datasets/components/DatasetForm";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
-import { type Prisma } from "@hanzo/console";
+import { type Prisma } from "@hanzo/console-core";
 import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 
 interface BaseDatasetButtonProps {

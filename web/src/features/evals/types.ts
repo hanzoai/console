@@ -1,5 +1,5 @@
 import { z } from "zod/v4";
-import { JobConfigState, type JobConfiguration } from "@hanzo/console";
+import { JobConfigState, type JobConfiguration } from "@hanzo/console-core";
 
 export enum EvalReferencedEvaluators {
   UPDATE = "update",

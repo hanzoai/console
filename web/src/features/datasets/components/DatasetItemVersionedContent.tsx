@@ -1,5 +1,5 @@
 import { DatasetItemDiffView } from "./DatasetItemDiffView";
-import type { DatasetItemDomain } from "@hanzo/console";
+import type { DatasetItemDomain } from "@hanzo/console-core";
 import { stringifyDatasetItemData, type DatasetSchema } from "../utils/datasetItemUtils";
 import { DatasetItemFields } from "@/src/features/datasets/components/DatasetItemFields";
 

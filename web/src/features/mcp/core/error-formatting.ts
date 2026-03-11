@@ -14,7 +14,7 @@ import {
   ForbiddenError,
   ConsoleNotFoundError,
   InvalidRequestError,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 import { logger } from "@hanzo/console-core/src/server";
 
 /**

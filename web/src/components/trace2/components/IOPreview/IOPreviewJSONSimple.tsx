@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { type Prisma, type ScoreDomain, deepParseJson } from "@hanzo/console";
+import { type Prisma, type ScoreDomain, deepParseJson } from "@hanzo/console-core";
 import { PrettyJsonView } from "@/src/components/ui/PrettyJsonView";
 import { type MediaReturnType } from "@/src/features/media/validation";
 import { CorrectedOutputField } from "./components/CorrectedOutputField";

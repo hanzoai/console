@@ -1,4 +1,4 @@
-import { type FilterState, singleFilter, type SingleValueOption } from "@hanzo/console";
+import { type FilterState, singleFilter, type SingleValueOption } from "@hanzo/console-core";
 import { encodeDelimitedArray, decodeDelimitedArray } from "use-query-params";
 
 // Escape pipe characters in values to avoid conflicts with the delimiter

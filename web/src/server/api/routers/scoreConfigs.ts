@@ -11,7 +11,7 @@ import {
   ScoreConfigDataType,
   validateDbScoreConfig,
   validateDbScoreConfigSafe,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 import { traceException } from "@hanzo/console-core/src/server";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
 

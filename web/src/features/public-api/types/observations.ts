@@ -6,7 +6,7 @@ import {
   publicApiPaginationZod,
   singleFilter,
   InvalidRequestError,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 
 import {
   reduceUsageOrCostDetails,

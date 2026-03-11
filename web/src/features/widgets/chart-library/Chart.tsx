@@ -13,7 +13,7 @@ import { Button } from "@/src/components/ui/button";
 import { AlertCircle } from "lucide-react";
 import { BigNumber } from "@/src/features/widgets/chart-library/BigNumber";
 import { PivotTable } from "@/src/features/widgets/chart-library/PivotTable";
-import { type OrderByState } from "@hanzo/console";
+import { type OrderByState } from "@hanzo/console-core";
 
 export const Chart = ({
   chartType,

@@ -24,7 +24,7 @@ import {
   type ActionTypes,
   type JobConfigState,
   webhookActionFilterOptions,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 import { InlineFilterBuilder } from "@/src/features/filters/components/filter-builder";
 import { DeleteAutomationButton } from "./DeleteAutomationButton";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";

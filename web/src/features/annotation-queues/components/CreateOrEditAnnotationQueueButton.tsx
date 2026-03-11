@@ -22,7 +22,7 @@ import {
   type CreateQueueWithAssignments,
   CreateQueueWithAssignmentsData,
   type ScoreConfigDomain,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 import { api } from "@/src/utils/api";
 import { MultiSelectKeyValues } from "@/src/features/scores/components/multi-select-key-values";
 import { useRouter } from "next/router";

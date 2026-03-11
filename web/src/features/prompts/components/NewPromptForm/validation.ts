@@ -7,7 +7,7 @@ import {
   TextPromptContentSchema,
   COMMIT_MESSAGE_MAX_LENGTH,
   PromptType,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 
 const NewPromptBaseSchema = z.object({
   name: PromptNameSchema,

@@ -1,6 +1,6 @@
 import { type EvalFormType } from "@/src/features/evals/utils/evaluator-form-utils";
 import { api, type RouterOutputs } from "@/src/utils/api";
-import { EvalTargetObject, type FilterState } from "@hanzo/console";
+import { EvalTargetObject, type FilterState } from "@hanzo/console-core";
 import { type UseFormReturn } from "react-hook-form";
 import { isEventTarget } from "@/src/features/evals/utils/typeHelpers";
 import { useV4Beta } from "@/src/features/events/hooks/useV4Beta";

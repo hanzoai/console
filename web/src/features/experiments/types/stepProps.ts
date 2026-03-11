@@ -2,7 +2,7 @@ import { type UseFormReturn } from "react-hook-form";
 import { type CreateExperiment } from "@/src/features/experiments/types";
 import { type UIModelParams } from "@hanzo/console-core/src/server";
 import { type ModelParamsContext } from "@/src/components/ModelParameters";
-import { type EvalTemplate, type PromptType } from "@hanzo/console";
+import { type EvalTemplate, type PromptType } from "@hanzo/console-core";
 import { type PartialConfig } from "@/src/features/evals/types";
 
 type ValidationResult =

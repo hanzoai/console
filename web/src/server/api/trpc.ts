@@ -94,7 +94,7 @@ import { ZodError as _ZodError } from "zod/v4";
 
 import { AdminApiAuthService } from "@/src/features/admin-api/server/adminApiAuth";
 import { env } from "@/src/env.mjs";
-import { BaseError, parseIO } from "@hanzo/console";
+import { BaseError, parseIO } from "@hanzo/console-core";
 
 setUpSuperjson();
 

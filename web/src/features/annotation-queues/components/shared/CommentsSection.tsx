@@ -1,5 +1,5 @@
 import { CommentList } from "@/src/features/comments/CommentList";
-import { type AnnotationQueueObjectType } from "@hanzo/console";
+import { type AnnotationQueueObjectType } from "@hanzo/console-core";
 
 interface CommentsSectionProps {
   projectId: string;

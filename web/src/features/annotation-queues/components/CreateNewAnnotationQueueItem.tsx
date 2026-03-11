@@ -11,7 +11,7 @@ import {
 } from "@/src/components/ui/dropdown-menu";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { api } from "@/src/utils/api";
-import { type AnnotationQueueObjectType } from "@hanzo/console";
+import { type AnnotationQueueObjectType } from "@hanzo/console-core";
 import { ChevronDown, ExternalLink } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";

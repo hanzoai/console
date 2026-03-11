@@ -15,7 +15,7 @@ import useColumnOrder from "@/src/features/column-visibility/hooks/useColumnOrde
 import { Skeleton } from "@/src/components/ui/skeleton";
 import { scoreFilters } from "@/src/features/scores/lib/scoreColumns";
 import { DatasetItemIOCell, TraceObservationIOCell } from "@/src/features/datasets/components/DatasetIOCells";
-import { datasetRunItemsTableColsWithOptions } from "@hanzo/console";
+import { datasetRunItemsTableColsWithOptions } from "@hanzo/console-core";
 import { convertRunItemToItemsByRunUiTableRow } from "@/src/features/datasets/lib/convertRunItemDataToUiTableRow";
 import { type DatasetRunItemByRunRowData } from "@/src/features/datasets/lib/types";
 import { LocalIsoDate } from "@/src/components/LocalIsoDate";

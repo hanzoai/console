@@ -8,7 +8,7 @@ import {
   transformDbDatasetToAPIDataset,
 } from "@/src/features/public-api/types/datasets";
 import { createDatasetItemFilterState, getDatasetItems } from "@hanzo/console-core/src/server";
-import { ConsoleNotFoundError } from "@hanzo/console";
+import { ConsoleNotFoundError } from "@hanzo/console-core";
 
 export default withMiddlewares({
   GET: createAuthedProjectAPIRoute({

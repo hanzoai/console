@@ -6,7 +6,7 @@ import { logger, redis } from "@hanzo/console-core/src/server";
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { hashPassword } from "@/src/features/auth-credentials/lib/credentialsServerUtils";
 import { z } from "zod";
-import { type Role } from "@hanzo/console";
+import { type Role } from "@hanzo/console-core";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   await runMiddleware(req, res, cors);

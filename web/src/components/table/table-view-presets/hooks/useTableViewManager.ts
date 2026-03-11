@@ -5,7 +5,7 @@ import {
   type OrderByState,
   type TableViewPresetDomain,
   type ColumnDefinition,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 import { type DefaultViewScope } from "@hanzo/console-core/src/server";
 import { useRouter } from "next/router";
 import { useEffect, useCallback, useState, useRef } from "react";

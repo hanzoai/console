@@ -1,4 +1,4 @@
-import { type PrismaClient } from "@hanzo/console";
+import { type PrismaClient } from "@hanzo/console-core";
 
 type CheckHasProtectedLabelsParams = {
   labelsToCheck: string[];

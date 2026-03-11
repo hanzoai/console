@@ -5,7 +5,7 @@ import {
   type ScoreTarget,
   type ScoreTargetSession,
   ScoreDataTypeEnum,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 
 export const isNumericDataType = (dataType: ScoreDataTypeType) => dataType === ScoreDataTypeEnum.NUMERIC;
 

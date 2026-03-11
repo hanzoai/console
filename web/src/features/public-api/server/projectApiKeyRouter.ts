@@ -5,7 +5,7 @@ import * as z from "zod/v4";
 import { ApiAuthService } from "@/src/features/public-api/server/apiAuth";
 import { redis } from "@hanzo/console-core/src/server";
 import { createAndAddApiKeysToDb } from "@hanzo/console-core/src/server/auth/apiKeys";
-import { StringNoHTML } from "@hanzo/console";
+import { StringNoHTML } from "@hanzo/console-core";
 
 export const projectApiKeysRouter = createTRPCRouter({
   byProjectId: protectedProjectProcedure

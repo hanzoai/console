@@ -10,7 +10,7 @@ import {
   type TableViewPresetDomain,
   type TableViewPresetTableName,
   type TracingSearchType,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 import { type RowSelectionState, type ColumnOrderState, type VisibilityState } from "@tanstack/react-table";
 import { type ConsoleColumnDef } from "@/src/components/table/types";
 import { DataTableRowHeightSwitch, type RowHeight } from "@/src/components/table/data-table-row-height-switch";

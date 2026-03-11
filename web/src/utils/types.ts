@@ -1,4 +1,4 @@
-import { type Observation } from "@hanzo/console";
+import { type Observation } from "@hanzo/console-core";
 import { type inferRouterInputs, type inferRouterOutputs } from "@trpc/server";
 import { type AppRouter } from "@/src/server/api/root";
 import { type ObservationReturnType } from "@/src/server/api/routers/traces";

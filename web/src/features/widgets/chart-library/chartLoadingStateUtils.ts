@@ -1,4 +1,4 @@
-import { RESOURCE_LIMIT_ERROR_MESSAGE } from "@hanzo/console";
+import { RESOURCE_LIMIT_ERROR_MESSAGE } from "@hanzo/console-core";
 
 type ChartQueryState = {
   isPending: boolean;

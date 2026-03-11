@@ -10,7 +10,7 @@ import { prisma } from "@hanzo/console-core/src/db";
 import { v4 } from "uuid";
 import { validateCommentReferenceObject } from "@/src/features/comments/validateCommentReferenceObject";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
-import { ConsoleNotFoundError } from "@hanzo/console";
+import { ConsoleNotFoundError } from "@hanzo/console-core";
 
 export default withMiddlewares({
   POST: createAuthedProjectAPIRoute({

@@ -17,7 +17,7 @@ import {
   orderBy,
   jsonSchema,
   EvalTargetObject,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 import {
   getQueue,
   getAvgCostByEvaluatorIds,

@@ -1,6 +1,6 @@
 import { type Entitlement } from "@/src/features/entitlements/constants/entitlements";
 import { type ProjectScope } from "@/src/features/rbac/constants/projectAccessRights";
-import { type BatchActionType, type ActionId } from "@hanzo/console";
+import { type BatchActionType, type ActionId } from "@hanzo/console-core";
 import { type ReactElement } from "react";
 
 type BaseTableAction = {

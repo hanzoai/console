@@ -15,7 +15,7 @@ import {
   type ScoreDataTypeType,
   type ScoreDomain,
   type FilterState,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 
 /**
  * Converts a ScoreDomain object to API format.

@@ -1,4 +1,4 @@
-import { promptsTableCols } from "@hanzo/console";
+import { promptsTableCols } from "@hanzo/console-core";
 import type { FilterConfig } from "@/src/features/filters/lib/filter-config";
 
 export const promptFilterConfig: FilterConfig = {

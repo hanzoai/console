@@ -9,7 +9,7 @@ import {
   getObservationsTableCount,
 } from "@hanzo/console-core/src/server";
 import { TRPCError } from "@trpc/server";
-import { BatchTableNames, BatchActionType, BatchActionStatus, ActionId } from "@hanzo/console";
+import { BatchTableNames, BatchActionType, BatchActionStatus, ActionId } from "@hanzo/console-core";
 import { env } from "@/src/env.mjs";
 import { CreateObservationAddToDatasetActionSchema } from "../validation";
 

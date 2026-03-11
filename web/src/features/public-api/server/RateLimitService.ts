@@ -2,7 +2,7 @@ import { type Redis, type Cluster } from "ioredis";
 import { type z } from "zod/v4";
 import { RateLimiterRedis, RateLimiterRes } from "rate-limiter-flexible";
 import { env } from "@/src/env.mjs";
-import { type RateLimitResult, type RateLimitResource, type RateLimitConfig, type Plan } from "@hanzo/console";
+import { type RateLimitResult, type RateLimitResource, type RateLimitConfig, type Plan } from "@hanzo/console-core";
 import {
   recordIncrement,
   type ApiAccessScope,

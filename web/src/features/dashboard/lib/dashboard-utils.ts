@@ -1,5 +1,5 @@
 import { type z } from "zod/v4";
-import { type FilterState, type singleFilter } from "@hanzo/console";
+import { type FilterState, type singleFilter } from "@hanzo/console-core";
 import { usdFormatter } from "@/src/utils/numbers";
 import { type QueryType, type ViewVersion, mapLegacyUiTableFilterToView } from "@/src/features/query";
 

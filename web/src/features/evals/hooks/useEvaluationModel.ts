@@ -1,5 +1,5 @@
 import { api } from "@/src/utils/api";
-import { type ModelParams, ZodModelConfig, type UIModelParams } from "@hanzo/console";
+import { type ModelParams, ZodModelConfig, type UIModelParams } from "@hanzo/console-core";
 import { type Dispatch, type SetStateAction, useEffect } from "react";
 
 export function useEvaluationModel(

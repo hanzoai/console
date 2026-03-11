@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useMemo, type ReactNode } from "react";
-import type { FilterState, OrderByState } from "@hanzo/console";
+import type { FilterState, OrderByState } from "@hanzo/console-core";
 
 interface PeekTableState {
   filters: FilterState;

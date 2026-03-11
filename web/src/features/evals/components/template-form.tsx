@@ -14,11 +14,11 @@ import {
 } from "@/src/components/ui/form";
 import { api } from "@/src/utils/api";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { extractVariables, getIsCharOrUnderscore } from "@hanzo/console";
+import { extractVariables, getIsCharOrUnderscore } from "@hanzo/console-core";
 import router from "next/router";
-import { type EvalTemplate } from "@hanzo/console";
+import { type EvalTemplate } from "@hanzo/console-core";
 import { ModelParameters } from "@/src/components/ModelParameters";
-import { OutputSchema, type ModelParams, ZodModelConfig } from "@hanzo/console";
+import { OutputSchema, type ModelParams, ZodModelConfig } from "@hanzo/console-core";
 import { PromptVariableListPreview } from "@/src/features/prompts/components/PromptVariableListPreview";
 import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { getFinalModelParams } from "@/src/utils/getFinalModelParams";

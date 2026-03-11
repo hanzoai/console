@@ -1,7 +1,7 @@
 import { z } from "zod/v4";
 import { createTRPCRouter, authenticatedProcedure } from "@/src/server/api/trpc";
 import { TRPCError } from "@trpc/server";
-import { StringNoHTML } from "@hanzo/console";
+import { StringNoHTML } from "@hanzo/console-core";
 import { Role, Prisma } from "@hanzo/console-core/src/db";
 import type { PrismaClient } from "@hanzo/console-core/src/db";
 

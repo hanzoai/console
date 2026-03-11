@@ -1,5 +1,5 @@
-import { type ScoreTarget, type ScoreTargetTrace, type ScoreTargetSession, ScoreSourceEnum } from "@hanzo/console";
-import { type ScoreConfigDomain } from "@hanzo/console";
+import { type ScoreTarget, type ScoreTargetTrace, type ScoreTargetSession, ScoreSourceEnum } from "@hanzo/console-core";
+import { type ScoreConfigDomain } from "@hanzo/console-core";
 import { isTraceScore } from "@/src/features/scores/lib/helpers";
 import { type AnnotationScoreDataSchema } from "@/src/features/scores/schema";
 import { type z } from "zod/v4";

@@ -1,4 +1,4 @@
-import { DatasetNameSchema, InvalidRequestError, Prisma } from "@hanzo/console";
+import { DatasetNameSchema, InvalidRequestError, Prisma } from "@hanzo/console-core";
 import { prisma } from "@hanzo/console-core/src/db";
 import { validateAllDatasetItems } from "@hanzo/console-core/src/server";
 

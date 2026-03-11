@@ -1,7 +1,7 @@
-import { type TraceDomain } from "@hanzo/console";
+import { type TraceDomain } from "@hanzo/console-core";
 import { type UrlUpdateType } from "use-query-params";
 import { type ObservationReturnTypeWithMetadata } from "@/src/server/api/routers/traces";
-import { type ScoreDomain } from "@hanzo/console";
+import { type ScoreDomain } from "@hanzo/console-core";
 import { type WithStringifiedMetadata } from "@/src/utils/clientSideDomainTypes";
 import { TraceDataProvider } from "./contexts/TraceDataContext";
 import { ViewPreferencesProvider } from "./contexts/ViewPreferencesContext";

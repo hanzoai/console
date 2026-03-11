@@ -1,4 +1,4 @@
-import { type Plan } from "@hanzo/console";
+import { type Plan } from "@hanzo/console-core";
 
 // Entitlements: Binary feature access
 // Exported to silence @typescript-eslint/no-unused-vars v8 warning

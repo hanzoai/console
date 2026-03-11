@@ -2,7 +2,7 @@ import { Trace } from "@/src/components/trace2/Trace";
 import { ObservationPreview } from "@/src/components/trace2/ObservationPreview";
 import { TracePreview } from "@/src/components/trace2/TracePreview";
 import { JsonExpansionProvider } from "@/src/components/trace2/contexts/JsonExpansionContext";
-import { type AnnotationQueueItem, AnnotationQueueObjectType, type ScoreConfigDomain } from "@hanzo/console";
+import { type AnnotationQueueItem, AnnotationQueueObjectType, type ScoreConfigDomain } from "@hanzo/console-core";
 import { useEffect, useMemo } from "react";
 import { StringParam, useQueryParam } from "use-query-params";
 import { AnnotationDrawerSection } from "../shared/AnnotationDrawerSection";

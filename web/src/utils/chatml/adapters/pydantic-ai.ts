@@ -1,1 +1,1 @@
-export { pydanticAIAdapter } from "@hanzo/console";
+export { pydanticAIAdapter } from "@hanzo/console-core";

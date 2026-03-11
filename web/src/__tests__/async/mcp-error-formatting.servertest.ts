@@ -26,7 +26,7 @@ import {
   ConsoleNotFoundError,
   InvalidRequestError,
   BaseError,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 
 describe("MCP Error Formatting", () => {
   describe("formatErrorForUser", () => {

@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { type ScoreAggregate } from "@hanzo/console";
+import { type ScoreAggregate } from "@hanzo/console-core";
 import { useScoreCache } from "@/src/features/scores/contexts/ScoreCacheContext";
 import { mergeAggregatesWithCache } from "@/src/features/scores/lib/mergeScoresWithCache";
 

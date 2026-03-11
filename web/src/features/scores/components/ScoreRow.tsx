@@ -1,5 +1,5 @@
 import * as React from "react";
-import { type ScoreSourceType, type AggregatedScoreData } from "@hanzo/console";
+import { type ScoreSourceType, type AggregatedScoreData } from "@hanzo/console-core";
 import { MessageCircleMore } from "lucide-react";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/src/components/ui/hover-card";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/src/components/ui/tooltip";

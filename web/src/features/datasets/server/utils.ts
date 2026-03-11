@@ -1,4 +1,4 @@
-import { type DatasetRunItemDomain } from "@hanzo/console";
+import { type DatasetRunItemDomain } from "@hanzo/console-core";
 import { calculateRecursiveCost } from "../lib/costCalculations";
 import { type ObservationTuple } from "@hanzo/console-core/src/server";
 

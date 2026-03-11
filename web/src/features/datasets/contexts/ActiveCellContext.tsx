@@ -1,4 +1,4 @@
-import { type ScoreAggregate } from "@hanzo/console";
+import { type ScoreAggregate } from "@hanzo/console-core";
 import { createContext, useContext, useState, useCallback, useMemo, type ReactNode } from "react";
 
 type ActiveCell = {

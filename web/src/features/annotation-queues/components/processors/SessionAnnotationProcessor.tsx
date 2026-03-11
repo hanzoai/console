@@ -1,4 +1,4 @@
-import { type AnnotationQueueItem, type ScoreConfigDomain } from "@hanzo/console";
+import { type AnnotationQueueItem, type ScoreConfigDomain } from "@hanzo/console-core";
 import { AnnotationDrawerSection } from "../shared/AnnotationDrawerSection";
 import { AnnotationProcessingLayout } from "../shared/AnnotationProcessingLayout";
 import { SessionIO } from "@/src/components/session";

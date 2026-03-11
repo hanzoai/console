@@ -1,7 +1,7 @@
 /** @jest-environment node */
 
 import { prisma } from "@hanzo/console-core/src/db";
-import { Prisma, type Role } from "@hanzo/console";
+import { Prisma, type Role } from "@hanzo/console-core";
 import { v4 } from "uuid";
 import { getUserProjectRoles } from "@hanzo/console-core/src/server";
 

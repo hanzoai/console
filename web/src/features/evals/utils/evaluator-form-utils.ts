@@ -1,6 +1,6 @@
 import { z } from "zod/v4";
-import { singleFilter, type consoleObjects, TimeScopeSchema } from "@hanzo/console";
-import { wipVariableMapping } from "@hanzo/console";
+import { singleFilter, type consoleObjects, TimeScopeSchema } from "@hanzo/console-core";
+import { wipVariableMapping } from "@hanzo/console-core";
 import { OUTPUT_MAPPING } from "@/src/features/evals/utils/evaluator-constants";
 
 // Legacy eval targets (TRACE, DATASET) use full variable mapping UI with object selector

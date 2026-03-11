@@ -1,7 +1,7 @@
 import { Input } from "@/src/components/ui/input";
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/src/components/ui/form";
 import { type UseFormReturn } from "react-hook-form";
-import { type ActionDomain } from "@hanzo/console";
+import { type ActionDomain } from "@hanzo/console-core";
 import { api } from "@/src/utils/api";
 import { SlackConnectionCard } from "@/src/features/slack/components/SlackConnectionCard";
 import { ChannelSelector, type SlackChannel } from "@/src/features/slack/components/ChannelSelector";

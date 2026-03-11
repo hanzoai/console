@@ -1,5 +1,5 @@
 import { api } from "@/src/utils/api";
-import { type FilterState } from "@hanzo/console";
+import { type FilterState } from "@hanzo/console-core";
 
 /**
  * Checks if there are root observations for current filter conditions.

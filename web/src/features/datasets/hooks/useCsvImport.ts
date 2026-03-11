@@ -2,7 +2,7 @@ import { useState } from "react";
 import { type RouterInputs, api } from "@/src/utils/api";
 import { showErrorToast } from "@/src/features/notifications/showErrorToast";
 import { MAX_FILE_SIZE_BYTES } from "@/src/features/datasets/components/UploadDatasetCsv";
-import { type BulkDatasetItemValidationError } from "@hanzo/console";
+import { type BulkDatasetItemValidationError } from "@hanzo/console-core";
 import chunk from "lodash/chunk";
 import { parseCsvClient, parseColumns, buildSchemaObject } from "@/src/features/datasets/lib/csv/helpers";
 import type { CsvColumnPreview, FieldMapping } from "@/src/features/datasets/lib/csv/types";

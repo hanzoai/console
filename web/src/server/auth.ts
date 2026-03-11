@@ -38,7 +38,7 @@ async function loadSsoProviders(): Promise<[]> {
 }
 import { ENTERPRISE_SSO_REQUIRED_MESSAGE } from "@/src/features/auth/constants";
 import { z } from "zod/v4";
-import { CloudConfigSchema } from "@hanzo/console";
+import { CloudConfigSchema } from "@hanzo/console-core";
 import {
   CustomSSOProvider,
   GitHubEnterpriseProvider,

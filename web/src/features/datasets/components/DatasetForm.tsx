@@ -15,7 +15,7 @@ import { api } from "@/src/utils/api";
 import { useMemo, useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import { Input } from "@/src/components/ui/input";
 import { CodeMirrorEditor } from "@/src/components/editor";
-import { DatasetNameSchema, isValidJSONSchema, type Prisma } from "@hanzo/console";
+import { DatasetNameSchema, isValidJSONSchema, type Prisma } from "@hanzo/console-core";
 import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { Label } from "@/src/components/ui/label";
 import { useRouter } from "next/router";

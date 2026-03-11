@@ -9,7 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/src/components/ui/dropdown-menu";
-import { ChatMessageRole, ChatMessageType, type ChatMessageWithId } from "@hanzo/console";
+import { ChatMessageRole, ChatMessageType, type ChatMessageWithId } from "@hanzo/console-core";
 
 import { ChatMessageComponent } from "./ChatMessageComponent";
 

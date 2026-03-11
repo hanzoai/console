@@ -1,4 +1,4 @@
-import { type ScoreDomain, type ScoreAggregate } from "@hanzo/console";
+import { type ScoreDomain, type ScoreAggregate } from "@hanzo/console-core";
 import { type CachedScore } from "@/src/features/scores/contexts/ScoreCacheContext";
 import { type AnnotationScore } from "@/src/features/scores/types";
 import { composeAggregateScoreKey } from "@/src/features/scores/lib/aggregateScores";

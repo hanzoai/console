@@ -1,4 +1,4 @@
-import { extractValueFromObject, type BatchActionQuery, type ObservationVariableMapping } from "@hanzo/console";
+import { extractValueFromObject, type BatchActionQuery, type ObservationVariableMapping } from "@hanzo/console-core";
 import { type RouterOutputs } from "@/src/utils/api";
 
 type ObservationPreview = RouterOutputs["observations"]["byId"];

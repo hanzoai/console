@@ -1,5 +1,5 @@
 import { parse } from "csv-parse";
-import { type Prisma } from "@hanzo/console";
+import { type Prisma } from "@hanzo/console-core";
 import type { ParseOptions, CsvPreviewResult, ColumnType, FieldMapping, FreeformField, SchemaField } from "./types";
 
 const MAX_PREVIEW_ROWS = 10;

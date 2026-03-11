@@ -31,7 +31,7 @@ import {
   type FilterState,
   type TableViewPresetTableName,
   type TableViewPresetDomain,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 import { useCallback, useMemo, useState } from "react";
 import { DropdownMenuItem, DropdownMenuTrigger } from "@/src/components/ui/dropdown-menu";
 import { DropdownMenu } from "@/src/components/ui/dropdown-menu";

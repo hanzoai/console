@@ -11,7 +11,7 @@ import {
   convertToSafeWebhookConfig,
   isGitHubDispatchAction,
   convertToSafeGitHubDispatchConfig,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 import { throwIfNoProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { v4 } from "uuid";
 import {

@@ -12,7 +12,7 @@ import {
   DeleteAnnotationQueueItemResponse,
   CreateAnnotationQueueResponse,
 } from "@/src/features/public-api/types/annotation-queues";
-import { AnnotationQueueObjectType, AnnotationQueueStatus } from "@hanzo/console";
+import { AnnotationQueueObjectType, AnnotationQueueStatus } from "@hanzo/console-core";
 import { createOrgProjectAndApiKey } from "@hanzo/console-core/src/server";
 import { v4 as uuidv4 } from "uuid";
 

@@ -11,7 +11,7 @@ import { SetupDefaultEvalModelCard } from "@/src/features/evals/components/set-u
 import { useTemplateValidation } from "@/src/features/evals/hooks/useTemplateValidation";
 import { Card } from "@/src/components/ui/card";
 import { Skeleton } from "@/src/components/ui/skeleton";
-import { type EvalTemplate } from "@hanzo/console";
+import { type EvalTemplate } from "@hanzo/console-core";
 
 type SelectEvaluatorListProps = {
   projectId: string;

@@ -1,5 +1,5 @@
 import { type EvalFormType } from "@/src/features/evals/utils/evaluator-form-utils";
-import { EvalTargetObject, type ObservationType } from "@hanzo/console";
+import { EvalTargetObject, type ObservationType } from "@hanzo/console-core";
 import { type UseFormReturn } from "react-hook-form";
 import { useRouter } from "next/router";
 import { type PreviewData, usePreviewData } from "@/src/features/evals/hooks/usePreviewData";

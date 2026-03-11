@@ -7,7 +7,7 @@ import {
   GetAnnotationQueuesQuery,
   GetAnnotationQueuesResponse,
 } from "@/src/features/public-api/types/annotation-queues";
-import { InvalidRequestError, MethodNotAllowedError } from "@hanzo/console";
+import { InvalidRequestError, MethodNotAllowedError } from "@hanzo/console-core";
 
 export default withMiddlewares({
   GET: createAuthedProjectAPIRoute({

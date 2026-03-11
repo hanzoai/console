@@ -1,6 +1,6 @@
 import { api } from "@/src/utils/api";
 import { useMemo } from "react";
-import { type FilterState, AnnotationQueueObjectType } from "@hanzo/console";
+import { type FilterState, AnnotationQueueObjectType } from "@hanzo/console-core";
 import { type FullEventsObservations } from "@hanzo/console-core/src/server";
 import { showSuccessToast } from "@/src/features/notifications/showSuccessToast";
 import { joinTableCoreAndMetrics } from "@/src/components/table/utils/joinTableCoreAndMetrics";

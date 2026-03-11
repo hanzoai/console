@@ -2,7 +2,7 @@ import { type PreviewData } from "@/src/features/evals/hooks/usePreviewData";
 import { type VariableMapping } from "@/src/features/evals/utils/evaluator-form-utils";
 import { api } from "@/src/utils/api";
 import { trpcErrorToast } from "@/src/utils/trpcErrorToast";
-import { EvalTargetObject, extractValueFromObject } from "@hanzo/console";
+import { EvalTargetObject, extractValueFromObject } from "@hanzo/console-core";
 import { useEffect, useState, useRef } from "react";
 
 /**

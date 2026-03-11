@@ -16,7 +16,7 @@ import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAcces
 import { useMergedAggregates } from "@/src/features/scores/lib/useMergedAggregates";
 import { useMergeScoreColumns } from "@/src/features/scores/lib/mergeScoreColumns";
 import { useTrpcError } from "@/src/hooks/useTrpcError";
-import { type ScoreAggregate } from "@hanzo/console";
+import { type ScoreAggregate } from "@hanzo/console-core";
 import { computeScoreDiffs } from "@/src/features/datasets/lib/computeScoreDiffs";
 import { useMemo } from "react";
 import { type BaselineDiff } from "@/src/features/datasets/lib/calculateBaselineDiff";

@@ -1,1 +1,1 @@
-export { genericAdapter } from "@hanzo/console";
+export { genericAdapter } from "@hanzo/console-core";

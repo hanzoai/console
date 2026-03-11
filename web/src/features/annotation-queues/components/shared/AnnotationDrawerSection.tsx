@@ -1,6 +1,6 @@
 import { Card } from "@/src/components/ui/card";
 import { type ScoreTarget } from "@/src/features/scores/types";
-import { type AnnotationQueueItem, type ScoreDomain, isPresent, type ScoreConfigDomain } from "@hanzo/console";
+import { type AnnotationQueueItem, type ScoreDomain, isPresent, type ScoreConfigDomain } from "@hanzo/console-core";
 import { TriangleAlertIcon } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { AnnotationForm } from "@/src/features/scores/components/AnnotationForm";

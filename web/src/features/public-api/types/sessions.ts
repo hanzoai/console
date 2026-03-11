@@ -1,5 +1,5 @@
 import { APITrace } from "@/src/features/public-api/types/traces";
-import { paginationMetaResponseZod, publicApiPaginationZod } from "@hanzo/console";
+import { paginationMetaResponseZod, publicApiPaginationZod } from "@hanzo/console-core";
 import { stringDateTime } from "@hanzo/console-core/src/server";
 
 import { z } from "zod/v4";

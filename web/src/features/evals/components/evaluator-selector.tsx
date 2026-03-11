@@ -1,4 +1,4 @@
-import { type EvalTemplate } from "@hanzo/console";
+import { type EvalTemplate } from "@hanzo/console-core";
 import { AlertCircle, CheckIcon, ExternalLink, ExternalLinkIcon } from "lucide-react";
 import {
   InputCommand,

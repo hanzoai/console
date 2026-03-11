@@ -4,7 +4,7 @@ import { logger, OtelIngestionProcessor, markProjectAsOtelUser } from "@hanzo/co
 import { z } from "zod/v4";
 import { $root } from "@/src/pages/api/public/otel/otlp-proto/generated/root";
 import { gunzip } from "node:zlib";
-import { ForbiddenError } from "@hanzo/console";
+import { ForbiddenError } from "@hanzo/console-core";
 import { env } from "@/src/env.mjs";
 
 /** Read a console SDK header that may arrive with hyphens or underscores. */

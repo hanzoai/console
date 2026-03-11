@@ -17,7 +17,7 @@ import {
   optionalPaginationZod,
   ConsoleConflictError,
   ConsoleNotFoundError,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 import { TRPCError } from "@trpc/server";
 import {
   datasetRunsTableSchema,
@@ -66,7 +66,7 @@ import {
 } from "@hanzo/console-core/src/server";
 import { aggregateScores } from "@/src/features/scores/lib/aggregateScores";
 import { updateDataset, upsertDataset } from "@/src/features/datasets/server/actions/createDataset";
-import { type BulkDatasetItemValidationError } from "@hanzo/console";
+import { type BulkDatasetItemValidationError } from "@hanzo/console-core";
 import { v4 } from "uuid";
 
 // Batch size kept small (100) as items may have large input/output/metadata JSON

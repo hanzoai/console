@@ -1,6 +1,6 @@
 import { DashboardCard } from "@/src/features/dashboard/components/cards/DashboardCard";
 import { DashboardTable } from "@/src/features/dashboard/components/cards/DashboardTable";
-import { type ScoreDataTypeType, type ScoreSourceType, type FilterState } from "@hanzo/console";
+import { type ScoreDataTypeType, type ScoreSourceType, type FilterState } from "@hanzo/console-core";
 import { type ViewVersion } from "@/src/features/query";
 import { api } from "@/src/utils/api";
 import { compactNumberFormatter } from "@/src/utils/numbers";

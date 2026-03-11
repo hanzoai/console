@@ -1,4 +1,4 @@
-import { AnalyticsIntegrationExportSource } from "@hanzo/console";
+import { AnalyticsIntegrationExportSource } from "@hanzo/console-core";
 import { z } from "zod/v4";
 
 export const insightsIntegrationFormSchema = z.object({

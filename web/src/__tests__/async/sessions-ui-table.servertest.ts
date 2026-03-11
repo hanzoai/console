@@ -18,7 +18,7 @@ import {
   type EventRecordInsertType,
 } from "@hanzo/console-core/src/server";
 import { createTrace } from "@hanzo/console-core/src/server";
-import { type FilterState } from "@hanzo/console";
+import { type FilterState } from "@hanzo/console-core";
 import { env } from "@/src/env.mjs";
 
 const isEventsPath = env.HANZO_ENABLE_EVENTS_TABLE_V2_APIS === "true";

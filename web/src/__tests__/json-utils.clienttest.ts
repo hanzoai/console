@@ -23,7 +23,7 @@ const USER_DEFINED_TEST_OBJECT: any = {
 
 // ============================================================================
 
-import { deepParseJson, deepParseJsonIterative } from "@hanzo/console";
+import { deepParseJson, deepParseJsonIterative } from "@hanzo/console-core";
 
 describe("deepParseJson (recursive)", () => {
   describe("basic functionality", () => {

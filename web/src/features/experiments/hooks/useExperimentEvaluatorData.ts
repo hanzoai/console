@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from "react";
-import { type EvalTemplate } from "@hanzo/console";
+import { type EvalTemplate } from "@hanzo/console-core";
 import { type RouterOutputs } from "@/src/utils/api";
 import { type PartialConfig } from "@/src/features/evals/types";
 import partition from "lodash/partition";

@@ -4,7 +4,7 @@ import { prisma } from "@hanzo/console-core/src/db";
 import { redis } from "@hanzo/console-core/src/server";
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { hasEntitlementBasedOnPlan } from "@/src/features/entitlements/server/hasEntitlement";
-import { ConsoleNotFoundError, UnauthorizedError, ForbiddenError } from "@hanzo/console";
+import { ConsoleNotFoundError, UnauthorizedError, ForbiddenError } from "@hanzo/console-core";
 
 export default withMiddlewares({
   DELETE: handleDeleteBlobStorageIntegration,

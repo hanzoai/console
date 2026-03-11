@@ -1,5 +1,5 @@
 import { prisma } from "@hanzo/console-core/src/db";
-import { ConsoleNotFoundError } from "@hanzo/console";
+import { ConsoleNotFoundError } from "@hanzo/console-core";
 import { GetSessionV1Query, GetSessionV1Response } from "@/src/features/public-api/types/sessions";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";

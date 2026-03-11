@@ -1,6 +1,6 @@
 import { logger, PromptService } from "@hanzo/console-core/src/server";
 import { removeLabelsFromPreviousPromptVersions } from "@/src/features/prompts/server/utils/updatePromptLabels";
-import { InvalidRequestError, ConsoleNotFoundError } from "@hanzo/console";
+import { InvalidRequestError, ConsoleNotFoundError } from "@hanzo/console-core";
 import { prisma, Prisma } from "@hanzo/console-core/src/db";
 import { redis } from "@hanzo/console-core/src/server";
 import { promptChangeEventSourcing } from "@/src/features/prompts/server/promptChangeEventSourcing";

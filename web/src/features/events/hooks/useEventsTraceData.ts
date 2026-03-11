@@ -6,7 +6,7 @@ import {
   AGGREGATABLE_SCORE_TYPES,
   ScoreDataTypeEnum,
   type ScoreDomain,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 import type { FullEventsObservations } from "@hanzo/console-core/src/server";
 import { type WithStringifiedMetadata, toDomainArrayWithStringifiedMetadata } from "@/src/utils/clientSideDomainTypes";
 import { partition } from "lodash";

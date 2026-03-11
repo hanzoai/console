@@ -1,7 +1,7 @@
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
 import { prisma } from "@hanzo/console-core/src/db";
-import { ConsoleNotFoundError, Prisma } from "@hanzo/console";
+import { ConsoleNotFoundError, Prisma } from "@hanzo/console-core";
 import {
   AnnotationQueueAssignmentQuery,
   CreateAnnotationQueueAssignmentBody,

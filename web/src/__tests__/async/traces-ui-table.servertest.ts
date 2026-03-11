@@ -7,7 +7,7 @@ import {
   type ObservationRecordInsertType,
   type TraceRecordInsertType,
 } from "@hanzo/console-core/src/server";
-import { type FilterState } from "@hanzo/console";
+import { type FilterState } from "@hanzo/console-core";
 
 describe("Traces table API test", () => {
   it("should get a correct trace without observation", async () => {

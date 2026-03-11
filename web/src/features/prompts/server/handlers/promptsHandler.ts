@@ -6,7 +6,7 @@ import { withMiddlewares } from "@/src/features/public-api/server/withMiddleware
 import { prisma } from "@hanzo/console-core/src/db";
 import { authorizePromptRequestOrThrow } from "../utils/authorizePromptRequest";
 import { RateLimitService } from "@/src/features/public-api/server/RateLimitService";
-import { CreatePromptSchema, GetPromptsMetaSchema, InvalidRequestError } from "@hanzo/console";
+import { CreatePromptSchema, GetPromptsMetaSchema, InvalidRequestError } from "@hanzo/console-core";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
 
 const getPromptsHandler = async (req: NextApiRequest, res: NextApiResponse) => {

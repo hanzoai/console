@@ -5,7 +5,7 @@ import {
   LLMToolDefinitionSchema,
   ChatMessageSchema,
   JSONObjectSchema,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 
 const ModelParamsSchema = z.object({
   provider: z.string(),

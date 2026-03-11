@@ -4,7 +4,7 @@ import { makeZodVerifiedAPICall, makeAPICall } from "@/src/__tests__/test-utils"
 import { prisma } from "@hanzo/console-core/src/db";
 import { z } from "zod/v4";
 import { randomUUID } from "crypto";
-import { Role } from "@hanzo/console";
+import { Role } from "@hanzo/console-core";
 import { createAndAddApiKeysToDb, createBasicAuthHeader } from "@hanzo/console-core/src/server";
 
 // Schema for membership response

@@ -1,4 +1,4 @@
-import { Role } from "@hanzo/console";
+import { Role } from "@hanzo/console-core";
 
 export const orderedRoles: Record<Role, number> = {
   [Role.OWNER]: 5,

@@ -19,7 +19,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/src/components/ui/tooltip";
 import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { insightsIntegrationFormSchema } from "@/src/features/insights-integration/types";
-import { AnalyticsIntegrationExportSource, EXPORT_SOURCE_OPTIONS } from "@hanzo/console";
+import { AnalyticsIntegrationExportSource, EXPORT_SOURCE_OPTIONS } from "@hanzo/console-core";
 import { useV4Beta } from "@/src/features/events/hooks/useV4Beta";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { api } from "@/src/utils/api";

@@ -1,5 +1,5 @@
 import { api } from "@/src/utils/api";
-import { type EvalTemplate } from "@hanzo/console";
+import { type EvalTemplate } from "@hanzo/console-core";
 
 export function useSingleTemplateValidation({ projectId }: { projectId: string }) {
   const { data: defaultModel } = api.defaultLlmModel.fetchDefaultModel.useQuery({ projectId });

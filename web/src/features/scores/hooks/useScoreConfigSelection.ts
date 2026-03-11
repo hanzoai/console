@@ -1,7 +1,7 @@
 import { useEmptyScoreConfigs } from "@/src/features/scores/hooks/useEmptyConfigs";
 import { resolveConfigValue } from "@/src/features/scores/lib/annotationFormHelpers";
 import { type AnnotateFormSchemaType, type AnnotationScoreSchemaType } from "@/src/features/scores/types";
-import { type ScoreConfigDomain } from "@hanzo/console";
+import { type ScoreConfigDomain } from "@hanzo/console-core";
 import { useCallback, useMemo } from "react";
 import { type UseFieldArrayRemove, type UseFieldArrayInsert } from "react-hook-form";
 import { toast } from "sonner";

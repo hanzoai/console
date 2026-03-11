@@ -8,7 +8,7 @@ import {
 } from "@/src/features/public-api/types/datasets";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
-import { ApiError, ConsoleNotFoundError } from "@hanzo/console";
+import { ApiError, ConsoleNotFoundError } from "@hanzo/console-core";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
 import { addToDeleteDatasetQueue } from "@hanzo/console-core/src/server";
 import { generateDatasetRunItemsForPublicApi } from "@/src/features/public-api/server/dataset-run-items";

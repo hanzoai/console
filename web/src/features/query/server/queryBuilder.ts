@@ -4,7 +4,7 @@ import type { QueryType, ViewDeclarationType, metricAggregations, granularities,
 import { query as queryModel } from "../types";
 import { getViewDeclaration } from "@/src/features/query/dataModel";
 import { FilterList, createFilterFromFilterState, type Filter } from "@hanzo/console-core/src/server";
-import { InvalidRequestError } from "@hanzo/console";
+import { InvalidRequestError } from "@hanzo/console-core";
 import { env } from "@/src/env.mjs";
 
 type AppliedDimensionType = {

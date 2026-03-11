@@ -1,6 +1,6 @@
 // Mock the problematic @hanzo/console import before importing our functions
-jest.mock("@hanzo/console", () => {
-  const actual = jest.requireActual("@hanzo/console");
+jest.mock("@hanzo/console-core", () => {
+  const actual = jest.requireActual("@hanzo/console-core");
   const { z } = require("zod/v4");
 
   const OpenAITextContentPart = z.object({

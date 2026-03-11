@@ -1,4 +1,4 @@
-import { type ModelParams } from "@hanzo/console";
+import { type ModelParams } from "@hanzo/console-core";
 
 export function useValidateCustomModel(
   availableProviders: string[],

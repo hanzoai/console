@@ -6,7 +6,7 @@ import { api } from "@/src/utils/api";
 import { numberFormatter, compactNumberFormatter } from "@/src/utils/numbers";
 import { MAX_EVENTS_FREE_PLAN } from "@/src/features/billing/constants";
 import { ExternalLink, CreditCard, BarChart3, Receipt, Zap } from "lucide-react";
-import type { Plan } from "@hanzo/console";
+import type { Plan } from "@hanzo/console-core";
 
 export const BillingSettings = () => {
   const organization = useQueryOrganization();

@@ -5,7 +5,7 @@ import {
   type GitHubDispatchActionConfigWithSecrets,
   type GitHubDispatchActionCreate,
   isGitHubDispatchActionConfig,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 import { getActionByIdWithSecrets, validateWebhookURL } from "@hanzo/console-core/src/server";
 import { TRPCError } from "@trpc/server";
 

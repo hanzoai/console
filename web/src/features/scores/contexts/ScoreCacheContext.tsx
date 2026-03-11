@@ -1,4 +1,4 @@
-import { type ScoreDomain } from "@hanzo/console";
+import { type ScoreDomain } from "@hanzo/console-core";
 import { createContext, type ReactNode, useCallback, useContext, useState } from "react";
 import { type AnnotationScoreDataType, type ScoreColumn } from "@/src/features/scores/types";
 import { composeAggregateScoreKey } from "@/src/features/scores/lib/aggregateScores";

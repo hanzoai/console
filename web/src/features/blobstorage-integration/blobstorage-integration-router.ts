@@ -14,7 +14,7 @@ import {
 } from "@hanzo/console-core/src/server";
 import { randomUUID } from "crypto";
 import { decrypt } from "@hanzo/console-core/encryption";
-import { type BlobStorageIntegration, BlobStorageIntegrationType, BlobStorageExportMode } from "@hanzo/console";
+import { type BlobStorageIntegration, BlobStorageIntegrationType, BlobStorageExportMode } from "@hanzo/console-core";
 import { env } from "@/src/env.mjs";
 
 export const blobStorageIntegrationRouter = createTRPCRouter({

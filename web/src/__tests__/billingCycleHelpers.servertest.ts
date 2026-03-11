@@ -7,7 +7,7 @@ import {
   startOfDayUTC,
   endOfDayUTC,
 } from "@hanzo/console-core/src/server";
-import { type Organization } from "@hanzo/console";
+import { type Organization } from "@hanzo/console-core";
 
 describe("getBillingCycleAnchor", () => {
   it("returns cloudBillingCycleAnchor when set", () => {

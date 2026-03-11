@@ -15,7 +15,7 @@ import {
   type BatchExportFileFormat,
   type OrderByState,
   BatchTableNames,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 import React from "react";
 import { api } from "@/src/utils/api";
 import { showSuccessToast } from "@/src/features/notifications/showSuccessToast";

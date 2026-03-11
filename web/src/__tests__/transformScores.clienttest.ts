@@ -1,5 +1,5 @@
 import { transformToAnnotationScores } from "@/src/features/scores/lib/transformScores";
-import { type ScoreDomain, type ScoreAggregate, type ScoreConfigDomain } from "@hanzo/console";
+import { type ScoreDomain, type ScoreAggregate, type ScoreConfigDomain } from "@hanzo/console-core";
 import { type WithStringifiedMetadata } from "@/src/utils/clientSideDomainTypes";
 
 const mockConfigs: ScoreConfigDomain[] = [

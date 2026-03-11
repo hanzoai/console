@@ -5,7 +5,7 @@ import {
   isValidVariableName,
   PromptDependencyRegex,
   type ParsedPromptDependencyTag,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 import { Badge } from "@/src/components/ui/badge";
 import { Button } from "@/src/components/ui/button";
 import { FileCode } from "lucide-react";

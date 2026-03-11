@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import type { z } from "zod/v4";
-import { type Prisma, deepParseJson } from "@hanzo/console";
+import { type Prisma, deepParseJson } from "@hanzo/console-core";
 import {
   normalizeInput,
   normalizeOutput,

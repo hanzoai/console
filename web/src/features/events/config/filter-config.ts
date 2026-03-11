@@ -1,4 +1,4 @@
-import { eventsTableCols } from "@hanzo/console";
+import { eventsTableCols } from "@hanzo/console-core";
 import type { FilterConfig } from "@/src/features/filters/lib/filter-config";
 import type { ColumnToBackendKeyMap } from "@/src/features/filters/lib/filter-transform";
 import { renderFilterIcon } from "@/src/components/ItemBadge";

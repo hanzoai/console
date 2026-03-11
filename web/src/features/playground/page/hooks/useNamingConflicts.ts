@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { type PromptVariable } from "@hanzo/console";
+import { type PromptVariable } from "@hanzo/console-core";
 import { type PlaceholderMessageFillIn } from "../types";
 
 export interface NamingConflictInfo {

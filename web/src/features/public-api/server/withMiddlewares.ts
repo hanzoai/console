@@ -2,7 +2,7 @@ import { isPrismaException } from "@/src/utils/exceptions";
 import { cors, runMiddleware } from "@/src/features/public-api/server/cors";
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { type ZodError } from "zod/v4";
-import { BaseError, ConsoleNotFoundError, MethodNotAllowedError, UnauthorizedError } from "@hanzo/console";
+import { BaseError, ConsoleNotFoundError, MethodNotAllowedError, UnauthorizedError } from "@hanzo/console-core";
 import { logger, traceException, contextWithHanzoProps, DatastoreResourceError } from "@hanzo/console-core/src/server";
 import * as opentelemetry from "@opentelemetry/api";
 

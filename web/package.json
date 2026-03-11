@@ -45,7 +45,6 @@
     "@dnd-kit/sortable": "^8.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@ferrucc-io/emoji-picker": "^0.0.47",
-    "@hanzo/console": "workspace:*",
     "@hanzo/console-sdk": "npm:langfuse@3.38.4",
     "@hanzo/iam": "^0.4.1",
     "@hanzo/insights": "^1.357.1",

@@ -1,4 +1,4 @@
-import { type ScoreDomain } from "@hanzo/console";
+import { type ScoreDomain } from "@hanzo/console-core";
 
 /**
  * Extracts the most recent correction from an array of corrections.

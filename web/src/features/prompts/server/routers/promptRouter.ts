@@ -17,8 +17,8 @@ import {
   PromptType,
   StringNoHTMLNonEmpty,
   TracingSearchType,
-} from "@hanzo/console";
-import { orderBy, singleFilter } from "@hanzo/console";
+} from "@hanzo/console-core";
+import { orderBy, singleFilter } from "@hanzo/console-core";
 import {
   orderByToPrismaSql,
   PromptService,

@@ -1,7 +1,7 @@
 import { StreamingTextResponse } from "ai";
 import { NextResponse, type NextRequest } from "next/server";
 
-import { BaseError, ForbiddenError, InternalServerError, InvalidRequestError } from "@hanzo/console";
+import { BaseError, ForbiddenError, InternalServerError, InvalidRequestError } from "@hanzo/console-core";
 
 import { InsightsCallbackHandler } from "./analytics/insightsCallback";
 import { authorizeRequestOrThrow } from "./authorizeRequest";

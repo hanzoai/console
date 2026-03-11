@@ -10,7 +10,7 @@
  */
 
 import { memo } from "react";
-import { type ObservationType, AnnotationQueueObjectType, isGenerationLike } from "@hanzo/console";
+import { type ObservationType, AnnotationQueueObjectType, isGenerationLike } from "@hanzo/console-core";
 import { type SelectionData } from "@/src/features/comments/contexts/InlineCommentSelectionContext";
 import { type ObservationReturnTypeWithMetadata } from "@/src/server/api/routers/traces";
 import { ItemBadge } from "@/src/components/ItemBadge";
@@ -35,7 +35,7 @@ import { CostBadge, UsageBadge } from "./ObservationMetadataBadgesTooltip";
 import { ModelBadge } from "./ObservationMetadataBadgeModel";
 import { ModelParametersBadges } from "./ObservationMetadataBadgeModelParameters";
 import { type WithStringifiedMetadata, type MetadataDomainClient } from "@/src/utils/clientSideDomainTypes";
-import { type ScoreDomain } from "@hanzo/console";
+import { type ScoreDomain } from "@hanzo/console-core";
 import { type AggregatedTraceMetrics } from "@/src/components/trace2/lib/trace-aggregation";
 import type Decimal from "decimal.js";
 

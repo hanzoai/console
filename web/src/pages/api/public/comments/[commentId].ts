@@ -1,7 +1,7 @@
 import { prisma } from "@hanzo/console-core/src/db";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
-import { ConsoleNotFoundError } from "@hanzo/console";
+import { ConsoleNotFoundError } from "@hanzo/console-core";
 import { GetCommentV1Query, GetCommentV1Response } from "@/src/features/public-api/types/comments";
 
 export default withMiddlewares({

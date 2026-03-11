@@ -7,7 +7,7 @@ import {
   type PlaceholderMessage,
   type PromptVariable,
   type UIModelParams,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 
 export type PlaygroundTool = LLMToolDefinition & {
   id: string;

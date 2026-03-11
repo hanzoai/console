@@ -22,7 +22,7 @@ import { useSession, signOut } from "next-auth/react";
 import { SettingsDangerZone } from "@/src/components/SettingsDangerZone";
 import ContainerPage from "@/src/components/layouts/container-page";
 import { useRouter } from "next/router";
-import { StringNoHTML } from "@hanzo/console";
+import { StringNoHTML } from "@hanzo/console-core";
 import Link from "next/link";
 import { showSuccessToast } from "@/src/features/notifications/showSuccessToast";
 import { showErrorToast } from "@/src/features/notifications/showErrorToast";

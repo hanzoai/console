@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { EvalTargetObject, type BatchActionQuery } from "@hanzo/console";
+import { EvalTargetObject, type BatchActionQuery } from "@hanzo/console-core";
 import { api } from "@/src/utils/api";
 import {
   Dialog,

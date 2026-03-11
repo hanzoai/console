@@ -20,7 +20,7 @@ import {
   LLMAdapter,
   type supportedModels,
   type UIModelParams,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 import { InfoIcon, Settings2 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/src/components/ui/tooltip";

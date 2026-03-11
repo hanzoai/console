@@ -1,5 +1,5 @@
 import { api } from "@/src/utils/api";
-import { type ExperimentEvalOptions, type ObservationEvalOptions } from "@hanzo/console";
+import { type ExperimentEvalOptions, type ObservationEvalOptions } from "@hanzo/console-core";
 import { useMemo } from "react";
 
 export function useEvalConfigFilterOptions({ projectId }: { projectId: string }) {

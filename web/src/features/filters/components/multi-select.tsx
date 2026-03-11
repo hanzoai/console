@@ -15,7 +15,7 @@ import {
 } from "@/src/components/ui/input-command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
 import { Separator } from "@/src/components/ui/separator";
-import { type FilterOption } from "@hanzo/console";
+import { type FilterOption } from "@hanzo/console-core";
 import { Input } from "@/src/components/ui/input";
 import { useRef, useState, useMemo, useCallback } from "react";
 import { PropertyHoverCard } from "@/src/features/widgets/components/WidgetPropertySelectItem";

@@ -5,7 +5,7 @@ import { getMediaStorageServiceClient } from "@/src/features/media/server/getMed
 import { GetMediaQuerySchema, GetMediaResponseSchema, PatchMediaBodySchema } from "@/src/features/media/validation";
 import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
-import { ForbiddenError, InternalServerError, ConsoleNotFoundError } from "@hanzo/console";
+import { ForbiddenError, InternalServerError, ConsoleNotFoundError } from "@hanzo/console-core";
 import { Prisma, prisma } from "@hanzo/console-core/src/db";
 import { recordIncrement, recordHistogram } from "@hanzo/console-core/src/server";
 

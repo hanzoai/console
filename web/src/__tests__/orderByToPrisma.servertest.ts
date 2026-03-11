@@ -1,5 +1,5 @@
 import { orderByToPrismaSql } from "@hanzo/console-core/src/server";
-import { tracesTableCols } from "@hanzo/console";
+import { tracesTableCols } from "@hanzo/console-core";
 
 // The test for the orderByToPrisma function
 describe("orderByToPrisma (Convert orderBy to Prisma.sql)", () => {

@@ -1,5 +1,5 @@
 import { z } from "zod/v4";
-import { singleFilter, TracingSearchType, orderBy } from "@hanzo/console";
+import { singleFilter, TracingSearchType, orderBy } from "@hanzo/console-core";
 
 export const EventsTableOptions = z.object({
   projectId: z.string(), // Required for protectedProjectProcedure

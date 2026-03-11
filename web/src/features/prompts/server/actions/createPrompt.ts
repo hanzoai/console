@@ -9,7 +9,7 @@ import {
   LATEST_PROMPT_LABEL,
   PromptType,
   extractVariables,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 import { type PrismaClient } from "@hanzo/console-core/src/db";
 import { removeLabelsFromPreviousPromptVersions } from "@/src/features/prompts/server/utils/updatePromptLabels";
 import { updatePromptTagsOnAllVersions } from "@/src/features/prompts/server/utils/updatePromptTags";

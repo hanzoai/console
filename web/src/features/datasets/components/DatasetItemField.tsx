@@ -1,7 +1,7 @@
 import { CodeMirrorEditor } from "@/src/components/editor";
 import { DatasetSchemaHoverCard } from "./DatasetSchemaHoverCard";
 import { DatasetItemFieldSchemaErrors } from "./DatasetItemFieldSchemaErrors";
-import type { Prisma } from "@hanzo/console";
+import type { Prisma } from "@hanzo/console-core";
 import { FormControl, FormItem, FormLabel, FormMessage } from "@/src/components/ui/form";
 
 type DatasetError = {

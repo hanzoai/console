@@ -1,4 +1,4 @@
-import { type ColumnDefinition, JobConfigState } from "@hanzo/console";
+import { type ColumnDefinition, JobConfigState } from "@hanzo/console-core";
 
 export const evalConfigFilterColumns: ColumnDefinition[] = [
   {

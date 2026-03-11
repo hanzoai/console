@@ -8,7 +8,7 @@ import { throwIfNoOrganizationAccess } from "@/src/features/rbac/utils/checkOrga
 import { ApiAuthService } from "@/src/features/public-api/server/apiAuth";
 import { QueueJobs, redis, ProjectDeleteQueue, getEnvironmentsForProject } from "@hanzo/console-core/src/server";
 import { randomUUID } from "crypto";
-import { StringNoHTMLNonEmpty } from "@hanzo/console";
+import { StringNoHTMLNonEmpty } from "@hanzo/console-core";
 
 export const projectsRouter = createTRPCRouter({
   create: protectedOrganizationProcedure

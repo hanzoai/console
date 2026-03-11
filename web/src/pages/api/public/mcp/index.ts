@@ -33,7 +33,7 @@ import { logger, redis } from "@hanzo/console-core/src/server";
 import { ApiAuthService } from "@/src/features/public-api/server/apiAuth";
 import { RateLimitService } from "@/src/features/public-api/server/RateLimitService";
 import { prisma } from "@hanzo/console-core/src/db";
-import { BaseError, UnauthorizedError, ForbiddenError } from "@hanzo/console";
+import { BaseError, UnauthorizedError, ForbiddenError } from "@hanzo/console-core";
 import { ZodError } from "zod/v4";
 import { isUserInputError } from "@/src/features/mcp/core/errors";
 

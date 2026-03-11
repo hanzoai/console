@@ -16,7 +16,7 @@ import { UserInputError } from "../../../core/errors";
 import { instrumentAsync } from "@hanzo/console-core/src/server";
 import { SpanKind } from "@opentelemetry/api";
 
-import { PROMPT_NAME_MAX_LENGTH } from "@hanzo/console";
+import { PROMPT_NAME_MAX_LENGTH } from "@hanzo/console-core";
 
 /**
  * Base schema for JSON Schema generation (MCP client display)

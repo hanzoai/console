@@ -10,7 +10,7 @@
  * Fixed height component placed below NavigationHeader
  */
 
-import { ObservationLevel } from "@hanzo/console";
+import { ObservationLevel } from "@hanzo/console-core";
 import { useTraceData } from "../../contexts/TraceDataContext";
 import { useViewPreferences } from "../../contexts/ViewPreferencesContext";
 

@@ -8,7 +8,7 @@ import {
   TRACE_FIELD_GROUPS,
   type TraceFieldGroup,
 } from "@/src/features/public-api/types/traces";
-import { InvalidRequestError } from "@hanzo/console";
+import { InvalidRequestError } from "@hanzo/console-core";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
 import { processEventBatch } from "@hanzo/console-core/src/server";

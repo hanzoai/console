@@ -1,7 +1,7 @@
 /** @jest-environment node */
 import type { NextApiRequest, NextApiResponse } from "next";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
-import { BaseError, ConsoleNotFoundError, UnauthorizedError, ServiceUnavailableError } from "@hanzo/console";
+import { BaseError, ConsoleNotFoundError, UnauthorizedError, ServiceUnavailableError } from "@hanzo/console-core";
 import { DatastoreResourceError, logger, traceException } from "@hanzo/console-core/src/server";
 import { createMocks } from "node-mocks-http";
 import { z } from "zod/v4";

@@ -1,6 +1,6 @@
 import type z from "zod/v4";
 import type { ViewVersion, ViewDeclarationType, DimensionsDeclarationType, views } from "@/src/features/query/types";
-import { InvalidRequestError } from "@hanzo/console";
+import { InvalidRequestError } from "@hanzo/console-core";
 
 // The data model defines all available dimensions, measures, and the timeDimension for a given view.
 // Make sure to update ./dashboardUiTableToViewMapping.ts if you make changes

@@ -11,7 +11,7 @@ import { GroupedScoreBadges } from "@/src/components/grouped-score-badge";
 import { formatIntervalSeconds } from "@/src/utils/dates";
 import { usdFormatter } from "@/src/utils/numbers";
 import { heatMapTextColor } from "@/src/components/trace2/lib/helpers";
-import { isPresent } from "@hanzo/console";
+import { isPresent } from "@hanzo/console-core";
 
 export function TimelineBar({
   node,

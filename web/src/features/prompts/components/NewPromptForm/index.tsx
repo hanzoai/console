@@ -25,7 +25,7 @@ import {
   PromptType,
   extractVariables,
   getIsCharOrUnderscore,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 import { PromptChatMessages } from "./PromptChatMessages";
 import { ReviewPromptDialog } from "./ReviewPromptDialog";
 import {

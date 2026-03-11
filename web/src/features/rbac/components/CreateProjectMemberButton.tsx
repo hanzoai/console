@@ -25,7 +25,7 @@ import {
 } from "@/src/components/ui/form";
 import { Select, SelectContent, SelectTrigger, SelectValue } from "@/src/components/ui/select";
 import { Input } from "@/src/components/ui/input";
-import { Role } from "@hanzo/console";
+import { Role } from "@hanzo/console-core";
 import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { useHasOrganizationAccess } from "@/src/features/rbac/utils/checkOrganizationAccess";
 import { useHasEntitlement, useEntitlementLimit } from "@/src/features/entitlements/hooks";

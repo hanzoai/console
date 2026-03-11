@@ -10,7 +10,7 @@ import {
   validatePricingTiers,
   validatePricingMethod,
   type PricingTierInput,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 import { createOrgProjectAndApiKey } from "@hanzo/console-core/src/server";
 
 describe("validation methods", () => {

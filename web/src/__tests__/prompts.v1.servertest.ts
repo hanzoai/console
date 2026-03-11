@@ -3,8 +3,8 @@
 import { prisma } from "@hanzo/console-core/src/db";
 import { makeAPICall, pruneDatabase } from "@/src/__tests__/test-utils";
 import { v4 as uuidv4, v4 } from "uuid";
-import { type Prompt, PromptType } from "@hanzo/console";
-import { LegacyPromptSchema, type LegacyValidatedPrompt } from "@hanzo/console";
+import { type Prompt, PromptType } from "@hanzo/console-core";
+import { LegacyPromptSchema, type LegacyValidatedPrompt } from "@hanzo/console-core";
 import { getObservationById } from "@hanzo/console-core/src/server";
 
 describe("/api/public/prompts API Endpoint", () => {

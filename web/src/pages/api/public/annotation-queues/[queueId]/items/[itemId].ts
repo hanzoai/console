@@ -9,8 +9,8 @@ import {
   DeleteAnnotationQueueItemQuery,
   DeleteAnnotationQueueItemResponse,
 } from "@/src/features/public-api/types/annotation-queues";
-import { ConsoleNotFoundError } from "@hanzo/console";
-import { AnnotationQueueStatus } from "@hanzo/console";
+import { ConsoleNotFoundError } from "@hanzo/console-core";
+import { AnnotationQueueStatus } from "@hanzo/console-core";
 
 export default withMiddlewares({
   GET: createAuthedProjectAPIRoute({

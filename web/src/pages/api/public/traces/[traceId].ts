@@ -7,7 +7,7 @@ import {
   DeleteTraceV1Query,
   DeleteTraceV1Response,
 } from "@/src/features/public-api/types/traces";
-import { filterAndValidateDbTraceScoreList, ConsoleNotFoundError } from "@hanzo/console";
+import { filterAndValidateDbTraceScoreList, ConsoleNotFoundError } from "@hanzo/console-core";
 import { prisma } from "@hanzo/console-core/src/db";
 import {
   getObservationsForTrace,

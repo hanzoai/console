@@ -1,4 +1,4 @@
-import { type ActionType } from "@hanzo/console";
+import { type ActionType } from "@hanzo/console-core";
 import { type FieldValues } from "react-hook-form";
 import { type BaseActionHandler } from "./BaseActionHandler";
 import { WebhookActionHandler } from "./WebhookActionHandler";

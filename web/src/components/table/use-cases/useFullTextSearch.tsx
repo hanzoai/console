@@ -1,4 +1,4 @@
-import type { TracingSearchType } from "@hanzo/console";
+import type { TracingSearchType } from "@hanzo/console-core";
 import { useQueryParam, withDefault, StringParam, ArrayParam } from "use-query-params";
 import { usePeekTableState } from "@/src/components/table/peek/contexts/PeekTableStateContext";
 

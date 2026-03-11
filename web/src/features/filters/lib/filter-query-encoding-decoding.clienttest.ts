@@ -1,5 +1,5 @@
 import { encodeFiltersGeneric, decodeFiltersGeneric } from "@/src/features/filters/lib/filter-query-encoding";
-import type { FilterState } from "@hanzo/console";
+import type { FilterState } from "@hanzo/console-core";
 
 // Wrapper functions for tests
 const encodeFilters = (filters: FilterState) => encodeFiltersGeneric(filters);

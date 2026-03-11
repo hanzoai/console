@@ -1,4 +1,4 @@
-import { ZodModelConfig } from "@hanzo/console";
+import { ZodModelConfig } from "@hanzo/console-core";
 import z from "zod/v4";
 
 export const CreateExperimentData = z.object({

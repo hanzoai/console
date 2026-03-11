@@ -11,7 +11,7 @@ import { DetailPageNav } from "@/src/features/navigate-detail-pages/DetailPageNa
 import useProjectIdFromURL from "@/src/hooks/useProjectIdFromURL";
 import { api } from "@/src/utils/api";
 import { getNumberFromMap } from "@/src/utils/map-utils";
-import { extractVariables, PRODUCTION_LABEL, PromptType } from "@hanzo/console";
+import { extractVariables, PRODUCTION_LABEL, PromptType } from "@hanzo/console-core";
 import { getPromptTabs, PROMPT_TABS } from "@/src/features/navigation/utils/prompt-tabs";
 import { PromptHistoryNode } from "./prompt-history";
 import { JumpToPlaygroundButton } from "@/src/features/playground/page/components/JumpToPlaygroundButton";

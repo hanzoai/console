@@ -30,7 +30,7 @@ import {
   type FilterState,
   type ScoreDomain,
   TableViewPresetTableName,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 import { CreateNewAnnotationQueueItem } from "@/src/features/annotation-queues/components/CreateNewAnnotationQueueItem";
 import { TablePeekView } from "@/src/components/table/peek";
 import { PeekViewTraceDetail } from "@/src/components/table/peek/peek-trace-detail";

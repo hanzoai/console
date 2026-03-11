@@ -13,8 +13,8 @@ import { FeedbackButtonWrapper } from "@/src/features/feedback/component/Feedbac
 import { BarChart2 } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { PopoverFilterBuilder } from "@/src/features/filters/components/filter-builder";
-import { type FilterState } from "@hanzo/console";
-import { type ColumnDefinition } from "@hanzo/console";
+import { type FilterState } from "@hanzo/console-core";
+import { type ColumnDefinition } from "@hanzo/console-core";
 import { useQueryFilterState } from "@/src/features/filters/hooks/useFilterState";
 import { LatencyTables } from "@/src/features/dashboard/components/LatencyTables";
 import { useMemo } from "react";

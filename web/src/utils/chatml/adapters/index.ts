@@ -11,4 +11,4 @@ export {
   genericAdapter,
   normalizeInput,
   normalizeOutput,
-} from "@hanzo/console";
+} from "@hanzo/console-core";

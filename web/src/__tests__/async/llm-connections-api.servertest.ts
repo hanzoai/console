@@ -7,7 +7,7 @@ import {
   PutLlmConnectionV1Response,
 } from "@/src/features/public-api/types/llm-connections";
 import { createOrgProjectAndApiKey } from "@hanzo/console-core/src/server";
-import { LLMAdapter } from "@hanzo/console";
+import { LLMAdapter } from "@hanzo/console-core";
 import { encrypt } from "@hanzo/console-core/encryption";
 
 // Generate truly unique provider names for tests to avoid conflicts

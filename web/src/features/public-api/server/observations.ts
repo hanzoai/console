@@ -9,7 +9,7 @@ import {
   convertObservation,
   shouldSkipObservationsFinal,
 } from "@hanzo/console-core/src/server";
-import type { FilterState } from "@hanzo/console";
+import type { FilterState } from "@hanzo/console-core";
 
 type QueryType = {
   page: number;

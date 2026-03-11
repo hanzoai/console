@@ -12,11 +12,11 @@ import {
   tracesTableUiColumnDefinitions,
   shouldSkipObservationsFinal,
 } from "@hanzo/console-core/src/server";
-import { AGGREGATABLE_SCORE_TYPES, type OrderByState } from "@hanzo/console";
+import { AGGREGATABLE_SCORE_TYPES, type OrderByState } from "@hanzo/console-core";
 import { TRACE_FIELD_GROUPS, type TraceFieldGroup } from "@/src/features/public-api/types/traces";
 import { env } from "@/src/env.mjs";
 
-import type { FilterState } from "@hanzo/console";
+import type { FilterState } from "@hanzo/console-core";
 import snakeCase from "lodash/snakeCase";
 
 export type TraceQueryType = {

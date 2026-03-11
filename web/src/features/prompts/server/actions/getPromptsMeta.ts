@@ -1,4 +1,4 @@
-import { type GetPromptsMetaType, type FilterState, promptsTableCols, type PromptType } from "@hanzo/console";
+import { type GetPromptsMetaType, type FilterState, promptsTableCols, type PromptType } from "@hanzo/console-core";
 import { prisma } from "@hanzo/console-core/src/db";
 import { tableColumnsToSqlFilterAndPrefix } from "@hanzo/console-core/src/server";
 

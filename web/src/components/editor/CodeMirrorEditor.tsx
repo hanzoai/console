@@ -21,7 +21,7 @@ import {
   UNCLOSED_VARIABLE_REGEX,
   PromptDependencyRegex,
   parsePromptDependencyTags,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 import { lightTheme } from "@/src/components/editor/light-theme";
 import { darkTheme } from "@/src/components/editor/dark-theme";
 

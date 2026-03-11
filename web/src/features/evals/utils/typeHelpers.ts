@@ -1,4 +1,8 @@
-import { type EvalTemplate, EvalTargetObject, type EvalTargetObject as EvalTargetObjectType } from "@hanzo/console";
+import {
+  type EvalTemplate,
+  EvalTargetObject,
+  type EvalTargetObject as EvalTargetObjectType,
+} from "@hanzo/console-core";
 
 export const partnerIdentifierToName = new Map([["ragas", "Ragas"]]);
 

@@ -1,7 +1,7 @@
 import { auditLog } from "@/src/features/audit-logs/auditLog";
 import { throwIfNoProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { createTRPCRouter, protectedProjectProcedure } from "@/src/server/api/trpc";
-import { BatchExportStatus, CreateBatchExportSchema, paginationZod } from "@hanzo/console";
+import { BatchExportStatus, CreateBatchExportSchema, paginationZod } from "@hanzo/console-core";
 import { BatchExportQueue, logger, QueueJobs } from "@hanzo/console-core/src/server";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod/v4";

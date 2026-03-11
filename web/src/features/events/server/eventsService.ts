@@ -24,7 +24,7 @@ import {
   getTracesGroupedByTags,
   getObservationsBatchIOFromEventsTable,
 } from "@hanzo/console-core/src/server";
-import { type timeFilter, type FilterState } from "@hanzo/console";
+import { type timeFilter, type FilterState } from "@hanzo/console-core";
 import { type EventBatchIOOutput } from "@/src/features/events/server/eventsRouter";
 
 type TimeFilter = z.infer<typeof timeFilter>;

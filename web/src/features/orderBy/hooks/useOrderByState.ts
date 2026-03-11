@@ -1,4 +1,4 @@
-import { type OrderByState } from "@hanzo/console";
+import { type OrderByState } from "@hanzo/console-core";
 import { ObjectParam, useQueryParam, withDefault } from "use-query-params";
 import { usePeekTableState } from "@/src/components/table/peek/contexts/PeekTableStateContext";
 

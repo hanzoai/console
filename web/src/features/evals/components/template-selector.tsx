@@ -1,4 +1,4 @@
-import { type EvalTemplate } from "@hanzo/console";
+import { type EvalTemplate } from "@hanzo/console-core";
 
 import { CheckIcon, ChevronDown, Cog, ExternalLink, AlertCircle, ExternalLinkIcon } from "lucide-react";
 import { Badge } from "@/src/components/ui/badge";

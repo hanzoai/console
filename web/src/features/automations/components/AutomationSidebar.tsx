@@ -1,6 +1,6 @@
 import React from "react";
 import { api } from "@/src/utils/api";
-import { JobConfigState, type AutomationDomain } from "@hanzo/console";
+import { JobConfigState, type AutomationDomain } from "@hanzo/console-core";
 import { cn } from "@/src/utils/tailwind";
 import { StatusBadge } from "@/src/components/layouts/status-badge";
 

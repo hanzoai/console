@@ -10,7 +10,7 @@ import {
 } from "@/src/features/media/validation";
 import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
-import { ForbiddenError, InternalServerError, InvalidRequestError } from "@hanzo/console";
+import { ForbiddenError, InternalServerError, InvalidRequestError } from "@hanzo/console-core";
 import { prisma } from "@hanzo/console-core/src/db";
 import { logger, instrumentAsync } from "@hanzo/console-core/src/server";
 

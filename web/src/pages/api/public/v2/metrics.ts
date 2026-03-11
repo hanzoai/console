@@ -3,7 +3,7 @@ import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/cr
 import { env } from "@/src/env.mjs";
 import { logger } from "@hanzo/console-core/src/server";
 import { GetMetricsV2Query, GetMetricsV2Response } from "@/src/features/public-api/types/metrics";
-import { InvalidRequestError, NotImplementedError } from "@hanzo/console";
+import { InvalidRequestError, NotImplementedError } from "@hanzo/console-core";
 import { executeQuery, validateQuery } from "@/src/features/query/server/queryExecutor";
 
 const DEFAULT_ROW_LIMIT = 100;

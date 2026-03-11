@@ -1,6 +1,6 @@
 import { env } from "@/src/env.mjs";
 import { aggregateScores } from "@/src/features/scores/lib/aggregateScores";
-import { AGGREGATABLE_SCORE_TYPES, filterAndValidateDbScoreList } from "@hanzo/console";
+import { AGGREGATABLE_SCORE_TYPES, filterAndValidateDbScoreList } from "@hanzo/console-core";
 import {
   getObservationsTableWithModelData,
   getObservationsWithModelDataFromEventsTable,

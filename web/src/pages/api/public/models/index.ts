@@ -9,7 +9,7 @@ import {
   PostModelsV1Response,
   prismaToApiModelDefinition,
 } from "@/src/features/public-api/types/models";
-import { InvalidRequestError } from "@hanzo/console";
+import { InvalidRequestError } from "@hanzo/console-core";
 import { isValidPostgresRegex } from "@/src/features/models/server/isValidPostgresRegex";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
 

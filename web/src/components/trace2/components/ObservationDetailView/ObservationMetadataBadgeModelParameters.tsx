@@ -3,7 +3,7 @@
  * Renders dynamic badges for each model parameter with truncation
  */
 
-import { type JsonNested } from "@hanzo/console";
+import { type JsonNested } from "@hanzo/console-core";
 import { Badge } from "@/src/components/ui/badge";
 
 export function ModelParametersBadges({ modelParameters }: { modelParameters: JsonNested | null | undefined }) {

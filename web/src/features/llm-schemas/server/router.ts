@@ -1,4 +1,4 @@
-import { type Prisma } from "@hanzo/console";
+import { type Prisma } from "@hanzo/console-core";
 import { z } from "zod/v4";
 import { createTRPCRouter, protectedProjectProcedure } from "@/src/server/api/trpc";
 import { throwIfNoProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";

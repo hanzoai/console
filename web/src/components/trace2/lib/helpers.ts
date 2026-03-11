@@ -2,7 +2,7 @@ import { type NestedObservation } from "@/src/utils/types";
 import { type TreeNode, type TraceSearchListItem } from "./types";
 import { type ObservationReturnType } from "@/src/server/api/routers/traces";
 import Decimal from "decimal.js";
-import { type ObservationLevelType, ObservationLevel, type TraceDomain } from "@hanzo/console";
+import { type ObservationLevelType, ObservationLevel, type TraceDomain } from "@hanzo/console-core";
 import { type WithStringifiedMetadata } from "@/src/utils/clientSideDomainTypes";
 
 export function nestObservations(

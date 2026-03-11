@@ -9,7 +9,7 @@ import {
   getDatasetItems,
   createDatasetItemFilterState,
 } from "@hanzo/console-core/src/server";
-import { validateFieldAgainstSchema } from "@hanzo/console";
+import { validateFieldAgainstSchema } from "@hanzo/console-core";
 
 process.env.HANZO_DATASET_SERVICE_READ_FROM_VERSIONED_IMPLEMENTATION = "true";
 process.env.HANZO_DATASET_SERVICE_WRITE_TO_VERSIONED_IMPLEMENTATION = "true";

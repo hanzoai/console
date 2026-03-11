@@ -1,5 +1,5 @@
 import { api } from "@/src/utils/api";
-import { type AnnotationQueueItem, AnnotationQueueObjectType } from "@hanzo/console";
+import { type AnnotationQueueItem, AnnotationQueueObjectType } from "@hanzo/console-core";
 
 export interface ObjectDataHook<TData> {
   data: TData | undefined;

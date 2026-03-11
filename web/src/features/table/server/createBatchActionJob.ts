@@ -6,7 +6,7 @@ import {
   type BatchActionQuery,
   type ActionId,
   type BatchActionType,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 import { BatchActionQueue, logger, QueueJobs } from "@hanzo/console-core/src/server";
 import { TRPCError } from "@trpc/server";
 

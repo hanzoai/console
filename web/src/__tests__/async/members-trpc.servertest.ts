@@ -3,7 +3,7 @@
 import { appRouter } from "@/src/server/api/root";
 import { createInnerTRPCContext } from "@/src/server/api/trpc";
 import { prisma } from "@hanzo/console-core/src/db";
-import { Role, type Plan } from "@hanzo/console";
+import { Role, type Plan } from "@hanzo/console-core";
 import type { Session } from "next-auth";
 import { v4 as uuidv4 } from "uuid";
 

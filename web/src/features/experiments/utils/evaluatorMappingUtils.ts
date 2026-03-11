@@ -1,4 +1,4 @@
-import { type EvalTemplate } from "@hanzo/console";
+import { type EvalTemplate } from "@hanzo/console-core";
 
 // Define the type locally to match what's in @hanzo/console
 type VariableMapping = {

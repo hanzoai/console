@@ -1,5 +1,5 @@
 import { DummyDriver, Kysely, PostgresAdapter, PostgresIntrospector, PostgresQueryCompiler } from "kysely";
-import { type DB as Database } from "@hanzo/console";
+import { type DB as Database } from "@hanzo/console-core";
 
 export const DB = new Kysely<Database>({
   dialect: {

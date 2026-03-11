@@ -4,7 +4,7 @@ import {
   type SingleValueOption,
   ScoreSourceArray,
   ScoreDataTypeArray,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 
 export const scoresTableCols: ColumnDefinition[] = [
   {

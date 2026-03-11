@@ -8,7 +8,7 @@ import {
   PostDatasetRunItemsV1Body,
   PostDatasetRunItemsV1Response,
 } from "@/src/features/public-api/types/datasets";
-import { type JSONValue, ConsoleNotFoundError } from "@hanzo/console";
+import { type JSONValue, ConsoleNotFoundError } from "@hanzo/console-core";
 import { addDatasetRunItemsToEvalQueue } from "@/src/features/evals/server/addDatasetRunItemsToEvalQueue";
 import {
   eventTypes,

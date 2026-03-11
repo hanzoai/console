@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect, useRef, useCallback, memo } from "react";
 import { cn } from "@/src/utils/tailwind";
-import { deepParseJson } from "@hanzo/console";
+import { deepParseJson } from "@hanzo/console-core";
 import { Skeleton } from "@/src/components/ui/skeleton";
 import { type MediaReturnType } from "@/src/features/media/validation";
 import { HanzoMediaView } from "@/src/components/ui/HanzoMediaView";

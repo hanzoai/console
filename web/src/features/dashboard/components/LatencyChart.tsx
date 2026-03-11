@@ -1,5 +1,5 @@
 import { api } from "@/src/utils/api";
-import { type FilterState, getGenerationLikeTypes } from "@hanzo/console";
+import { type FilterState, getGenerationLikeTypes } from "@hanzo/console-core";
 import {
   extractTimeSeriesData,
   fillMissingValuesAndTransform,

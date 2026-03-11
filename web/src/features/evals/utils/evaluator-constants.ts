@@ -1,4 +1,4 @@
-import { ConsoleInternalTraceEnvironment, observationEvalVariableColumns } from "@hanzo/console";
+import { ConsoleInternalTraceEnvironment, observationEvalVariableColumns } from "@hanzo/console-core";
 
 /**
  * Constant for observation-based evaluators (event/experiment).

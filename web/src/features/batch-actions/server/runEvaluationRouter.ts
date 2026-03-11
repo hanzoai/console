@@ -8,7 +8,7 @@ import {
   getObservationsCountFromEventsTable,
 } from "@hanzo/console-core/src/server";
 import { TRPCError } from "@trpc/server";
-import { BatchTableNames, BatchActionStatus, ActionId, EvalTargetObject } from "@hanzo/console";
+import { BatchTableNames, BatchActionStatus, ActionId, EvalTargetObject } from "@hanzo/console-core";
 import { env } from "@/src/env.mjs";
 import { CreateObservationBatchEvaluationActionSchema } from "../validation";
 

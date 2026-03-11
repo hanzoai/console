@@ -1,4 +1,4 @@
-import { noUrlCheck, StringNoHTMLNonEmpty } from "@hanzo/console";
+import { noUrlCheck, StringNoHTMLNonEmpty } from "@hanzo/console-core";
 import * as z from "zod/v4";
 
 export const passwordSchema = z

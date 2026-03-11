@@ -1,6 +1,6 @@
 import { generateBatchActionId } from "./helpers";
 import { createTRPCRouter, protectedProjectProcedure } from "@/src/server/api/trpc";
-import { GetIsBatchActionInProgressSchema } from "@hanzo/console";
+import { GetIsBatchActionInProgressSchema } from "@hanzo/console-core";
 import { BatchActionQueue, logger } from "@hanzo/console-core/src/server";
 import { TRPCError } from "@trpc/server";
 

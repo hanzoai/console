@@ -11,7 +11,7 @@ import {
   AvailableWebhookApiSchema,
   type SafeWebhookActionConfig,
   WebhookDefaultHeaders,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 import { api } from "@/src/utils/api";
 import { useState } from "react";
 import {

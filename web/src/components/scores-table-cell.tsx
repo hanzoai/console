@@ -1,5 +1,5 @@
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/src/components/ui/hover-card";
-import { type CategoricalAggregate, type AggregatedScoreData } from "@hanzo/console";
+import { type CategoricalAggregate, type AggregatedScoreData } from "@hanzo/console-core";
 
 import { numberFormatter } from "@/src/utils/numbers";
 import { cn } from "@/src/utils/tailwind";

@@ -20,7 +20,7 @@ import { CommentableJsonView } from "@/src/features/comments/components/Commenta
 import { InlineCommentBubble } from "@/src/features/comments/components/InlineCommentBubble";
 import { type CommentedPathsByField } from "@/src/components/ui/AdvancedJsonViewer/utils/commentRanges";
 import { type ExpansionState } from "@/src/components/ui/AdvancedJsonViewer/types";
-import { type ScoreDomain } from "@hanzo/console";
+import { type ScoreDomain } from "@hanzo/console-core";
 import { CorrectedOutputField } from "./components/CorrectedOutputField";
 
 const VIRTUALIZATION_THRESHOLD = 3333;

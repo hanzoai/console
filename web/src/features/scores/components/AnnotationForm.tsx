@@ -10,7 +10,7 @@ import {
   type ScoreConfigCategoryDomain,
   type UpdateAnnotationScoreData,
   type CreateAnnotationScoreData,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 import { Input } from "@/src/components/ui/input";
 import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
 import { Combobox } from "@/src/components/ui/combobox";

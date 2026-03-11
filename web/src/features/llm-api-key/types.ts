@@ -1,5 +1,5 @@
 import { z } from "zod/v4";
-import { LLMAdapter, BedrockConfigSchema, VertexAIConfigSchema } from "@hanzo/console";
+import { LLMAdapter, BedrockConfigSchema, VertexAIConfigSchema } from "@hanzo/console-core";
 
 export const LlmApiKeySchema = z.object({
   projectId: z.string(),

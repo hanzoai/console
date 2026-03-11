@@ -15,7 +15,7 @@ import {
   type SessionOptions,
   type ScoreDomain,
   AGGREGATABLE_SCORE_TYPES,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 import { Prisma } from "@hanzo/console-core/src/db";
 import { TRPCError } from "@trpc/server";
 import Decimal from "decimal.js";

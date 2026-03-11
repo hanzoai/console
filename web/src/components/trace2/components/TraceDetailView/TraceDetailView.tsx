@@ -2,7 +2,7 @@
  * TraceDetailView - Shows trace-level details when no observation is selected
  */
 
-import { type TraceDomain, type ScoreDomain } from "@hanzo/console";
+import { type TraceDomain, type ScoreDomain } from "@hanzo/console-core";
 import { type ObservationReturnTypeWithMetadata } from "@/src/server/api/routers/traces";
 import { type WithStringifiedMetadata } from "@/src/utils/clientSideDomainTypes";
 import { TabsBar, TabsBarContent, TabsBarList, TabsBarTrigger } from "@/src/components/ui/tabs-bar";

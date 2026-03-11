@@ -6,7 +6,7 @@
  */
 
 import { type ObservationReturnTypeWithMetadata } from "@/src/server/api/routers/traces";
-import { type ObservationType, isGenerationLike } from "@hanzo/console";
+import { type ObservationType, isGenerationLike } from "@hanzo/console-core";
 import { type TreeNode } from "./types";
 
 export interface AggregatedTraceMetrics {

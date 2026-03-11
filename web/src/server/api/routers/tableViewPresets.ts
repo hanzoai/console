@@ -12,7 +12,7 @@ import {
   SetDefaultViewInput,
   ClearDefaultViewInput,
 } from "@hanzo/console-core/src/server";
-import { ConsoleConflictError, Prisma, TableViewPresetTableName } from "@hanzo/console";
+import { ConsoleConflictError, Prisma, TableViewPresetTableName } from "@hanzo/console-core";
 
 export const TableViewPresetsRouter = createTRPCRouter({
   create: protectedProjectProcedure.input(CreateTableViewPresetsInput).mutation(async ({ input, ctx }) => {

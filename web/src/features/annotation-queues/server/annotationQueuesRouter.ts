@@ -9,7 +9,7 @@ import {
   ConsoleNotFoundError,
   optionalPaginationZod,
   Prisma,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 import { getObservationById, logger } from "@hanzo/console-core/src/server";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod/v4";

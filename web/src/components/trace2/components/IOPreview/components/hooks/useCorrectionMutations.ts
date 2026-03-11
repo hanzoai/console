@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import { api } from "@/src/utils/api";
 import { useCorrectionCache } from "@/src/features/corrections/contexts/CorrectionCacheContext";
-import { type ScoreDomain } from "@hanzo/console";
+import { type ScoreDomain } from "@hanzo/console-core";
 import { toast } from "sonner";
 import { v4 } from "uuid";
 

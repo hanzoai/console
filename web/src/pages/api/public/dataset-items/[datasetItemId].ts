@@ -8,7 +8,7 @@ import {
   DeleteDatasetItemV1Response,
   transformDbDatasetItemDomainToAPIDatasetItem,
 } from "@/src/features/public-api/types/datasets";
-import { ConsoleNotFoundError } from "@hanzo/console";
+import { ConsoleNotFoundError } from "@hanzo/console-core";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
 import { deleteDatasetItem, getDatasetItemById } from "@hanzo/console-core/src/server";
 

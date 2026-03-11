@@ -1,5 +1,5 @@
-import { type ScoreDomain, type ScoreConfigDomain } from "@hanzo/console";
-import { type ScoreAggregate } from "@hanzo/console";
+import { type ScoreDomain, type ScoreConfigDomain } from "@hanzo/console-core";
+import { type ScoreAggregate } from "@hanzo/console-core";
 import {
   ANNOTATION_SCORE_DATA_TYPES_ARRAY,
   type AnnotationScoreDataType,

@@ -3,7 +3,7 @@ import {
   CreateCommentData,
   paginationMetaResponseZod,
   publicApiPaginationZod,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 import { z } from "zod/v4";
 
 /**

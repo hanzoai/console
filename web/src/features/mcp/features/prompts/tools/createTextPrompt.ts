@@ -13,7 +13,7 @@ import {
   PromptNameSchema,
   COMMIT_MESSAGE_MAX_LENGTH,
   PROMPT_NAME_MAX_LENGTH,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 import { createPrompt as createPromptAction } from "@/src/features/prompts/server/actions/createPrompt";
 import { prisma } from "@hanzo/console-core/src/db";
 import { auditLog } from "@/src/features/audit-logs/auditLog";

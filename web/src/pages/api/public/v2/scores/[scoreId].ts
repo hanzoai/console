@@ -1,7 +1,7 @@
 import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
 import { ScoresApiService } from "@/src/features/public-api/server/scores-api-service";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
-import { GetScoreQueryV2, GetScoreResponseV2, InternalServerError, ConsoleNotFoundError } from "@hanzo/console";
+import { GetScoreQueryV2, GetScoreResponseV2, InternalServerError, ConsoleNotFoundError } from "@hanzo/console-core";
 import { logger, traceException } from "@hanzo/console-core/src/server";
 
 export default withMiddlewares({

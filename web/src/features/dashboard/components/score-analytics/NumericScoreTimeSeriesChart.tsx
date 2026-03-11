@@ -1,6 +1,6 @@
 import { api } from "@/src/utils/api";
 
-import { type ScoreSourceType, type FilterState, type ScoreDataTypeType } from "@hanzo/console";
+import { type ScoreSourceType, type FilterState, type ScoreDataTypeType } from "@hanzo/console-core";
 import {
   extractTimeSeriesData,
   fillMissingValuesAndTransform,

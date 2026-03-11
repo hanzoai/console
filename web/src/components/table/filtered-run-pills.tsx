@@ -3,7 +3,7 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/src/components/
 import { api } from "@/src/utils/api";
 import { ListFilter } from "lucide-react";
 import React, { useMemo } from "react";
-import { type FilterCondition, type FilterState } from "@hanzo/console";
+import { type FilterCondition, type FilterState } from "@hanzo/console-core";
 
 interface FilteredRunPillsProps {
   projectId: string;

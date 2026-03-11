@@ -3,7 +3,7 @@ import { api } from "@/src/utils/api";
 import { type views, type metricAggregations, mapLegacyUiTableFilterToView } from "@/src/features/query";
 import { type z } from "zod/v4";
 import { Chart } from "@/src/features/widgets/chart-library/Chart";
-import { type FilterState, type OrderByState } from "@hanzo/console";
+import { type FilterState, type OrderByState } from "@hanzo/console-core";
 import { isTimeSeriesChart } from "@/src/features/widgets/chart-library/utils";
 import { PencilIcon, TrashIcon, CopyIcon, GripVerticalIcon } from "lucide-react";
 import { useRouter } from "next/router";

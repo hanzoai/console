@@ -2,7 +2,7 @@
 
 import type { Session } from "next-auth";
 import { pruneDatabase } from "@/src/__tests__/test-utils";
-import { LLMAdapter } from "@hanzo/console";
+import { LLMAdapter } from "@hanzo/console-core";
 import { prisma } from "@hanzo/console-core/src/db";
 import { appRouter } from "@/src/server/api/root";
 import { createInnerTRPCContext } from "@/src/server/api/trpc";

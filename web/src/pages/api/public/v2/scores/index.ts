@@ -5,7 +5,7 @@ import {
   GetScoresResponseV2,
   filterAndValidateV2GetScoreList,
   InvalidRequestError,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 import { ScoresApiService } from "@/src/features/public-api/server/scores-api-service";
 import { logger } from "@hanzo/console-core/src/server";
 

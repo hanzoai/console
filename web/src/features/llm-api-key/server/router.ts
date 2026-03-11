@@ -17,7 +17,7 @@ import {
   VertexAIConfigSchema,
   BEDROCK_USE_DEFAULT_CREDENTIALS,
   VERTEXAI_USE_DEFAULT_CREDENTIALS,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 import { encrypt, decrypt } from "@hanzo/console-core/encryption";
 import {
   ChatMessageType,

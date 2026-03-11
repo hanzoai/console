@@ -1,4 +1,4 @@
-import { InvalidRequestError, ConsoleNotFoundError } from "@hanzo/console";
+import { InvalidRequestError, ConsoleNotFoundError } from "@hanzo/console-core";
 import { prisma, type Prompt } from "@hanzo/console-core/src/db";
 import { PromptService, redis, logger } from "@hanzo/console-core/src/server";
 

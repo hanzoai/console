@@ -8,7 +8,7 @@ import {
   filterAndValidateV1GetScoreList,
   PostScoresBodyV1,
   PostScoresResponseV1,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 import { eventTypes, logger, processEventBatch } from "@hanzo/console-core/src/server";
 import { ScoresApiService } from "@/src/features/public-api/server/scores-api-service";
 

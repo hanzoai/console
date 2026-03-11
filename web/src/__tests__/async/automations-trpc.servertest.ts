@@ -12,7 +12,7 @@ import {
   type SafeWebhookActionConfig,
   type WebhookActionConfigWithSecrets,
   isWebhookAction,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 import { encrypt, decrypt } from "@hanzo/console-core/encryption";
 import { generateWebhookSecret } from "@hanzo/console-core/encryption";
 import { TRPCError } from "@trpc/server";

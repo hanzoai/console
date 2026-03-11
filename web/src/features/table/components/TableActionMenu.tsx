@@ -10,7 +10,7 @@ import { ChevronDown, Trash } from "lucide-react";
 import { Plus } from "lucide-react";
 import { type TableAction, type CustomDialogTableAction } from "@/src/features/table/types";
 import { TableActionDialog } from "@/src/features/table/components/TableActionDialog";
-import { type BatchExportTableName } from "@hanzo/console";
+import { type BatchExportTableName } from "@hanzo/console-core";
 
 type TableActionMenuProps = {
   projectId: string;

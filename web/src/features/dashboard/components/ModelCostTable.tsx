@@ -3,7 +3,7 @@ import { RightAlignedCell } from "@/src/features/dashboard/components/RightAlign
 import { LeftAlignedCell } from "@/src/features/dashboard/components/LeftAlignedCell";
 import { DashboardCard } from "@/src/features/dashboard/components/cards/DashboardCard";
 import { DashboardTable } from "@/src/features/dashboard/components/cards/DashboardTable";
-import { type FilterState, getGenerationLikeTypes } from "@hanzo/console";
+import { type FilterState, getGenerationLikeTypes } from "@hanzo/console-core";
 import { api } from "@/src/utils/api";
 import { compactNumberFormatter } from "@/src/utils/numbers";
 import { TotalMetric } from "./TotalMetric";

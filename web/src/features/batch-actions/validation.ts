@@ -1,5 +1,9 @@
 import z from "zod/v4";
-import { AddToDatasetMappingSchema, ObservationAddToDatasetConfigSchema, BatchActionQuerySchema } from "@hanzo/console";
+import {
+  AddToDatasetMappingSchema,
+  ObservationAddToDatasetConfigSchema,
+  BatchActionQuerySchema,
+} from "@hanzo/console-core";
 
 export const CreateObservationAddToDatasetActionSchema = z.object({
   projectId: z.string(),

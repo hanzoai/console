@@ -3,7 +3,7 @@ import {
   type FilterCondition,
   type ScoreDataTypeType,
   type ScoreSourceType,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 
 export const scoreFilters = {
   // Filter for trace level scores

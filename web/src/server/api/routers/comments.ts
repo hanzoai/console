@@ -2,8 +2,8 @@ import { z } from "zod/v4";
 
 import { throwIfNoProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { createTRPCRouter, protectedProjectProcedure } from "@/src/server/api/trpc";
-import { CommentObjectType } from "@hanzo/console";
-import { Prisma, CreateCommentData, DeleteCommentData } from "@hanzo/console";
+import { CommentObjectType } from "@hanzo/console-core";
+import { Prisma, CreateCommentData, DeleteCommentData } from "@hanzo/console-core";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
 import { TRPCError } from "@trpc/server";
 import { validateCommentReferenceObject } from "@/src/features/comments/validateCommentReferenceObject";

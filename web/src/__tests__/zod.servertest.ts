@@ -1,4 +1,4 @@
-import { paginationZod, parseJsonPrioritised } from "@hanzo/console";
+import { paginationZod, parseJsonPrioritised } from "@hanzo/console-core";
 import { ZodError } from "zod/v4";
 
 // Create test cases

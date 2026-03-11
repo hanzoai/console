@@ -23,7 +23,7 @@ import {
   InvalidRequestError,
   singleFilter,
   type FilterState,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 import { throwIfNoProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { executeQuery } from "@/src/features/query/server/queryExecutor";
 

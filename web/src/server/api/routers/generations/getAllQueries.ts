@@ -1,6 +1,6 @@
 import { type z } from "zod/v4";
 import { protectedProjectProcedure } from "@/src/server/api/trpc";
-import { paginationZod } from "@hanzo/console";
+import { paginationZod } from "@hanzo/console-core";
 import { GenerationTableOptions } from "./utils/GenerationTableOptions";
 import { getAllGenerations } from "@/src/server/api/routers/generations/db/getAllGenerationsSqlQuery";
 import { getObservationsCountFromEventsTable, getObservationsTableCount } from "@hanzo/console-core/src/server";

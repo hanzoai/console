@@ -21,7 +21,7 @@ import {
   type PromptMessage,
   isPresent,
   type DatasetItemDomain,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 import { throwIfNoProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 
 const ValidConfigResponse = z.object({

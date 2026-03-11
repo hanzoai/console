@@ -10,7 +10,7 @@ import {
   datasetItemFilterColumns,
   datasetRunItemsTableCols,
   usersTableCols,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 import { scoresTableCols } from "@/src/server/api/definitions/scoresTable";
 import { useQueryParam, encodeDelimitedArray, decodeDelimitedArray, withDefault } from "use-query-params";
 import useSessionStorage from "@/src/components/useSessionStorage";

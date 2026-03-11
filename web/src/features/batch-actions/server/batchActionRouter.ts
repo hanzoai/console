@@ -1,6 +1,6 @@
 import { throwIfNoProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { createTRPCRouter, protectedProjectProcedure } from "@/src/server/api/trpc";
-import { paginationZod } from "@hanzo/console";
+import { paginationZod } from "@hanzo/console-core";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod/v4";
 import { GetBatchActionByIdSchema } from "../validation";

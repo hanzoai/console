@@ -1,6 +1,6 @@
 import { api } from "@/src/utils/api";
 import { useMemo } from "react";
-import { type FilterState, type TimeFilter } from "@hanzo/console";
+import { type FilterState, type TimeFilter } from "@hanzo/console-core";
 
 type UseEventsFilterOptionsParams = {
   projectId: string;

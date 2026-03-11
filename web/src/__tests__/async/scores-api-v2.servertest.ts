@@ -12,7 +12,7 @@ import {
   createOrgProjectAndApiKey,
 } from "@hanzo/console-core/src/server";
 import { makeZodVerifiedAPICall } from "@/src/__tests__/test-utils";
-import { GetScoreResponseV2, GetScoresResponseV2 } from "@hanzo/console";
+import { GetScoreResponseV2, GetScoresResponseV2 } from "@hanzo/console-core";
 import { prisma } from "@hanzo/console-core/src/db";
 import { v4 } from "uuid";
 import { z } from "zod/v4";

@@ -3,8 +3,8 @@
 import { prisma } from "@hanzo/console-core/src/db";
 import { disconnectQueues, makeAPICall } from "@/src/__tests__/test-utils";
 import { v4 as uuidv4, v4 } from "uuid";
-import { PromptSchema, type ValidatedPrompt, type ChatMessage, type Prompt, PromptType } from "@hanzo/console";
-import { parsePromptDependencyTags } from "@hanzo/console";
+import { PromptSchema, type ValidatedPrompt, type ChatMessage, type Prompt, PromptType } from "@hanzo/console-core";
+import { parsePromptDependencyTags } from "@hanzo/console-core";
 import { generateId, nanoid } from "ai";
 
 import { type PromptsMetaResponse } from "@/src/features/prompts/server/actions/getPromptsMeta";

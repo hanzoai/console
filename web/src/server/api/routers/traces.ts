@@ -19,7 +19,7 @@ import {
   type ScoreDomain,
   AGGREGATABLE_SCORE_TYPES,
   ScoreDataTypeEnum,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 import {
   traceException,
   getTracesTable,

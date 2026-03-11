@@ -6,7 +6,7 @@ import { CreateNaturalLanguageFilterCompletion } from "./validation";
 import { getDefaultModelParams, parseFiltersFromCompletion, getHanzoClient } from "./utils";
 import { randomBytes } from "crypto";
 import { throwIfNoProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
-import { BEDROCK_USE_DEFAULT_CREDENTIALS } from "@hanzo/console";
+import { BEDROCK_USE_DEFAULT_CREDENTIALS } from "@hanzo/console-core";
 import { encrypt } from "@hanzo/console-core/encryption";
 
 export const naturalLanguageFilterRouter = createTRPCRouter({

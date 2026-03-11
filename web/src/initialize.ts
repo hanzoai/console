@@ -4,7 +4,7 @@ import { prisma } from "@hanzo/console-core/src/db";
 import { createAndAddApiKeysToDb } from "@hanzo/console-core/src/server/auth/apiKeys";
 import { hasEntitlementBasedOnPlan } from "@/src/features/entitlements/server/hasEntitlement";
 import { getOrganizationPlanServerSide } from "@/src/features/entitlements/server/getPlan";
-import { CloudConfigSchema } from "@hanzo/console";
+import { CloudConfigSchema } from "@hanzo/console-core";
 import { logger } from "@hanzo/console-core/src/server";
 
 const toTitleCase = (value: string) =>

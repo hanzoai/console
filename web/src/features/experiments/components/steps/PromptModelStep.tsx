@@ -13,7 +13,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
 import { ChevronDown, CheckIcon, PlusIcon, EyeIcon } from "lucide-react";
 import { CreateOrEditLLMSchemaDialog } from "@/src/features/playground/page/components/CreateOrEditLLMSchemaDialog";
-import { type LlmSchema } from "@hanzo/console";
+import { type LlmSchema } from "@hanzo/console-core";
 import { Switch } from "@/src/components/ui/switch";
 import { api } from "@/src/utils/api";
 import { CardDescription } from "@/src/components/ui/card";

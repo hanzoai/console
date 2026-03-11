@@ -1,4 +1,4 @@
-import { singleFilter } from "@hanzo/console";
+import { singleFilter } from "@hanzo/console-core";
 import { z } from "zod/v4";
 
 export type DatabaseRow = {

@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { api } from "@/src/utils/api";
-import { type ScoreDataTypeType, type FilterCondition, type ScoreAggregate } from "@hanzo/console";
+import { type ScoreDataTypeType, type FilterCondition, type ScoreAggregate } from "@hanzo/console-core";
 import { type ConsoleColumnDef } from "@/src/components/table/types";
 import { ScoresTableCell } from "@/src/components/scores-table-cell";
 import { toOrderedScoresList } from "@/src/features/scores/lib/helpers";

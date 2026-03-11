@@ -15,7 +15,7 @@ import {
   GetPromptSchema,
   LegacyCreatePromptSchema,
   PRODUCTION_LABEL,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 import { redis, traceException, logger } from "@hanzo/console-core/src/server";
 import { RateLimitService } from "@/src/features/public-api/server/RateLimitService";
 import { telemetry } from "@/src/features/telemetry";

@@ -20,7 +20,7 @@ import { type Redis, type Cluster } from "ioredis";
 import { getOrganizationPlanServerSide } from "@/src/features/entitlements/server/getPlan";
 import { API_KEY_NON_EXISTENT } from "@hanzo/console-core/src/server";
 import { type z } from "zod/v4";
-import { CloudConfigSchema, isPlan } from "@hanzo/console";
+import { CloudConfigSchema, isPlan } from "@hanzo/console-core";
 
 export class ApiAuthService {
   prisma: PrismaClient;

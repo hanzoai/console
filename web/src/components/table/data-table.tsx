@@ -1,5 +1,5 @@
 "use client";
-import { type OrderByState } from "@hanzo/console";
+import { type OrderByState } from "@hanzo/console-core";
 import React, { useState, useMemo, useCallback, type CSSProperties } from "react";
 import DocPopup from "@/src/components/layouts/doc-popup";
 import { DataTablePagination } from "@/src/components/table/data-table-pagination";

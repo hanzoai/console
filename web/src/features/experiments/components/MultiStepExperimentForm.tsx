@@ -40,7 +40,7 @@ import { ExperimentDetailsStep } from "./steps/ExperimentDetailsStep";
 import { ReviewStep } from "./steps/ReviewStep";
 
 // Import step prop types
-import { PromptType } from "@hanzo/console";
+import { PromptType } from "@hanzo/console-core";
 
 export const MultiStepExperimentForm = ({
   projectId,

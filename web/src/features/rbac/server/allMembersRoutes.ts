@@ -1,7 +1,7 @@
 import { throwIfNoOrganizationAccess, hasOrganizationAccess } from "@/src/features/rbac/utils/checkOrganizationAccess";
 import { hasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { protectedOrganizationProcedure, protectedProjectProcedure } from "@/src/server/api/trpc";
-import { paginationZod, type PrismaClient, Role } from "@hanzo/console";
+import { paginationZod, type PrismaClient, Role } from "@hanzo/console-core";
 import { formatAuthProviderName } from "@hanzo/console-core/src/server";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod/v4";

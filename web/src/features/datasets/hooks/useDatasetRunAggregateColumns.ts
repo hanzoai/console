@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { constructDatasetRunAggregateColumns } from "@/src/features/datasets/components/DatasetRunAggregateColumnHelpers";
 import { api } from "@/src/utils/api";
-import { datasetRunItemsTableColsWithOptions, type FilterState } from "@hanzo/console";
+import { datasetRunItemsTableColsWithOptions, type FilterState } from "@hanzo/console-core";
 import { scoreFilters } from "@/src/features/scores/lib/scoreColumns";
 
 export function useDatasetRunAggregateColumns({

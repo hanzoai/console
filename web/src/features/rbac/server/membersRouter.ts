@@ -3,7 +3,7 @@ import { createTRPCRouter, protectedOrganizationProcedure, protectedProjectProce
 import { TRPCError } from "@trpc/server";
 import * as z from "zod/v4";
 import { hasOrganizationAccess, throwIfNoOrganizationAccess } from "@/src/features/rbac/utils/checkOrganizationAccess";
-import { type FilterState, optionalPaginationZod, Prisma, type PrismaClient, Role } from "@hanzo/console";
+import { type FilterState, optionalPaginationZod, Prisma, type PrismaClient, Role } from "@hanzo/console-core";
 import { sendMembershipInvitationEmail } from "@hanzo/console-core/src/server";
 import { env } from "@/src/env.mjs";
 import { hasEntitlement } from "@/src/features/entitlements/server/hasEntitlement";

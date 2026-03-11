@@ -1,5 +1,5 @@
 import { transformDbDatasetRunItemToAPIDatasetRunItemCh } from "@/src/features/public-api/types/datasets";
-import { isPresent } from "@hanzo/console";
+import { isPresent } from "@hanzo/console-core";
 import { getDatasetRunItemsByDatasetIdCh, getDatasetRunItemsCountByDatasetIdCh } from "@hanzo/console-core/src/server";
 
 type DatasetRunItemsQueryType = {

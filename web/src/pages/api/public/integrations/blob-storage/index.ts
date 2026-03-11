@@ -8,7 +8,7 @@ import {
   CreateBlobStorageIntegrationRequest,
   type BlobStorageIntegrationResponseType,
 } from "@/src/features/public-api/types/blob-storage-integrations";
-import { ConsoleNotFoundError, UnauthorizedError, ForbiddenError } from "@hanzo/console";
+import { ConsoleNotFoundError, UnauthorizedError, ForbiddenError } from "@hanzo/console-core";
 import { encrypt } from "@hanzo/console-core/encryption";
 
 export default withMiddlewares({

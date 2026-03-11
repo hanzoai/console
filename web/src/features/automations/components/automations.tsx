@@ -18,7 +18,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/src/components/ui/dialog";
-import { type AutomationDomain } from "@hanzo/console";
+import { type AutomationDomain } from "@hanzo/console-core";
 import { ErrorPage } from "@/src/components/error-page";
 import { getPathnameWithoutBasePath } from "@/src/utils/api";
 

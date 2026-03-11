@@ -4,7 +4,7 @@ import {
   BlobStorageIntegrationFileType,
   BlobStorageExportMode,
   AnalyticsIntegrationExportSource,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 
 export const blobStorageIntegrationFormSchema = z.object({
   type: z.enum(BlobStorageIntegrationType),

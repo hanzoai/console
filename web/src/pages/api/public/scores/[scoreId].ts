@@ -7,7 +7,7 @@ import {
   GetScoreResponseV1,
   InternalServerError,
   ConsoleNotFoundError,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 import { logger, traceException, ScoreDeleteQueue } from "@hanzo/console-core/src/server";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
 import { QueueJobs } from "@hanzo/console-core/src/server";

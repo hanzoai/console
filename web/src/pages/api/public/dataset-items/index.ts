@@ -8,7 +8,7 @@ import {
   PostDatasetItemsV1Response,
   transformDbDatasetItemDomainToAPIDatasetItem,
 } from "@/src/features/public-api/types/datasets";
-import { ConsoleNotFoundError, Prisma } from "@hanzo/console";
+import { ConsoleNotFoundError, Prisma } from "@hanzo/console-core";
 import {
   createDatasetItemFilterState,
   getDatasetItems,

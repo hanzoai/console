@@ -1,5 +1,5 @@
 import { entitlementAccess, type EntitlementLimit } from "@/src/features/entitlements/constants/entitlements";
-import { type Plan } from "@hanzo/console";
+import { type Plan } from "@hanzo/console-core";
 import { TRPCError } from "@trpc/server";
 import { type User } from "next-auth";
 

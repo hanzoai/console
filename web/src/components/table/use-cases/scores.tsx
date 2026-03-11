@@ -26,7 +26,7 @@ import {
   BatchActionType,
   TableViewPresetTableName,
   type TimeFilter,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 import TagList from "@/src/features/tag/components/TagList";
 import { cn } from "@/src/utils/tailwind";
 import useColumnOrder from "@/src/features/column-visibility/hooks/useColumnOrder";

@@ -1,4 +1,4 @@
-import { CommentObjectType, type CreateCommentData } from "@hanzo/console";
+import { CommentObjectType, type CreateCommentData } from "@hanzo/console-core";
 import { type z } from "zod/v4";
 import { getObservationById, getTraceById } from "@hanzo/console-core/src/server";
 

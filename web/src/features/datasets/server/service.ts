@@ -8,7 +8,7 @@ import {
   singleFilter,
   type DatasetRunItemDomain,
   AGGREGATABLE_SCORE_TYPES,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 import { z } from "zod/v4";
 import {
   type EnrichedDatasetRunItem,

@@ -9,7 +9,7 @@ import { AnnotateDrawer } from "@/src/features/scores/components/AnnotateDrawer"
 import { CommentDrawerButton } from "@/src/features/comments/CommentDrawerButton";
 import { ItemBadge } from "@/src/components/ItemBadge";
 import { NewDatasetItemFromTraceId } from "@/src/components/session/NewDatasetItemFromTrace";
-import { AnnotationQueueObjectType, type FilterState } from "@hanzo/console";
+import { AnnotationQueueObjectType, type FilterState } from "@hanzo/console-core";
 import { CreateNewAnnotationQueueItem } from "@/src/features/annotation-queues/components/CreateNewAnnotationQueueItem";
 import { IOPreview } from "@/src/components/trace2/components/IOPreview/IOPreview";
 import { api } from "@/src/utils/api";

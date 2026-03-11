@@ -1,4 +1,4 @@
-import { type FilterState, type ColumnDefinition } from "@hanzo/console";
+import { type FilterState, type ColumnDefinition } from "@hanzo/console-core";
 
 /**
  * Maps frontend column IDs to backend-expected column IDs

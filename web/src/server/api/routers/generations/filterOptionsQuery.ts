@@ -1,6 +1,6 @@
 import { z } from "zod/v4";
 
-import { ObservationType, timeFilter, type ObservationOptions } from "@hanzo/console";
+import { ObservationType, timeFilter, type ObservationOptions } from "@hanzo/console-core";
 import { protectedProjectProcedure } from "@/src/server/api/trpc";
 import {
   getCategoricalScoresGroupedByName,

@@ -1,4 +1,4 @@
-import type { ScoreAggregate } from "@hanzo/console";
+import type { ScoreAggregate } from "@hanzo/console-core";
 
 export type DatasetRunItemByItemRowData = {
   id: string;

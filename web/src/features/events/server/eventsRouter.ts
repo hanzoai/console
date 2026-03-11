@@ -1,7 +1,7 @@
 import { type z } from "zod/v4";
 import { z as zodSchema } from "zod/v4";
 import { createTRPCRouter, protectedProjectProcedure } from "@/src/server/api/trpc";
-import { type Observation, type OrderByState, paginationZod, timeFilter } from "@hanzo/console";
+import { type Observation, type OrderByState, paginationZod, timeFilter } from "@hanzo/console-core";
 import { EventsTableOptions } from "./types";
 import { getEventList, getEventCount, getEventFilterOptions, getEventBatchIO } from "./eventsService";
 import {

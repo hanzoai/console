@@ -1,4 +1,4 @@
-import { type ColumnDefinition, type TableDefinitions } from "@hanzo/console";
+import { type ColumnDefinition, type TableDefinitions } from "@hanzo/console-core";
 
 export const completionTokens = {
   name: "completionTokens",

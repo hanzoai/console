@@ -3,7 +3,7 @@ import { useEffect, useMemo, useCallback, useState } from "react";
 import useProjectIdFromURL from "@/src/hooks/useProjectIdFromURL";
 import { api } from "@/src/utils/api";
 import useLocalStorage from "@/src/components/useLocalStorage";
-import { LLMAdapter, supportedModels, type UIModelParams } from "@hanzo/console";
+import { LLMAdapter, supportedModels, type UIModelParams } from "@hanzo/console-core";
 import { type ModelParamsContext } from "@/src/components/ModelParameters";
 import { getModelNameKey, getModelProviderKey } from "../storage/keys";
 

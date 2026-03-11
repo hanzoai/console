@@ -14,7 +14,7 @@ import {
   dashboardDateRangeAggregationSettings,
 } from "@/src/utils/date-range-utils";
 import { compactNumberFormatter } from "@/src/utils/numbers";
-import { type FilterState, getGenerationLikeTypes } from "@hanzo/console";
+import { type FilterState, getGenerationLikeTypes } from "@hanzo/console-core";
 import { ModelSelectorPopover, useModelSelection } from "@/src/features/dashboard/components/ModelSelector";
 import { type QueryType, type ViewVersion, mapLegacyUiTableFilterToView } from "@/src/features/query";
 import { type DatabaseRow } from "@/src/server/api/services/sqlInterface";

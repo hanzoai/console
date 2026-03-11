@@ -10,7 +10,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/src/components/ui/dialog";
-import { type Prompt } from "@hanzo/console";
+import { type Prompt } from "@hanzo/console-core";
 import { type NewPromptFormSchemaType } from "./validation";
 import DiffViewer from "@/src/components/DiffViewer";
 

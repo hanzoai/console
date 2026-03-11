@@ -22,7 +22,7 @@ import {
   MIXPANEL_REGIONS,
   type MixpanelRegion,
 } from "@/src/features/mixpanel-integration/types";
-import { AnalyticsIntegrationExportSource, EXPORT_SOURCE_OPTIONS } from "@hanzo/console";
+import { AnalyticsIntegrationExportSource, EXPORT_SOURCE_OPTIONS } from "@hanzo/console-core";
 import { useV4Beta } from "@/src/features/events/hooks/useV4Beta";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { api } from "@/src/utils/api";

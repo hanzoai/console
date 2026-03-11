@@ -1,4 +1,4 @@
-import { type LLMToolCall } from "@hanzo/console";
+import { type LLMToolCall } from "@hanzo/console-core";
 import { PrettyJsonView } from "@/src/components/ui/PrettyJsonView";
 
 export const ToolCallCard: React.FC<{ toolCall: LLMToolCall }> = ({ toolCall }) => {

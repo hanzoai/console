@@ -7,7 +7,7 @@ import {
   PostScoreConfigResponse,
   PutScoreConfigResponse,
 } from "@/src/features/public-api/types/score-configs";
-import { ScoreConfigDataType } from "@hanzo/console";
+import { ScoreConfigDataType } from "@hanzo/console-core";
 import { type ScoreConfig, prisma } from "@hanzo/console-core/src/db";
 import { createOrgProjectAndApiKey } from "@hanzo/console-core/src/server";
 

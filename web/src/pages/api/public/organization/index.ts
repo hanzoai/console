@@ -1,5 +1,5 @@
 import { getOrganizationPlanServerSide } from "@/src/features/entitlements/server/getPlan";
-import { CloudConfigSchema } from "@hanzo/console";
+import { CloudConfigSchema } from "@hanzo/console-core";
 import { prisma } from "@hanzo/console-core/src/db";
 import type { NextApiRequest, NextApiResponse } from "next";
 

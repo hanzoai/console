@@ -1,7 +1,7 @@
 import { z } from "zod/v4";
 
 import { createTRPCRouter, protectedProjectProcedure } from "@/src/server/api/trpc";
-import { paginationZod, singleFilter } from "@hanzo/console";
+import { paginationZod, singleFilter } from "@hanzo/console-core";
 import {
   getTotalUserCount,
   getTracesGroupedByUsers,

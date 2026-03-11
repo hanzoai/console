@@ -4,7 +4,7 @@
 
 import type { TreeNode } from "../../lib/types";
 import type Decimal from "decimal.js";
-import type { ScoreDomain } from "@hanzo/console";
+import type { ScoreDomain } from "@hanzo/console-core";
 import type { WithStringifiedMetadata } from "@/src/utils/clientSideDomainTypes";
 
 /**

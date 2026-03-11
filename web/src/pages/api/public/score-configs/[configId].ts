@@ -12,7 +12,7 @@ import {
   InvalidRequestError,
   ConsoleNotFoundError,
   validateDbScoreConfigSafe,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 import { prisma } from "@hanzo/console-core/src/db";
 import { traceException } from "@hanzo/console-core/src/server";
 

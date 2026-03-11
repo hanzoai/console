@@ -5,7 +5,7 @@ import {
   type WebhookActionConfigWithSecrets,
   type WebhookActionCreate,
   isWebhookActionConfig,
-} from "@hanzo/console";
+} from "@hanzo/console-core";
 import {
   getActionByIdWithSecrets,
   mergeHeaders,

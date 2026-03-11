@@ -1,4 +1,4 @@
-import { type FilterState, getGenerationLikeTypes } from "@hanzo/console";
+import { type FilterState, getGenerationLikeTypes } from "@hanzo/console-core";
 
 export type TimeSeriesChartDataPoint = {
   ts: number;
