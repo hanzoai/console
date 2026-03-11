@@ -68,8 +68,6 @@ export * from "./redis/batchActionQueue";
 export * from "./redis/ingestionQueue";
 export * from "./redis/insightsIntegrationQueue";
 export * from "./redis/insightsIntegrationProcessingQueue";
-export * from "./redis/insightsIntegrationQueue";
-export * from "./redis/insightsIntegrationProcessingQueue";
 export * from "./redis/mixpanelIntegrationQueue";
 export * from "./redis/mixpanelIntegrationProcessingQueue";
 export * from "./redis/blobStorageIntegrationQueue";
