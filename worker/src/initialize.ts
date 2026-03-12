@@ -1,7 +1,7 @@
 import { upsertDefaultModelPrices } from "./scripts/upsertDefaultModelPrices";
 import { upsertManagedEvaluators } from "./scripts/upsertManagedEvaluators";
-import { upsertHanzoDashboards } from "./scripts/upsertHanzoDashboards";
+import { upsertConsoleDashboards } from "./scripts/upsertConsoleDashboards";
 
 upsertDefaultModelPrices();
 upsertManagedEvaluators();
-upsertHanzoDashboards();
+upsertConsoleDashboards();

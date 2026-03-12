@@ -1,6 +1,6 @@
 import { z } from "zod/v4";
 import { prisma } from "@hanzo/console-core/src/db";
-import hanzoDashboards from "../constants/hanzo-dashboards.json";
+import consoleDashboards from "../constants/console-dashboards.json";
 import { logger, WidgetDomainSchema, DashboardDomainSchema } from "@hanzo/console-core/src/server";
 
 /**
@@ -47,20 +47,20 @@ const FileSchema = z.object({
 type ParsedWidgets = z.infer<typeof WidgetDomainSchema>[];
 type ParsedDashboards = z.infer<typeof DashboardDomainSchema>[];
 
-export const upsertHanzoDashboards = async (force = false) => {
+export const upsertConsoleDashboards = async (force = false) => {
   const startTime = Date.now();
   try {
-    logger.debug(`Starting upsert of Hanzo dashboards (force = ${force})`);
+    logger.debug(`Starting upsert of console dashboards (force = ${force})`);
 
-    const parsed = FileSchema.parse(hanzoDashboards);
+    const parsed = FileSchema.parse(consoleDashboards);
 
     await upsertWidgets(parsed.widgets, force);
     await upsertDashboards(parsed.dashboards, force);
 
-    logger.info(`Finished upserting Hanzo dashboards and widgets in ${Date.now() - startTime}ms`);
+    logger.info(`Finished upserting console dashboards and widgets in ${Date.now() - startTime}ms`);
   } catch (error) {
     logger.error(
-      `Error upserting Hanzo dashboards after ${Date.now() - startTime}ms: ${
+      `Error upserting console dashboards after ${Date.now() - startTime}ms: ${
         error instanceof Error ? error.message : ""
       }`,
       { error },

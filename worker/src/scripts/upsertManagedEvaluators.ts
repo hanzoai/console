@@ -83,7 +83,7 @@ export const upsertManagedEvaluators = async (force = false) => {
     });
 
     await Promise.all(upsertPromises);
-    logger.info(`Finished upserting Hanzo dashboards and widgets in ${Date.now() - startTime}ms`);
+    logger.info(`Finished upserting managed evaluators in ${Date.now() - startTime}ms`);
   } catch (error) {
     logger.error(
       `Error upserting managed evaluators after ${Date.now() - startTime}ms: ${
