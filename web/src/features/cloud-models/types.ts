@@ -17,6 +17,15 @@ export const CloudModelsResponseSchema = z.object({
 });
 export type CloudModelsResponse = z.infer<typeof CloudModelsResponseSchema>;
 
+// ── Pricing data (from pricing API) ─────────────────────────────────
+
+export type ModelPricing = {
+  inputCostPerToken?: number;
+  outputCostPerToken?: number;
+  inputCostPerMTok?: number;
+  outputCostPerMTok?: number;
+};
+
 // ── Provider (derived from owned_by) ────────────────────────────────
 
 export const providerLabels: Record<string, string> = {

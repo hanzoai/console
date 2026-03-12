@@ -3,7 +3,7 @@ import { DataTable } from "@/src/components/table/data-table";
 import { type ConsoleColumnDef } from "@/src/components/table/types";
 import { Badge } from "@/src/components/ui/badge";
 import { useCloudModels } from "../hooks";
-import { providerLabels, type CloudModel } from "../types";
+import { providerLabels, type CloudModel, type ModelPricing } from "../types";
 import { ProviderFilter } from "./ProviderFilter";
 
 type ModelRow = {
@@ -11,19 +11,29 @@ type ModelRow = {
   ownedBy: string;
   premium: boolean;
   created: number;
+  pricing: ModelPricing | null;
 };
+
+function formatPrice(perMTok: number | undefined): string {
+  if (perMTok == null) return "—";
+  if (perMTok === 0) return "Free";
+  if (perMTok < 0.01) return `$${perMTok.toFixed(4)}`;
+  if (perMTok < 1) return `$${perMTok.toFixed(3)}`;
+  return `$${perMTok.toFixed(2)}`;
+}
 
 export function ModelsTable({ projectId }: { projectId: string }) {
   const modelsQuery = useCloudModels(projectId);
   const [providerFilter, setProviderFilter] = useState<string | null>(null);
 
   const allModels: ModelRow[] = useMemo(() => {
-    const raw = (modelsQuery.data as { data?: CloudModel[] })?.data ?? [];
+    const raw = (modelsQuery.data as { data?: Array<CloudModel & { pricing?: ModelPricing | null }> })?.data ?? [];
     return raw.map((m) => ({
       id: m.id,
       ownedBy: m.owned_by,
       premium: m.premium,
       created: m.created,
+      pricing: (m as { pricing?: ModelPricing | null }).pricing ?? null,
     }));
   }, [modelsQuery.data]);
 
@@ -42,14 +52,14 @@ export function ModelsTable({ projectId }: { projectId: string }) {
       accessorKey: "id",
       id: "id",
       header: "Model",
-      size: 260,
+      size: 240,
       cell: ({ row }) => <span className="font-mono text-sm">{row.original.id}</span>,
     },
     {
       accessorKey: "ownedBy",
       id: "ownedBy",
       header: "Provider",
-      size: 180,
+      size: 160,
       cell: ({ row }) => {
         const provider = row.original.ownedBy;
         return <span className="text-sm">{providerLabels[provider] ?? provider}</span>;
@@ -59,15 +69,35 @@ export function ModelsTable({ projectId }: { projectId: string }) {
       accessorKey: "premium",
       id: "premium",
       header: "Tier",
-      size: 100,
+      size: 90,
       cell: ({ row }) =>
         row.original.premium ? <Badge variant="default">Premium</Badge> : <Badge variant="secondary">Free</Badge>,
+    },
+    {
+      id: "inputPrice",
+      header: "Input / MTok",
+      size: 120,
+      cell: ({ row }) => {
+        const p = row.original.pricing;
+        const price = p?.inputCostPerMTok ?? (p?.inputCostPerToken ? p.inputCostPerToken * 1_000_000 : undefined);
+        return <span className="text-sm tabular-nums">{formatPrice(price)}</span>;
+      },
+    },
+    {
+      id: "outputPrice",
+      header: "Output / MTok",
+      size: 120,
+      cell: ({ row }) => {
+        const p = row.original.pricing;
+        const price = p?.outputCostPerMTok ?? (p?.outputCostPerToken ? p.outputCostPerToken * 1_000_000 : undefined);
+        return <span className="text-sm tabular-nums">{formatPrice(price)}</span>;
+      },
     },
     {
       accessorKey: "created",
       id: "created",
       header: "Available Since",
-      size: 180,
+      size: 140,
       cell: ({ row }) => new Date(row.original.created * 1000).toLocaleDateString(),
     },
   ];
