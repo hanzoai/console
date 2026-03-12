@@ -188,7 +188,6 @@ export default function DatasetCompare() {
                     ? `${getScoreDataTypeIcon(scoreData.dataType)} ${scoreData.name} (${scoreData.source.toLowerCase()})`
                     : (RESOURCE_METRICS.find((metric) => metric.key === key)?.label ?? key);
 
-                  // TODO: remove when revamping the datasets api for it to directly return ms
                   const valueFormatter =
                     key === "latency"
                       ? formatIntervalSeconds

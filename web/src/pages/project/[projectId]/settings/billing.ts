@@ -13,5 +13,5 @@ export default function ProjectBillingRedirect() {
     }
   }, [organization, router]);
 
-  return "Redirecting...";
+  return null;
 }

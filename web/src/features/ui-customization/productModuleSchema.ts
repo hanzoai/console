@@ -10,6 +10,11 @@ export const PRODUCT_MODULES = [
   "prompt-management",
   "playground",
   "datasets",
+  "search",
+  "agents",
+  "bots",
+  "kms",
+  "infrastructure",
   "zt",
 ] as const;
 
