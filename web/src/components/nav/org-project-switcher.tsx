@@ -28,6 +28,9 @@ type OrgProjectSwitcherProps = {
   currentProjectId?: string;
 };
 
+const LAST_ORG_KEY = "hanzo_last_org_id";
+const LAST_PROJECT_KEY = "hanzo_last_project_id";
+
 export function OrgProjectSwitcher({ organizations, currentOrgId, currentProjectId }: OrgProjectSwitcherProps) {
   const router = useRouter();
   const { isMobile } = useSidebar();
@@ -36,6 +39,12 @@ export function OrgProjectSwitcher({ organizations, currentOrgId, currentProject
   const currentProject = currentOrg?.projects.find((p) => p.id === currentProjectId);
 
   const orgInitial = currentOrg?.name?.charAt(0)?.toUpperCase() ?? "?";
+
+  // Persist current selection so we can restore it on next visit
+  React.useEffect(() => {
+    if (currentOrgId) localStorage.setItem(LAST_ORG_KEY, currentOrgId);
+    if (currentProjectId) localStorage.setItem(LAST_PROJECT_KEY, currentProjectId);
+  }, [currentOrgId, currentProjectId]);
 
   // Preserve the current page path segment when switching projects
   // e.g. /project/old-id/bots → /project/new-id/bots
@@ -48,14 +57,17 @@ export function OrgProjectSwitcher({ organizations, currentOrgId, currentProject
 
   const handleOrgChange = (org: Organization) => {
     if (org.id === currentOrgId) return;
+    localStorage.setItem(LAST_ORG_KEY, org.id);
     const firstProject = org.projects[0];
     if (firstProject) {
+      localStorage.setItem(LAST_PROJECT_KEY, firstProject.id);
       void router.push(`/project/${firstProject.id}`);
     }
   };
 
   const handleProjectChange = (projectId: string) => {
     if (projectId === currentProjectId) return;
+    localStorage.setItem(LAST_PROJECT_KEY, projectId);
     void router.push(getProjectUrl(projectId));
   };
 

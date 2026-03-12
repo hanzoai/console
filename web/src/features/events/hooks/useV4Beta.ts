@@ -1,28 +1,11 @@
-import { useSession } from "next-auth/react";
-import { api } from "@/src/utils/api";
-import { useCallback } from "react";
-
+/**
+ * v4 is now always enabled — this hook is kept for backward compatibility
+ * so the 27+ files that import it don't need to change.
+ */
 export function useV4Beta() {
-  const { data: session, update: updateSession } = useSession();
-
-  const mutation = api.userAccount.setV4BetaEnabled.useMutation({
-    onSuccess: async () => {
-      await updateSession();
-    },
-  });
-
-  const isBetaEnabled = session?.user?.v4BetaEnabled ?? false;
-
-  const setBetaEnabled = useCallback(
-    (enabled: boolean) => {
-      mutation.mutate({ enabled });
-    },
-    [mutation],
-  );
-
   return {
-    isBetaEnabled,
-    setBetaEnabled,
-    isLoading: mutation.isPending,
+    isBetaEnabled: true,
+    setBetaEnabled: (_enabled: boolean) => {},
+    isLoading: false,
   };
 }

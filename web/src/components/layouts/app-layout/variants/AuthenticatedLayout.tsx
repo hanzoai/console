@@ -132,7 +132,6 @@ export function AuthenticatedLayout({ children, session, navigation, metadata, o
       <PaymentBannerProvider>
         <SidebarProvider>
           <div className="flex h-dvh w-full flex-col">
-            <ConsoleHanzoHeader onSignOut={onSignOut} />
             <PaymentBanner />
             <div className="flex min-h-0 flex-1 pt-banner-offset">
               <AppSidebar

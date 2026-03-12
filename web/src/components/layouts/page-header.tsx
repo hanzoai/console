@@ -9,6 +9,17 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { type ParsedUrlQuery } from "querystring";
 import { type ReactNode } from "react";
+import { useSession } from "next-auth/react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/src/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/src/components/ui/dropdown-menu";
+import { useCommandMenu } from "@/src/features/command-k-menu/CommandMenuProvider";
+import { Search } from "lucide-react";
 
 type TabDefinition = {
   value: string;
@@ -66,7 +77,7 @@ const PageHeader = ({
       id="page-header"
     >
       <div className="flex flex-col justify-center">
-        {/* Top Row */}
+        {/* Top Row — unified header bar */}
         <div className="border-b">
           <div className={cn("flex min-h-11 items-center gap-3 px-3 py-2", container && "lg:container")}>
             {showSidebarTrigger ? (
@@ -77,9 +88,13 @@ const PageHeader = ({
             <div>
               <EnvLabel />
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-1 items-center gap-2">
               <BreadcrumbComponent items={breadcrumb} />
               {breadcrumbBadges}
+            </div>
+            <div className="ml-auto flex items-center gap-2">
+              <HeaderCommandK />
+              <HeaderAccountMenu />
             </div>
           </div>
         </div>
@@ -177,5 +192,91 @@ const PageHeader = ({
     </div>
   );
 };
+
+function HeaderCommandK() {
+  let cmdMenu: { setOpen: (open: boolean) => void } | undefined;
+  try {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    cmdMenu = useCommandMenu();
+  } catch {
+    // CommandMenuProvider not available
+  }
+
+  if (!cmdMenu) return null;
+
+  return (
+    <button
+      type="button"
+      onClick={() => cmdMenu!.setOpen(true)}
+      className="flex h-8 items-center gap-2 rounded-md border bg-muted/40 px-3 text-sm text-muted-foreground transition-colors hover:bg-muted"
+    >
+      <Search className="h-3.5 w-3.5" />
+      <span className="hidden sm:inline">Search</span>
+      <kbd className="pointer-events-none ml-1 hidden h-5 select-none items-center gap-0.5 rounded border px-1.5 font-mono text-[10px] sm:inline-flex">
+        <span className="text-[11px]">⌘</span>K
+      </kbd>
+    </button>
+  );
+}
+
+function HeaderAccountMenu() {
+  const { data: session } = useSession();
+  const user = session?.user;
+  if (!user) return null;
+
+  const initials = (user.name ?? user.email ?? "?")
+    .split(" ")
+    .slice(0, 2)
+    .map((w: string) => w[0])
+    .join("")
+    .toUpperCase();
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          type="button"
+          className="flex h-8 w-8 items-center justify-center rounded-full ring-1 ring-border transition-colors hover:ring-foreground/20"
+        >
+          <Avatar className="h-7 w-7">
+            <AvatarImage src={user.image ?? ""} alt={user.name ?? ""} />
+            <AvatarFallback className="text-[10px]">{initials}</AvatarFallback>
+          </Avatar>
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-56">
+        <div className="px-2 py-1.5">
+          <p className="text-sm font-medium">{user.name ?? "User"}</p>
+          <p className="text-xs text-muted-foreground">{user.email}</p>
+        </div>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link href="/account/settings">Account Settings</Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <a href="https://billing.hanzo.ai" target="_blank" rel="noopener noreferrer">
+            Billing
+          </a>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <a href="https://hanzo.chat" target="_blank" rel="noopener noreferrer">
+            Chat
+          </a>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <a href="https://cloud.hanzo.ai" target="_blank" rel="noopener noreferrer">
+            Cloud
+          </a>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <a href="https://platform.hanzo.ai" target="_blank" rel="noopener noreferrer">
+            Platform
+          </a>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
 
 export default PageHeader;

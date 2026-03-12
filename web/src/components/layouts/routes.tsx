@@ -45,7 +45,7 @@ import { type User } from "next-auth";
 import { type OrganizationScope } from "@/src/features/rbac/constants/organizationAccessRights";
 import { SupportButton } from "@/src/components/nav/support-button";
 import { BookACallButton } from "@/src/components/nav/book-a-call-button";
-import { V4BetaSidebarToggle } from "@/src/features/events/components/V4BetaSidebarToggle";
+// v4 is always enabled now — toggle removed
 import { SidebarMenuButton } from "@/src/components/ui/sidebar";
 import { useCommandMenu } from "@/src/features/command-k-menu/CommandMenuProvider";
 import { useInsightsCapture as useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
@@ -466,13 +466,7 @@ export const ROUTES: Route[] = [
     pathname: "",
     menuNode: <CloudStatusMenu />,
   },
-  {
-    title: "v4 Beta Toggle",
-    pathname: "",
-    section: RouteSection.Secondary,
-    featureFlag: "v4BetaToggleVisible",
-    menuNode: <V4BetaSidebarToggle />,
-  },
+  // v4 is now always enabled — toggle removed
   {
     title: "Settings",
     pathname: "/project/[projectId]/settings",
