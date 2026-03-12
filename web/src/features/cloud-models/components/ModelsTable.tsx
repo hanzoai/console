@@ -11,7 +11,8 @@ type ModelRow = {
   ownedBy: string;
   premium: boolean;
   created: number;
-  pricing: ModelPricing | null;
+  inputPrice: string;
+  outputPrice: string;
 };
 
 function formatPrice(perMTok: number | undefined): string {
@@ -28,13 +29,19 @@ export function ModelsTable({ projectId }: { projectId: string }) {
 
   const allModels: ModelRow[] = useMemo(() => {
     const raw = (modelsQuery.data as { data?: Array<CloudModel & { pricing?: ModelPricing | null }> })?.data ?? [];
-    return raw.map((m) => ({
-      id: m.id,
-      ownedBy: m.owned_by,
-      premium: m.premium,
-      created: m.created,
-      pricing: (m as { pricing?: ModelPricing | null }).pricing ?? null,
-    }));
+    return raw.map((m) => {
+      const p = (m as { pricing?: ModelPricing | null }).pricing ?? null;
+      const inPrice = p?.inputCostPerMTok ?? (p?.inputCostPerToken ? p.inputCostPerToken * 1_000_000 : undefined);
+      const outPrice = p?.outputCostPerMTok ?? (p?.outputCostPerToken ? p.outputCostPerToken * 1_000_000 : undefined);
+      return {
+        id: m.id,
+        ownedBy: m.owned_by,
+        premium: m.premium,
+        created: m.created,
+        inputPrice: formatPrice(inPrice),
+        outputPrice: formatPrice(outPrice),
+      };
+    });
   }, [modelsQuery.data]);
 
   const providers = useMemo(() => {
@@ -74,24 +81,18 @@ export function ModelsTable({ projectId }: { projectId: string }) {
         row.original.premium ? <Badge variant="default">Premium</Badge> : <Badge variant="secondary">Free</Badge>,
     },
     {
+      accessorKey: "inputPrice",
       id: "inputPrice",
       header: "Input / MTok",
       size: 120,
-      cell: ({ row }) => {
-        const p = row.original.pricing;
-        const price = p?.inputCostPerMTok ?? (p?.inputCostPerToken ? p.inputCostPerToken * 1_000_000 : undefined);
-        return <span className="text-sm tabular-nums">{formatPrice(price)}</span>;
-      },
+      cell: ({ row }) => <span className="text-sm tabular-nums">{row.original.inputPrice}</span>,
     },
     {
+      accessorKey: "outputPrice",
       id: "outputPrice",
       header: "Output / MTok",
       size: 120,
-      cell: ({ row }) => {
-        const p = row.original.pricing;
-        const price = p?.outputCostPerMTok ?? (p?.outputCostPerToken ? p.outputCostPerToken * 1_000_000 : undefined);
-        return <span className="text-sm tabular-nums">{formatPrice(price)}</span>;
-      },
+      cell: ({ row }) => <span className="text-sm tabular-nums">{row.original.outputPrice}</span>,
     },
     {
       accessorKey: "created",
