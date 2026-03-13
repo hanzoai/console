@@ -387,7 +387,7 @@ We take data security and privacy seriously. Please refer to our [Security and P
 
 ### Telemetry
 
-By default, Hanzo automatically reports basic usage statistics of self-hosted instances to a centralized server (PostHog).
+By default, Hanzo automatically reports basic usage statistics of self-hosted instances to a centralized analytics server.
 
 This helps us to:
 

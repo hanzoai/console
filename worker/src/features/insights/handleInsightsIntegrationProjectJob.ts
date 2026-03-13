@@ -18,8 +18,7 @@ import {
   transformScoreForInsights,
 } from "./transformers";
 import { decrypt } from "@hanzo/console-core/encryption";
-// posthog-node is the underlying SDK; re-aliased as Insights for branding
-import { PostHog as Insights } from "posthog-node";
+import { PostHog as Insights } from "@hanzo/insights-node";
 
 type InsightsExecutionConfig = {
   projectId: string;
