@@ -38,6 +38,7 @@ import {
   FileText,
   Key,
   Layers,
+  Eye,
 } from "lucide-react";
 import { type ReactNode } from "react";
 import { type Entitlement } from "@/src/features/entitlements/constants/entitlements";
@@ -442,6 +443,15 @@ export const ROUTES: Route[] = [
     group: RouteGroup.ZT,
     productModule: "zt",
     section: RouteSection.Main,
+  },
+  // Observability — external link to o11y.hanzo.ai
+  {
+    title: "Observe",
+    pathname: "https://o11y.hanzo.ai",
+    icon: Eye,
+    group: RouteGroup.Observability,
+    section: RouteSection.Main,
+    newTab: true,
   },
   // Infrastructure
   {
