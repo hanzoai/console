@@ -32,7 +32,7 @@ export const BillingActionButtons = () => {
           Change plan (via support)
         </Button>
         <Button variant="secondary" asChild>
-          <Link href={"https://hanzo.com/pricing"} target="_blank">
+          <Link href={"https://hanzo.ai/pricing"} target="_blank">
             Compare plans
           </Link>
         </Button>
@@ -53,7 +53,7 @@ export const BillingActionButtons = () => {
           </>
         )}
         <Button variant="secondary" asChild>
-          <Link href={"https://hanzo.com/pricing"} target="_blank">
+          <Link href={"https://hanzo.ai/pricing"} target="_blank">
             Compare plans
           </Link>
         </Button>

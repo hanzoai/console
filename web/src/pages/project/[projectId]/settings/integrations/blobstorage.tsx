@@ -71,7 +71,7 @@ export default function BlobStorageIntegrationSettings() {
         actionButtonsLeft: <>{status && <StatusBadge type={status} />}</>,
         actionButtonsRight: (
           <Button asChild variant="secondary">
-            <Link href="https://hanzo.com/docs/api-and-data-platform/features/export-to-blob-storage" target="_blank">
+            <Link href="https://hanzo.ai/docs/api-and-data-platform/features/export-to-blob-storage" target="_blank">
               Integration Docs ↗
             </Link>
           </Button>

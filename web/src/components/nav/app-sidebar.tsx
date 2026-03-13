@@ -104,7 +104,7 @@ const DemoBadge = () => {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild tooltip="Use Demo App to create traces" variant="cta">
-              <Link href="https://hanzo.com/docs/demo" target="_blank" rel="noopener noreferrer">
+              <Link href="https://hanzo.ai/docs/demo" target="_blank" rel="noopener noreferrer">
                 <ExternalLink className="h-4 w-4" />
                 <span>Use Demo App</span>
               </Link>

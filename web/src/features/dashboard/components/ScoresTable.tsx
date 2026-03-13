@@ -195,7 +195,7 @@ export const ScoresTable = ({
         isLoading={isLoading || metrics.isPending || zeroValueScores.isPending || oneValueScores.isPending}
         noDataProps={{
           description: "Scores evaluate LLM quality and can be created manually or using the SDK.",
-          href: "https://hanzo.com/docs/evaluation/overview",
+          href: "https://hanzo.ai/docs/evaluation/overview",
         }}
       >
         <TotalMetric

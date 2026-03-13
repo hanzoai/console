@@ -82,7 +82,7 @@ export function RetryBackgroundMigration({
           <p className="mt-1 text-xs text-muted-foreground">
             Required for security. This key must match your ADMIN_API_KEY environment variable{" ("}
             <a
-              href="https://hanzo.com/self-hosting/administration/organization-management-api#authentication"
+              href="https://hanzo.ai/self-hosting/administration/organization-management-api#authentication"
               target="_blank"
               rel="noopener noreferrer"
               className="text-muted-foreground underline hover:text-primary"

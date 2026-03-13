@@ -154,8 +154,8 @@ export default function EnterpriseSsoRequiredPage() {
               {error}
               <br />
               Contact{" "}
-              <a href="mailto:support@hanzo.com" className="text-primary-accent hover:text-hover-primary-accent">
-                support@hanzo.com
+              <a href="mailto:support@hanzo.ai" className="text-primary-accent hover:text-hover-primary-accent">
+                support@hanzo.ai
               </a>{" "}
               if this keeps happening.
             </div>
@@ -169,8 +169,8 @@ export default function EnterpriseSsoRequiredPage() {
 
         <div className="mt-4 text-center text-xs text-muted-foreground">
           Need help? Contact{" "}
-          <a href="mailto:support@hanzo.com" className="text-primary-accent hover:text-hover-primary-accent">
-            support@hanzo.com
+          <a href="mailto:support@hanzo.ai" className="text-primary-accent hover:text-hover-primary-accent">
+            support@hanzo.ai
           </a>
           .
         </div>

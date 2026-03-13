@@ -38,7 +38,7 @@ export function PromptsOnboarding({ projectId }: { projectId: string }) {
       }}
       secondaryAction={{
         label: "Learn More",
-        href: "https://hanzo.com/docs/prompt-management/get-started",
+        href: "https://hanzo.ai/docs/prompt-management/get-started",
       }}
     />
   );

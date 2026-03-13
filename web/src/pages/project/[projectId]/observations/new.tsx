@@ -38,7 +38,7 @@ export default function Events() {
         help: {
           description:
             "An observation captures a single function call in an application. This view uses the new Datastore events table.",
-          href: "https://hanzo.com/docs/observability/data-model",
+          href: "https://hanzo.ai/docs/observability/data-model",
         },
         tabsProps: {
           tabs: getTracingTabs(projectId),

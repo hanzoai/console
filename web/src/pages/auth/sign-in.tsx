@@ -689,7 +689,7 @@ export default function SignIn({ authProviders, signUpDisabled, runningOnHugging
             If you are experiencing issues signing in, please force refresh this page (CMD + SHIFT + R) or clear your
             browser cache.{" "}
             <a
-              href="mailto:support@hanzo.com"
+              href="mailto:support@hanzo.ai"
               className="cursor-pointer whitespace-nowrap text-xs font-medium text-primary-accent hover:text-hover-primary-accent"
             >
               (contact us)

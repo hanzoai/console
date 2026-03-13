@@ -40,8 +40,8 @@ export const cloudStatusRouter = createTRPCRouter({
       }
 
       try {
-        // incident.io widget API for status.hanzo.com
-        const response = await fetch("https://status.hanzo.com/api/v1/summary");
+        // incident.io widget API for status.hanzo.ai
+        const response = await fetch("https://status.hanzo.ai/api/v1/summary");
 
         if (!response.ok) {
           logger.error(`Failed to fetch status from incident.io: ${response.statusText}`);

@@ -14,7 +14,7 @@ export default function PlatformPage() {
         title: "Platform",
         help: {
           description: "View and manage PaaS container deployments, pipeline runs, and build triggers.",
-          href: "https://hanzo.com/docs/platform",
+          href: "https://hanzo.ai/docs/platform",
         },
       }}
     >

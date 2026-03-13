@@ -13,9 +13,8 @@ export default function BotsPage() {
       headerProps={{
         title: "Bots",
         help: {
-          description:
-            "Deploy and manage conversational bots across WhatsApp, Telegram, Discord, Slack, and more.",
-          href: "https://hanzo.com/docs/bots",
+          description: "Deploy and manage conversational bots across WhatsApp, Telegram, Discord, Slack, and more.",
+          href: "https://hanzo.ai/docs/bots",
         },
       }}
     >

@@ -219,7 +219,7 @@ export const NewPromptForm: React.FC<NewPromptFormProps> = (props) => {
                       <a
                         target="_blank"
                         rel="noopener noreferrer"
-                        href="https://hanzo.com/docs/prompt-management/get-started#prompt-folders-for-organization"
+                        href="https://hanzo.ai/docs/prompt-management/get-started#prompt-folders-for-organization"
                       >
                         <i>folders</i>
                       </a>

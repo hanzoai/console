@@ -20,7 +20,7 @@ const defaultHandler = () => {
 
 const CH_ERROR_ADVICE_FULL = [
   DatastoreResourceError.ERROR_ADVICE_MESSAGE,
-  "See https://hanzo.com/docs/api-and-data-platform/features/public-api for more details.",
+  "See https://hanzo.ai/docs/api-and-data-platform/features/public-api for more details.",
 ].join("\n");
 
 export function withMiddlewares(handlers: Handlers) {

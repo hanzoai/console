@@ -81,7 +81,7 @@ export const CreateExperimentsForm = ({
           <DialogDescription>
             Experiments allow you to test iterations of your application or prompt on a dataset. Learn more about
             experiments{" "}
-            <Link href="https://hanzo.com/docs/evaluation/dataset-runs/datasets" target="_blank" className="underline">
+            <Link href="https://hanzo.ai/docs/evaluation/dataset-runs/datasets" target="_blank" className="underline">
               here
             </Link>
             .
@@ -114,7 +114,7 @@ export const CreateExperimentsForm = ({
                   asChild
                   onClick={() => capture("dataset_run:view_prompt_experiment_docs")}
                 >
-                  <Link href="https://hanzo.com/docs/evaluation/dataset-runs/native-run">View Docs</Link>
+                  <Link href="https://hanzo.ai/docs/evaluation/dataset-runs/native-run">View Docs</Link>
                 </Button>
               </CardFooter>
             </Card>
@@ -158,7 +158,7 @@ export const CreateExperimentsForm = ({
                   asChild
                   onClick={() => capture("dataset_run:view_custom_experiment_docs")}
                 >
-                  <Link href="https://hanzo.com/docs/evaluation/dataset-runs/remote-run" target="_blank">
+                  <Link href="https://hanzo.ai/docs/evaluation/dataset-runs/remote-run" target="_blank">
                     View Docs
                   </Link>
                 </Button>

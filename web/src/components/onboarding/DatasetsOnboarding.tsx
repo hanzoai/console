@@ -41,7 +41,7 @@ export function DatasetsOnboarding({ projectId }: { projectId: string }) {
         label: "Learn More",
         href: "https://hanzo.ai/docs/datasets",
       }}
-      videoSrc="https://static.hanzo.com/prod-assets/onboarding/datasets-overview-v1.mp4"
+      videoSrc="https://static.hanzo.ai/prod-assets/onboarding/datasets-overview-v1.mp4"
     />
   );
 }

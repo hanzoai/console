@@ -20,7 +20,7 @@ export default function SearchOverviewPage() {
         title: "Search",
         help: {
           description: "Manage search indexes, test queries, and view API keys for Hanzo Search.",
-          href: "https://hanzo.com/docs/search",
+          href: "https://hanzo.ai/docs/search",
         },
       }}
     >

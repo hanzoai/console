@@ -121,7 +121,7 @@ export const DatasetItemsOnboarding = ({ projectId, datasetId }: { projectId: st
         </Dialog>
 
         <Link
-          href="https://hanzo.com/docs/evaluation/experiments/datasets#create-items-from-production-data"
+          href="https://hanzo.ai/docs/evaluation/experiments/datasets#create-items-from-production-data"
           target="_blank"
         >
           <DatasetItemEntryPointRow
@@ -139,7 +139,7 @@ export const DatasetItemsOnboarding = ({ projectId, datasetId }: { projectId: st
           docPopup={{
             description:
               "Creating items from production data is supported on single trace level. Click to view docs for more details.",
-            href: "https://hanzo.com/docs/evaluation/experiments/datasets#create-items-from-production-data",
+            href: "https://hanzo.ai/docs/evaluation/experiments/datasets#create-items-from-production-data",
           }}
         />
       </div>

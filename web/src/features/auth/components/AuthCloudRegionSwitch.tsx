@@ -53,7 +53,7 @@ const regions =
           },
           {
             name: "HIPAA",
-            hostname: "hipaa.cloud.hanzo.com",
+            hostname: "hipaa.cloud.hanzo.ai",
             flag: "⚕️",
           },
         ];
@@ -115,7 +115,7 @@ export function CloudRegionSwitch({ isSignUpPage }: { isSignUpPage?: boolean }) 
             <p>
               The Business Associate Agreement (BAA) is only effective on the Cloud Pro and Teams plans.{" "}
               <a
-                href="https://hanzo.com/security/hipaa"
+                href="https://hanzo.ai/security/hipaa"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary-accent underline hover:text-hover-primary-accent"
@@ -162,7 +162,7 @@ const DataRegionInfo = () => (
           <p>
             Learn more about{" "}
             <a
-              href="https://hanzo.com/security/data-regions"
+              href="https://hanzo.ai/security/data-regions"
               target="_blank"
               rel="noopener noreferrer"
               className="text-primary-accent underline"
@@ -171,7 +171,7 @@ const DataRegionInfo = () => (
             </a>{" "}
             and{" "}
             <a
-              href="https://hanzo.com/docs/data-security-privacy"
+              href="https://hanzo.ai/docs/data-security-privacy"
               target="_blank"
               rel="noopener noreferrer"
               className="text-primary-accent underline"

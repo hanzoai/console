@@ -11,7 +11,7 @@ export function TracesOnboarding({ projectId }: TracesOnboardingProps) {
     <SplashScreen
       title="You don't have any traces yet"
       description="Traces show you how your LLM calls behave in your application: what they cost, how they perform, and where things go wrong. It's the first step towards improving the behavior of your app."
-      videoSrc="https://static.hanzo.com/prod-assets/onboarding/tracing-overview-v1.mp4"
+      videoSrc="https://static.hanzo.ai/prod-assets/onboarding/tracing-overview-v1.mp4"
     >
       <div className="mt-8">
         <h3 className="mb-8 text-2xl font-semibold">Get started</h3>

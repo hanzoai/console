@@ -1,9 +1,4 @@
-import {
-  commerceGet,
-  commercePost,
-  commercePatch,
-  commerceDelete,
-} from "@/src/features/billing/server/commerceClient";
+import { commerceGet, commercePost, commercePatch, commerceDelete } from "@/src/features/billing/server/commerceClient";
 import { env } from "@/src/env.mjs";
 import { throwIfNoEntitlement } from "@/src/features/entitlements/server/hasEntitlement";
 import { createTRPCRouter, protectedOrganizationProcedure } from "@/src/server/api/trpc";
@@ -11,6 +6,7 @@ import { TRPCError } from "@trpc/server";
 import * as z from "zod";
 import { throwIfNoOrganizationAccess } from "@/src/features/rbac/utils/checkOrganizationAccess";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
+import { datastoreClient, convertDateToDatastoreDateTime } from "@hanzo/console-core/src/server";
 
 /** Headers to pass org-scoped requests to the Commerce service. */
 function orgHeaders(orgId: string): Record<string, string> {
@@ -46,8 +42,7 @@ export const cloudBillingRouter = createTRPCRouter({
         "/checkout/authorize",
         {
           productId: input.productId,
-          customerEmail:
-            input.customerEmail || ctx.session.user.email || "",
+          customerEmail: input.customerEmail || ctx.session.user.email || "",
           customerName: input.customerName,
           returnUrl: `${env.NEXTAUTH_URL}/organization/${input.orgId}/settings/billing`,
           cloudRegion: env.NEXT_PUBLIC_HANZO_CLOUD_REGION ?? null,
@@ -86,12 +81,7 @@ export const cloudBillingRouter = createTRPCRouter({
         orgId: input.orgId,
       });
 
-      await commercePatch(
-        "/subscribe/current",
-        { productId: input.productId },
-        undefined,
-        orgHeaders(input.orgId),
-      );
+      await commercePatch("/subscribe/current", { productId: input.productId }, undefined, orgHeaders(input.orgId));
     }),
 
   getCustomerPortalUrl: protectedOrganizationProcedure
@@ -209,18 +199,10 @@ export const cloudBillingRouter = createTRPCRouter({
 
         return {
           ...result,
-          current_period_start: result.current_period_start
-            ? new Date(result.current_period_start)
-            : null,
-          current_period_end: result.current_period_end
-            ? new Date(result.current_period_end)
-            : null,
-          cancel_at: result.cancel_at
-            ? new Date(result.cancel_at)
-            : null,
-          canceled_at: result.canceled_at
-            ? new Date(result.canceled_at)
-            : null,
+          current_period_start: result.current_period_start ? new Date(result.current_period_start) : null,
+          current_period_end: result.current_period_end ? new Date(result.current_period_end) : null,
+          cancel_at: result.cancel_at ? new Date(result.cancel_at) : null,
+          canceled_at: result.canceled_at ? new Date(result.canceled_at) : null,
         };
       } catch {
         return null;
@@ -244,12 +226,7 @@ export const cloudBillingRouter = createTRPCRouter({
       const result = await commercePost<{
         success: boolean;
         subscriptionId: string;
-      }>(
-        `/subscribe/${input.subscriptionId}/save`,
-        {},
-        undefined,
-        orgHeaders(input.orgId),
-      );
+      }>(`/subscribe/${input.subscriptionId}/save`, {}, undefined, orgHeaders(input.orgId));
 
       auditLog({
         session: ctx.session,
@@ -297,11 +274,7 @@ export const cloudBillingRouter = createTRPCRouter({
           } | null;
         }>;
         hasMore: boolean;
-      }>(
-        "/subscriptions/history",
-        { limit: String(input.limit) },
-        orgHeaders(input.orgId),
-      );
+      }>("/subscriptions/history", { limit: String(input.limit) }, orgHeaders(input.orgId));
 
       return result;
     }),
@@ -325,11 +298,7 @@ export const cloudBillingRouter = createTRPCRouter({
         invoiceNumber: string;
         amountDue: number;
         invoiceDate: string;
-      }>(
-        `/invoices/${input.invoiceId}/pdf`,
-        undefined,
-        orgHeaders(input.orgId),
-      );
+      }>(`/invoices/${input.invoiceId}/pdf`, undefined, orgHeaders(input.orgId));
     }),
 
   cancelSubscription: protectedOrganizationProcedure
@@ -355,11 +324,7 @@ export const cloudBillingRouter = createTRPCRouter({
         success: boolean;
         message: string;
         cancelAt: string | null;
-      }>(
-        "/subscribe/current",
-        { productId: input.productId },
-        orgHeaders(input.orgId),
-      );
+      }>("/subscribe/current", { productId: input.productId }, orgHeaders(input.orgId));
 
       auditLog({
         session: ctx.session,
@@ -374,5 +339,145 @@ export const cloudBillingRouter = createTRPCRouter({
         message: result.message,
         cancelAt: result.cancelAt ? new Date(result.cancelAt) : null,
       };
+    }),
+
+  /** Detailed usage breakdown from shared datastore. */
+  getDetailedUsage: protectedOrganizationProcedure
+    .input(
+      z.object({
+        orgId: z.string(),
+        startDate: z.date(),
+        endDate: z.date(),
+        groupBy: z.enum(["model", "user", "day", "provider"]).optional().default("model"),
+      }),
+    )
+    .query(async ({ input, ctx }) => {
+      throwIfNoOrganizationAccess({
+        organizationId: input.orgId,
+        scope: "hanzoCloudBilling:CRUD",
+        session: ctx.session,
+      });
+      throwIfNoEntitlement({
+        entitlement: "cloud-billing",
+        sessionUser: ctx.session.user,
+        orgId: input.orgId,
+      });
+
+      const client = datastoreClient(undefined, "ReadOnly");
+
+      const groupCol = {
+        model: "model",
+        user: "user_id",
+        day: "toDate(timestamp)",
+        provider: "provider",
+      }[input.groupBy];
+
+      const result = await client.query<{
+        group_key: string;
+        total_requests: string;
+        total_tokens: string;
+        prompt_tokens: string;
+        completion_tokens: string;
+        total_cost_cents: string;
+      }>({
+        query: `
+          SELECT
+            toString(${groupCol}) AS group_key,
+            count() AS total_requests,
+            sum(total_tokens) AS total_tokens,
+            sum(prompt_tokens) AS prompt_tokens,
+            sum(completion_tokens) AS completion_tokens,
+            sum(cost_cents) AS total_cost_cents
+          FROM hanzo.cloud_usage
+          WHERE organization = {orgId:String}
+            AND timestamp >= {startDate:DateTime}
+            AND timestamp <= {endDate:DateTime}
+            AND status = 'success'
+          GROUP BY ${groupCol}
+          ORDER BY total_cost_cents DESC
+          LIMIT 100
+        `,
+        query_params: {
+          orgId: input.orgId,
+          startDate: convertDateToDatastoreDateTime(input.startDate),
+          endDate: convertDateToDatastoreDateTime(input.endDate),
+        },
+      });
+
+      const { data: rows } = await result.json<{
+        group_key: string;
+        total_requests: string;
+        total_tokens: string;
+        prompt_tokens: string;
+        completion_tokens: string;
+        total_cost_cents: string;
+      }>();
+      return rows.map((row) => ({
+        groupKey: row.group_key,
+        totalRequests: Number(row.total_requests),
+        totalTokens: Number(row.total_tokens),
+        promptTokens: Number(row.prompt_tokens),
+        completionTokens: Number(row.completion_tokens),
+        totalCostCents: Number(row.total_cost_cents),
+      }));
+    }),
+
+  /** Daily usage time series for charts. */
+  getUsageTimeSeries: protectedOrganizationProcedure
+    .input(
+      z.object({
+        orgId: z.string(),
+        startDate: z.date(),
+        endDate: z.date(),
+      }),
+    )
+    .query(async ({ input, ctx }) => {
+      throwIfNoOrganizationAccess({
+        organizationId: input.orgId,
+        scope: "hanzoCloudBilling:CRUD",
+        session: ctx.session,
+      });
+
+      const client = datastoreClient(undefined, "ReadOnly");
+
+      const result = await client.query<{
+        day: string;
+        requests: string;
+        tokens: string;
+        cost_cents: string;
+      }>({
+        query: `
+          SELECT
+            toDate(timestamp) AS day,
+            count() AS requests,
+            sum(total_tokens) AS tokens,
+            sum(cost_cents) AS cost_cents
+          FROM hanzo.cloud_usage
+          WHERE organization = {orgId:String}
+            AND timestamp >= {startDate:DateTime}
+            AND timestamp <= {endDate:DateTime}
+            AND status = 'success'
+          GROUP BY day
+          ORDER BY day ASC
+        `,
+        query_params: {
+          orgId: input.orgId,
+          startDate: convertDateToDatastoreDateTime(input.startDate),
+          endDate: convertDateToDatastoreDateTime(input.endDate),
+        },
+      });
+
+      const { data: rows } = await result.json<{
+        day: string;
+        requests: string;
+        tokens: string;
+        cost_cents: string;
+      }>();
+      return rows.map((row) => ({
+        day: row.day,
+        requests: Number(row.requests),
+        tokens: Number(row.tokens),
+        costCents: Number(row.cost_cents),
+      }));
     }),
 });

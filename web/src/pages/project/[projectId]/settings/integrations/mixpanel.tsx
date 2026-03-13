@@ -61,7 +61,7 @@ export default function MixpanelIntegrationSettings() {
         actionButtonsLeft: <>{status && <StatusBadge type={status} />}</>,
         actionButtonsRight: (
           <Button asChild variant="secondary">
-            <Link href="https://hanzo.com/integrations/analytics/mixpanel">Integration Docs ↗</Link>
+            <Link href="https://hanzo.ai/integrations/analytics/mixpanel">Integration Docs ↗</Link>
           </Button>
         ),
       }}

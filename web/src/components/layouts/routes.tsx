@@ -444,14 +444,13 @@ export const ROUTES: Route[] = [
     productModule: "zt",
     section: RouteSection.Main,
   },
-  // Observability — external link to o11y.hanzo.ai
+  // Observability — embedded O11y view
   {
     title: "Observe",
-    pathname: "https://o11y.hanzo.ai",
+    pathname: `/project/[projectId]/observe`,
     icon: Eye,
     group: RouteGroup.Observability,
     section: RouteSection.Main,
-    newTab: true,
   },
   // Infrastructure
   {

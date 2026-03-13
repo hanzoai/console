@@ -7,18 +7,14 @@ export function UsersOnboarding() {
     <SplashScreen
       title="You aren't tracking users yet"
       description="Once you add a user ID to your traces, you can correlate costs, evaluations and other LLM Application metrics to better understand how they interact with your LLM applications."
-      videoSrc="https://static.hanzo.com/prod-assets/onboarding/users-overview-v1.mp4"
+      videoSrc="https://static.hanzo.ai/prod-assets/onboarding/users-overview-v1.mp4"
     >
       <div className="mt-8">
         <h3 className="mb-4 text-2xl font-semibold">Start tracking users</h3>
         <p className="mb-4 text-sm text-muted-foreground">
-          To start tracking users, you need to add a <code>userId</code> to your
-          traces.
+          To start tracking users, you need to add a <code>userId</code> to your traces.
         </p>
-        <ActionButton
-          href="https://hanzo.com/docs/observability/features/users"
-          variant="default"
-        >
+        <ActionButton href="https://hanzo.ai/docs/observability/features/users" variant="default">
           Read the docs
         </ActionButton>
       </div>

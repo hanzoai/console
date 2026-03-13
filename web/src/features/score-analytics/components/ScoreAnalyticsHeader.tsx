@@ -89,7 +89,7 @@ export function ScoreAnalyticsHeader({
                 your feedback.
               </p>
               <a
-                href="https://hanzo.com/discussions"
+                href="https://hanzo.ai/discussions"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"

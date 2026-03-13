@@ -41,7 +41,7 @@ export function EvaluatorsOnboarding({ projectId }: EvaluatorsOnboardingProps) {
       }}
       secondaryAction={{
         label: "Learn More",
-        href: "https://hanzo.com/docs/evaluation/evaluation-methods/llm-as-a-judge",
+        href: "https://hanzo.ai/docs/evaluation/evaluation-methods/llm-as-a-judge",
       }}
       videoSrc="https://static.hanzo.ai/prod-assets/onboarding/scores-llm-as-a-judge-overview-v1.mp4"
     />

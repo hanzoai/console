@@ -201,7 +201,7 @@ export const TracesAndObservationsTimeSeriesChart = ({
                   <NoDataOrLoading
                     isLoading={isLoading || observations.isPending || (!isV2 && traces.isPending)}
                     description="Traces contain details about LLM applications and can be created using the SDK."
-                    href="https://hanzo.com/docs/observability/overview"
+                    href="https://hanzo.ai/docs/observability/overview"
                   />
                 )}
               </>

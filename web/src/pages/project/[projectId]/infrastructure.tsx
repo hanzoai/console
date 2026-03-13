@@ -14,7 +14,7 @@ export default function InfrastructurePage() {
         title: "Infrastructure",
         help: {
           description: "Monitor service health, memory usage, and recent deployment events across your infrastructure.",
-          href: "https://hanzo.com/docs/infrastructure",
+          href: "https://hanzo.ai/docs/infrastructure",
         },
       }}
     >

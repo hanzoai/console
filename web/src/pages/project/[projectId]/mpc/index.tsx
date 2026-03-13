@@ -14,7 +14,7 @@ export default function MpcDashboardPage() {
         title: "MPC \u2014 Multi-Party Computation",
         help: {
           description: "Create and manage MPC wallets, monitor signing sessions, and configure threshold policies.",
-          href: "https://hanzo.com/docs/mpc",
+          href: "https://hanzo.ai/docs/mpc",
         },
       }}
     >

@@ -56,7 +56,7 @@ export default function EvaluatorsPage() {
           title: "LLM-as-a-Judge Evaluators",
           help: {
             description: "Configure a hanzo managed or custom evaluator to evaluate incoming traces.",
-            href: "https://hanzo.com/docs/evaluation/evaluation-methods/llm-as-a-judge",
+            href: "https://hanzo.ai/docs/evaluation/evaluation-methods/llm-as-a-judge",
           },
         }}
         scrollable
@@ -73,7 +73,7 @@ export default function EvaluatorsPage() {
           title: "LLM-as-a-Judge Evaluators",
           help: {
             description: "Configure a hanzo managed or custom evaluator to evaluate incoming traces.",
-            href: "https://hanzo.com/docs/evaluation/evaluation-methods/llm-as-a-judge",
+            href: "https://hanzo.ai/docs/evaluation/evaluation-methods/llm-as-a-judge",
           },
           tabsProps: {
             tabs: getEvalsTabs(projectId),

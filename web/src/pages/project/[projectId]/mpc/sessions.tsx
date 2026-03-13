@@ -15,7 +15,7 @@ export default function MpcSessionsPage() {
         breadcrumb: [{ name: "MPC", href: `/project/${projectId}/mpc` }],
         help: {
           description: "Monitor active and completed signing sessions across all MPC wallets.",
-          href: "https://hanzo.com/docs/mpc/sessions",
+          href: "https://hanzo.ai/docs/mpc/sessions",
         },
       }}
     >

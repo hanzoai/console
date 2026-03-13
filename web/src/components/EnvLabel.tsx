@@ -8,7 +8,7 @@ export const EnvLabel = ({ className }: { className?: string }) => {
   const session = useSession();
   const { isConsoleCloud, region } = useConsoleCloudRegion();
   if (!isConsoleCloud) return null;
-  if (!session.data?.user?.email?.endsWith("@hanzo.com")) return null;
+  if (!session.data?.user?.email?.endsWith("@hanzo.ai")) return null;
   if (isHidden) return null;
   return (
     <div

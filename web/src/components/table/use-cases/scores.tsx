@@ -458,7 +458,7 @@ export default function ScoresTable({
       id: "userId",
       headerTooltip: {
         description: "The user ID associated with the trace.",
-        href: "https://hanzo.com/docs/observability/features/users",
+        href: "https://hanzo.ai/docs/observability/features/users",
       },
       enableHiding: true,
       enableSorting: true,
@@ -525,7 +525,7 @@ export default function ScoresTable({
       headerTooltip: {
         description: "Add metadata to scores to track additional information.",
         // TODO: docs for metadata on scores
-        href: "https://hanzo.com/docs/observability/features/metadata",
+        href: "https://hanzo.ai/docs/observability/features/metadata",
       },
       cell: ({ row }) => {
         const scoreId: ScoresTableRow["id"] = row.getValue("id");
@@ -568,7 +568,7 @@ export default function ScoresTable({
       id: "jobConfigurationId",
       headerTooltip: {
         description: "The Job Configuration ID associated with the trace.",
-        href: "https://hanzo.com/docs/evaluation/evaluation-methods/llm-as-a-judge",
+        href: "https://hanzo.ai/docs/evaluation/evaluation-methods/llm-as-a-judge",
       },
       enableHiding: true,
       enableSorting: false,

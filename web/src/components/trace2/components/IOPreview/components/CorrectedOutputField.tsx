@@ -153,7 +153,7 @@ export function CorrectedOutputField({
                     Corrected outputs allow you to save the expected output for a trace or observation. Learn more in
                     the{" "}
                     <Link
-                      href="https://hanzo.com/docs/observability/features/corrections"
+                      href="https://hanzo.ai/docs/observability/features/corrections"
                       target="_blank"
                       rel="noreferrer"
                       className="underline hover:text-foreground"

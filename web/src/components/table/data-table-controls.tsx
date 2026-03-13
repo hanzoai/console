@@ -666,7 +666,7 @@ export function CategoricalFacet({
                   <span>
                     Sessions group traces together, which is useful for tracing multi-step workflows.{" "}
                     <a
-                      href="https://hanzo.com/docs/observability/features/sessions"
+                      href="https://hanzo.ai/docs/observability/features/sessions"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="underline hover:text-foreground"
@@ -681,7 +681,7 @@ export function CategoricalFacet({
                   <span>
                     Tags let you filter traces according to custom categories (e.g. feature flags).{" "}
                     <a
-                      href="https://hanzo.com/docs/observability/features/tags"
+                      href="https://hanzo.ai/docs/observability/features/tags"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="underline hover:text-foreground"
@@ -750,7 +750,7 @@ export function CategoricalFacet({
                   <div className="mt-2 px-2 text-xs text-muted-foreground">
                     Environments help you separate traces from different contexts (e.g. production, staging).{" "}
                     <a
-                      href="https://hanzo.com/docs/observability/features/environments"
+                      href="https://hanzo.ai/docs/observability/features/environments"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="underline hover:text-foreground"

@@ -16,7 +16,7 @@ export default function MpcWalletsPage() {
         help: {
           description:
             "View and manage all MPC wallets. Each wallet uses threshold signatures across multiple parties.",
-          href: "https://hanzo.com/docs/mpc/wallets",
+          href: "https://hanzo.ai/docs/mpc/wallets",
         },
       }}
     >

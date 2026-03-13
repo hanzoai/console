@@ -40,7 +40,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   // Return the service provider configuration
   return res.status(200).json({
     schemas: ["urn:ietf:params:scim:schemas:core:2.0:ServiceProviderConfig"],
-    documentationUri: "https://docs.hanzo.com/scim",
+    documentationUri: "https://docs.hanzo.ai/scim",
     patch: {
       supported: false,
     },

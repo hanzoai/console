@@ -82,7 +82,7 @@ export default function AIFeatureSwitch() {
               Hanzo data region. Traces are sent to Hanzo Cloud in your data region. Your data will not be used for
               training models. Applicable HIPAA, SOC2, GDPR, and ISO 27001 compliance remains intact.{" "}
               <a
-                href="https://hanzo.com/security/ai-features"
+                href="https://hanzo.ai/security/ai-features"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1 text-primary hover:underline"
@@ -123,7 +123,7 @@ export default function AIFeatureSwitch() {
               <br />
               <br />{" "}
               <a
-                href="https://hanzo.com/security/ai-features"
+                href="https://hanzo.ai/security/ai-features"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1 text-primary hover:underline"

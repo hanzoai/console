@@ -59,7 +59,7 @@ export const mixpanelIntegrationRouter = createTRPCRouter({
           throw new TRPCError({
             code: "BAD_REQUEST",
             message:
-              "Missing environment variable: `ENCRYPTION_KEY`. Please consult our docs: https://hanzo.com/self-hosting",
+              "Missing environment variable: `ENCRYPTION_KEY`. Please consult our docs: https://hanzo.ai/self-hosting",
           });
         }
       }

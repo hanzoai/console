@@ -344,7 +344,7 @@ export const UpsertModelFormDialog = (({ children, ...props }: UpsertModelDialog
                       Optionally, Hanzo can tokenize the input and output of a generation if no unit counts are
                       ingested. This is useful for e.g. streamed OpenAI completions. For details on the supported
                       tokenizers, see the{" "}
-                      <Link href="https://hanzo.com/docs/model-usage-and-cost" className="underline" target="_blank">
+                      <Link href="https://hanzo.ai/docs/model-usage-and-cost" className="underline" target="_blank">
                         docs
                       </Link>
                       .
@@ -363,7 +363,7 @@ export const UpsertModelFormDialog = (({ children, ...props }: UpsertModelDialog
                       <CodeMirrorEditor mode="json" value={field.value ?? "{}"} onChange={field.onChange} />
                       <FormDescription>
                         The config for the tokenizer. Required for openai. See the{" "}
-                        <Link href="https://hanzo.com/docs/model-usage-and-cost" className="underline" target="_blank">
+                        <Link href="https://hanzo.ai/docs/model-usage-and-cost" className="underline" target="_blank">
                           docs
                         </Link>{" "}
                         for details.

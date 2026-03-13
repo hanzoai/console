@@ -24,19 +24,18 @@ export default function Sessions() {
     },
   );
 
-  const { data: hasAnySessionFromEvents, isLoading: isLoadingFromEvents } =
-    api.sessions.hasAnyFromEvents.useQuery(
-      { projectId },
-      {
-        enabled: !!projectId && isBetaEnabled,
-        trpc: {
-          context: {
-            skipBatch: true,
-          },
+  const { data: hasAnySessionFromEvents, isLoading: isLoadingFromEvents } = api.sessions.hasAnyFromEvents.useQuery(
+    { projectId },
+    {
+      enabled: !!projectId && isBetaEnabled,
+      trpc: {
+        context: {
+          skipBatch: true,
         },
-        refetchInterval: 10_000,
       },
-    );
+      refetchInterval: 10_000,
+    },
+  );
 
   const hasSessions = isBetaEnabled ? hasAnySessionFromEvents : hasAnySession;
   const isLoadingSessions = isBetaEnabled ? isLoadingFromEvents : isLoading;
@@ -49,11 +48,10 @@ export default function Sessions() {
         help: {
           description: (
             <>
-              A session is a collection of related traces, such as a
-              conversation or thread. To begin, add a sessionId to the trace.
-              See{" "}
+              A session is a collection of related traces, such as a conversation or thread. To begin, add a sessionId
+              to the trace. See{" "}
               <a
-                href="https://hanzo.com/docs/observability/features/sessions"
+                href="https://hanzo.ai/docs/observability/features/sessions"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="underline decoration-primary/30 hover:decoration-primary"
@@ -64,17 +62,13 @@ export default function Sessions() {
               to learn more.
             </>
           ),
-          href: "https://hanzo.com/docs/observability/features/sessions",
+          href: "https://hanzo.ai/docs/observability/features/sessions",
         },
       }}
       scrollable={showOnboarding}
     >
       {/* Show onboarding screen if user has no sessions */}
-      {showOnboarding ? (
-        <SessionsOnboarding />
-      ) : (
-        <SessionsTable projectId={projectId} isBetaEnabled={isBetaEnabled} />
-      )}
+      {showOnboarding ? <SessionsOnboarding /> : <SessionsTable projectId={projectId} isBetaEnabled={isBetaEnabled} />}
     </Page>
   );
 }

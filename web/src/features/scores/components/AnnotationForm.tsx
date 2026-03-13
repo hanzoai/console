@@ -147,7 +147,7 @@ function AnnotateHeader({
       title="Annotate"
       help={{
         description,
-        href: "https://hanzo.com/docs/evaluation/evaluation-methods/annotation",
+        href: "https://hanzo.ai/docs/evaluation/evaluation-methods/annotation",
         className: "leading-relaxed",
       }}
       actionButtons={[

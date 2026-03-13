@@ -253,7 +253,7 @@ const Integrations = (props: { projectId: string }) => {
               Configure
             </ActionButton>
             <Button asChild variant="ghost">
-              <Link href="https://hanzo.com/integrations/analytics/insights" target="_blank">
+              <Link href="https://hanzo.ai/integrations/analytics/insights" target="_blank">
                 Integration Docs ↗
               </Link>
             </Button>
@@ -275,7 +275,7 @@ const Integrations = (props: { projectId: string }) => {
               Configure
             </ActionButton>
             <Button asChild variant="ghost">
-              <Link href="https://hanzo.com/integrations/analytics/mixpanel" target="_blank">
+              <Link href="https://hanzo.ai/integrations/analytics/mixpanel" target="_blank">
                 Integration Docs ↗
               </Link>
             </Button>
@@ -298,7 +298,7 @@ const Integrations = (props: { projectId: string }) => {
               Configure
             </ActionButton>
             <Button asChild variant="ghost">
-              <Link href="https://hanzo.com/docs/query-traces#blob-storage" target="_blank">
+              <Link href="https://hanzo.ai/docs/query-traces#blob-storage" target="_blank">
                 Integration Docs ↗
               </Link>
             </Button>

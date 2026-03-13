@@ -17,7 +17,7 @@ export default function VectorOverviewPage() {
         title: "Vector",
         help: {
           description: "Manage vector collections and search for similar embeddings.",
-          href: "https://hanzo.com/docs/vector",
+          href: "https://hanzo.ai/docs/vector",
         },
       }}
     >

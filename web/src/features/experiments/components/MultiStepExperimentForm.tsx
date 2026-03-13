@@ -387,7 +387,7 @@ export const MultiStepExperimentForm = ({
         <DialogTitle>Run Experiment</DialogTitle>
         <DialogDescription>
           Run an experiment to evaluate prompts and model configurations against a dataset. See{" "}
-          <Link href="https://hanzo.com/docs/evaluation/dataset-runs/native-run" target="_blank" className="underline">
+          <Link href="https://hanzo.ai/docs/evaluation/dataset-runs/native-run" target="_blank" className="underline">
             documentation
           </Link>{" "}
           to learn more.

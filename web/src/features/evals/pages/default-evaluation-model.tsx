@@ -24,7 +24,7 @@ export default function DefaultEvaluationModelPage() {
         title: "Default Evaluation Model",
         help: {
           description: "Configure a default evaluation model for your project.",
-          href: "https://hanzo.com/docs/evaluation/evaluation-methods/llm-as-a-judge",
+          href: "https://hanzo.ai/docs/evaluation/evaluation-methods/llm-as-a-judge",
         },
         breadcrumb: [
           {

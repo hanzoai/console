@@ -33,7 +33,7 @@ export default function TemplatesPage() {
         title: "LLM-as-a-Judge Evaluators",
         help: {
           description: "View all hanzo managed and custom evaluators.",
-          href: "https://hanzo.com/docs/evaluation/evaluation-methods/llm-as-a-judge",
+          href: "https://hanzo.ai/docs/evaluation/evaluation-methods/llm-as-a-judge",
         },
         tabsProps: {
           tabs: getEvalsTabs(projectId),

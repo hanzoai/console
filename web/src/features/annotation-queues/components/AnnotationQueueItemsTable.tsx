@@ -434,7 +434,7 @@ export function AnnotationQueueItemsTable({ projectId, queueId }: { projectId: s
         help={{
           description:
             "Add traces and/or observations to your annotation queue to have them annotated by your team across predefined dimensions.",
-          href: "https://hanzo.com/docs/evaluation/evaluation-methods/llm-as-a-judge",
+          href: "https://hanzo.ai/docs/evaluation/evaluation-methods/llm-as-a-judge",
         }}
         pagination={{
           totalCount: items.data?.totalItems ?? null,

@@ -1,5 +1,9 @@
 import { env } from "@/src/env.mjs";
-import { PostHog as InsightsNode } from "posthog-node";
+import * as InsightsSDK from "@hanzo/insights-node";
+
+// SDK re-exports the client class — alias to avoid upstream naming
+type InsightsNode = InstanceType<typeof InsightsSDK.PostHog>;
+const InsightsNode = InsightsSDK.PostHog;
 
 const FALLBACK_INSIGHTS_KEY = "phc_zkMwFajk8ehObUlMth0D7DtPItFnxETi3lmSvyQDrwB";
 const FALLBACK_INSIGHTS_HOST = "https://insights.hanzo.ai";

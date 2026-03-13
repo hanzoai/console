@@ -87,7 +87,7 @@ export function ResetPasswordPage({ passwordResetAvailable }: { passwordResetAva
         message="Password reset is not configured on this instance"
         additionalButton={{
           label: "Setup instructions",
-          href: "https://hanzo.com/self-hosting/security/authentication-and-sso#auth-email-password",
+          href: "https://hanzo.ai/self-hosting/security/authentication-and-sso#auth-email-password",
         }}
       />
     );

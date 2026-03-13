@@ -66,7 +66,7 @@ export const TracingSetup = ({
           You can use one of our SDKs or 50+ framework integrations. Please follow the quickstart in the documentation
           to add Hanzo to your application.
         </p>
-        <ActionButton href="https://hanzo.com/docs/observability/get-started">Quickstart guide</ActionButton>
+        <ActionButton href="https://hanzo.ai/docs/observability/get-started">Quickstart guide</ActionButton>
       </div>
     </div>
   );
@@ -110,7 +110,7 @@ export default function TracesSetupPage() {
         help: {
           description:
             "Setup tracing to track and analyze your LLM calls. You can create API keys and integrate Hanzo with your application.",
-          href: "https://hanzo.com/docs/observability/overview",
+          href: "https://hanzo.ai/docs/observability/overview",
         },
       }}
     >

@@ -76,8 +76,8 @@ export function ApiKeyList(props: { entityId: string; scope: ApiKeyScope }) {
           description: `Learn more about ${scope} API keys`,
           href:
             scope === "project"
-              ? "https://hanzo.com/docs/api#authentication"
-              : "https://hanzo.com/docs/api#org-scoped-routes",
+              ? "https://hanzo.ai/docs/api#authentication"
+              : "https://hanzo.ai/docs/api#org-scoped-routes",
         }}
         actionButtons={<CreateApiKeyButton entityId={entityId} scope={scope} />}
       />

@@ -58,7 +58,7 @@ export default function InsightsIntegrationSettings() {
         actionButtonsLeft: <>{status && <StatusBadge type={status} />}</>,
         actionButtonsRight: (
           <Button asChild variant="secondary">
-            <Link href="https://hanzo.com/integrations/analytics/insights">Integration Docs ↗</Link>
+            <Link href="https://hanzo.ai/integrations/analytics/insights">Integration Docs ↗</Link>
           </Button>
         ),
       }}

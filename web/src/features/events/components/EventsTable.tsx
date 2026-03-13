@@ -549,7 +549,7 @@ export default function ObservationsEventsTable({
       size: 300,
       headerTooltip: {
         description: "Add metadata to traces to track additional information.",
-        href: "https://hanzo.com/docs/observability/features/metadata",
+        href: "https://hanzo.ai/docs/observability/features/metadata",
       },
       cell: ({ row }) => {
         const value: string | undefined = row.getValue("metadata");
@@ -568,7 +568,7 @@ export default function ObservationsEventsTable({
       headerTooltip: {
         description:
           "You can differentiate the importance of observations with the level attribute to control the verbosity of your traces and highlight errors and warnings.",
-        href: "https://hanzo.com/docs/observability/features/log-levels",
+        href: "https://hanzo.ai/docs/observability/features/log-levels",
       },
       enableHiding: true,
       cell: ({ row }) => {
@@ -588,7 +588,7 @@ export default function ObservationsEventsTable({
       size: 150,
       headerTooltip: {
         description: "Use a statusMessage to e.g. provide additional information on a status such as level=ERROR.",
-        href: "https://hanzo.com/docs/observability/features/log-levels",
+        href: "https://hanzo.ai/docs/observability/features/log-levels",
       },
       enableHiding: true,
       defaultHidden: true,
@@ -853,7 +853,7 @@ export default function ObservationsEventsTable({
       header: getEventsColumnName("promptName"),
       headerTooltip: {
         description: "Link to prompt version in Hanzo prompt management.",
-        href: "https://hanzo.com/docs/prompt-management/get-started",
+        href: "https://hanzo.ai/docs/prompt-management/get-started",
       },
       size: 200,
       enableHiding: true,
@@ -949,7 +949,7 @@ export default function ObservationsEventsTable({
       size: 100,
       headerTooltip: {
         description: "Track changes via the version tag.",
-        href: "https://hanzo.com/docs/experimentation",
+        href: "https://hanzo.ai/docs/experimentation",
       },
       enableHiding: true,
       enableSorting,
