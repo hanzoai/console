@@ -329,7 +329,7 @@ _[Hanzo의 공개 예제 trace](https://cloud.hanzo.ai/project/cloramnkj0002jz08
 
 ### 텔레메트리
 
-기본적으로 Hanzo는 자체 호스팅 인스턴스의 기본 사용 통계를 중앙 서버(PostHog)로 자동 보고합니다.
+기본적으로 Hanzo는 자체 호스팅 인스턴스의 기본 사용 통계를 중앙 서버(Hanzo Insights)로 자동 보고합니다.
 
 이를 통해:
 
