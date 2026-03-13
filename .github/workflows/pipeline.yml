@@ -50,7 +50,7 @@ jobs:
   # Build once, share via artifact — eliminates 7 redundant builds
   # ──────────────────────────────────────────────────────────────────────
   build:
-    runs-on: hanzo-build
+    runs-on: hanzo-build-linux-amd64
     needs:
       - pre-job
     if: needs.pre-job.outputs.should_skip != 'true'
@@ -146,7 +146,7 @@ jobs:
   # ──────────────────────────────────────────────────────────────────────
   test-docker-build:
     timeout-minutes: 12
-    runs-on: hanzo-build
+    runs-on: hanzo-build-linux-amd64
     continue-on-error: true # not in CI gate — stabilizing Docker build
     needs:
       - pre-job
@@ -200,7 +200,7 @@ jobs:
 
   tests-web-sync:
     timeout-minutes: 15
-    runs-on: hanzo-build
+    runs-on: hanzo-build-linux-amd64
     needs:
       - pre-job
       - build
@@ -333,7 +333,7 @@ jobs:
 
   tests-web-async:
     timeout-minutes: 15
-    runs-on: hanzo-build
+    runs-on: hanzo-build-linux-amd64
     needs:
       - pre-job
       - build
@@ -465,7 +465,7 @@ jobs:
 
   tests-worker:
     timeout-minutes: 12
-    runs-on: hanzo-build
+    runs-on: hanzo-build-linux-amd64
     needs:
       - pre-job
       - build
@@ -659,7 +659,7 @@ jobs:
           HANZO_LLM_CONNECTION_ANTHROPIC_KEY: ${{ secrets.HANZO_LLM_CONNECTION_ANTHROPIC_KEY }}
 
   e2e-tests:
-    runs-on: hanzo-build
+    runs-on: hanzo-build-linux-amd64
     timeout-minutes: 15
     continue-on-error: true # not in CI gate — stabilizing Playwright tests
     needs:
@@ -733,7 +733,7 @@ jobs:
         run: pnpm --filter=web run test:e2e
 
   e2e-server-tests:
-    runs-on: hanzo-build
+    runs-on: hanzo-build-linux-amd64
     timeout-minutes: 15
     continue-on-error: true # not in CI gate — stabilizing worker health + server tests
     needs:
