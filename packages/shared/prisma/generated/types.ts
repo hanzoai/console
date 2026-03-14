@@ -489,6 +489,37 @@ export type DefaultView = {
   view_name: string;
   view_id: string;
 };
+export type DnsAuditLog = {
+  id: string;
+  zone_id: string;
+  user_id: string;
+  action: string;
+  details: unknown | null;
+  created_at: Generated<Timestamp>;
+};
+export type DnsRecord = {
+  id: string;
+  zone_id: string;
+  name: string;
+  type: string;
+  content: string;
+  ttl: Generated<number>;
+  priority: number | null;
+  proxied: Generated<boolean>;
+  sync_to_cloudflare: Generated<boolean>;
+  cloudflare_record_id: string | null;
+  created_at: Generated<Timestamp>;
+  updated_at: Timestamp;
+};
+export type DnsZone = {
+  id: string;
+  org_id: string;
+  name: string;
+  status: Generated<string>;
+  cloudflare_zone_id: string | null;
+  created_at: Generated<Timestamp>;
+  updated_at: Timestamp;
+};
 export type EvalTemplate = {
   id: string;
   created_at: Generated<Timestamp>;
@@ -506,8 +537,8 @@ export type EvalTemplate = {
 };
 export type InsightsIntegration = {
   project_id: string;
-  encrypted_posthog_api_key: string;
-  posthog_host_name: string;
+  encrypted_insights_api_key: string;
+  insights_host_name: string;
   last_sync_at: Timestamp | null;
   enabled: boolean;
   created_at: Generated<Timestamp>;
@@ -957,6 +988,9 @@ export type DB = {
   datasets: Dataset;
   default_llm_models: DefaultLlmModel;
   default_views: DefaultView;
+  dns_audit_logs: DnsAuditLog;
+  dns_records: DnsRecord;
+  dns_zones: DnsZone;
   eval_templates: EvalTemplate;
   job_configurations: JobConfiguration;
   job_executions: JobExecution;
@@ -973,7 +1007,7 @@ export type DB = {
   organization_memberships: OrganizationMembership;
   organizations: Organization;
   pending_deletions: PendingDeletion;
-  posthog_integrations: InsightsIntegration;
+  insights_integrations: InsightsIntegration;
   prices: Price;
   pricing_tiers: PricingTier;
   project_memberships: ProjectMembership;

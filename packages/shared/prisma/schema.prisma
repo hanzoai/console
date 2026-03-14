@@ -1068,14 +1068,14 @@ model SsoConfig {
 model InsightsIntegration {
   projectId                 String                            @id @map("project_id")
   project                   Project                           @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  encryptedInsightsApiKey   String                            @map("encrypted_posthog_api_key")
-  insightsHostName          String                            @map("posthog_host_name")
+  encryptedInsightsApiKey   String                            @map("encrypted_insights_api_key")
+  insightsHostName          String                            @map("insights_host_name")
   lastSyncAt                DateTime?                         @map("last_sync_at")
   enabled                   Boolean
   createdAt                 DateTime                          @default(now()) @map("created_at")
   exportSource              AnalyticsIntegrationExportSource  @default(TRACES_OBSERVATIONS) @map("export_source")
 
-  @@map("posthog_integrations")
+  @@map("insights_integrations")
 }
 
 model MixpanelIntegration {
@@ -1617,4 +1617,54 @@ model CloudSpendAlert {
 
   @@index([orgId])
   @@map("cloud_spend_alerts")
+}
+
+// ── DNS Management ──────────────────────────────────────────────
+
+model DnsZone {
+  id               String        @id @default(cuid())
+  orgId            String        @map("org_id")
+  name             String        // "example.com"
+  status           String        @default("active")
+  cloudflareZoneId String?       @map("cloudflare_zone_id")
+  createdAt        DateTime      @default(now()) @map("created_at")
+  updatedAt        DateTime      @updatedAt @map("updated_at")
+  records          DnsRecord[]
+  auditLogs        DnsAuditLog[]
+
+  @@unique([orgId, name])
+  @@index([orgId])
+  @@map("dns_zones")
+}
+
+model DnsRecord {
+  id                 String   @id @default(cuid())
+  zoneId             String   @map("zone_id")
+  zone               DnsZone  @relation(fields: [zoneId], references: [id], onDelete: Cascade)
+  name               String   // "www", "@"
+  type               String   // A, AAAA, CNAME, MX, TXT, SRV, NS, CAA
+  content            String
+  ttl                Int      @default(300)
+  priority           Int?
+  proxied            Boolean  @default(false)
+  syncToCloudflare   Boolean  @default(false) @map("sync_to_cloudflare")
+  cloudflareRecordId String?  @map("cloudflare_record_id")
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+
+  @@index([zoneId, name, type])
+  @@map("dns_records")
+}
+
+model DnsAuditLog {
+  id        String   @id @default(cuid())
+  zoneId    String   @map("zone_id")
+  zone      DnsZone  @relation(fields: [zoneId], references: [id], onDelete: Cascade)
+  userId    String   @map("user_id")
+  action    String   // create_zone, update_record, delete_record, etc.
+  details   Json?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([zoneId])
+  @@map("dns_audit_logs")
 }
