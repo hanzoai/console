@@ -13,6 +13,8 @@ export const PRODUCT_MODULES = [
   "search",
   "agents",
   "bots",
+  "tasks",
+  "functions",
   "kms",
   "infrastructure",
   "zt",
