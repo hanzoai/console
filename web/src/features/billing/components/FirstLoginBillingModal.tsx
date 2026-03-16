@@ -1,8 +1,10 @@
 /**
  * FirstLoginBillingModal
  *
- * Shown once on first login for new users. Prompts them to add a payment method
- * via billing.hanzo.ai/topup to unlock the $5 trial credit.
+ * Shown once on first login for new users. Prompts them to save a payment
+ * method via billing.hanzo.ai/#payment — NO forced purchase required.
+ * The $5 trial credit is granted automatically on first card save by the
+ * Commerce API (server-side, not client-driven).
  *
  * Dismissed permanently via localStorage (per user ID).
  * Opens billing in a new tab instead of iframe (billing.hanzo.ai blocks framing).
@@ -67,11 +69,11 @@ export function FirstLoginBillingModal() {
     return () => clearTimeout(timer);
   }, [status, userId]);
 
-  // Listen for topup-complete postMessage (fired when user returns from billing tab)
+  // Listen for payment-method-saved or topup-complete postMessage
   useEffect(() => {
     const handler = (event: MessageEvent) => {
       if (event.origin !== BILLING_URL.replace(/\/$/, "")) return;
-      if (event.data?.type === "topup-complete") {
+      if (event.data?.type === "payment-method-saved" || event.data?.type === "topup-complete") {
         markCapture(userId);
         setOpen(false);
       }
@@ -86,7 +88,11 @@ export function FirstLoginBillingModal() {
   }
 
   function handleOpenBilling() {
-    const billingUrl = `${BILLING_URL}/topup?userId=${encodeURIComponent(userId)}&credit=500`;
+    // Link to the Payment Methods section — NOT the topup flow.
+    // Users should be able to save a card without being forced to purchase.
+    // The $5 trial credit is granted server-side by Commerce when the first
+    // payment method is saved (setup intent, not charge).
+    const billingUrl = `${BILLING_URL}/#payment`;
     window.open(billingUrl, "_blank", "noopener,noreferrer");
     // Mark as captured optimistically — user opened billing
     if (userId) markCapture(userId);
@@ -114,9 +120,9 @@ export function FirstLoginBillingModal() {
           <div className="flex items-start gap-3 rounded-lg border p-4 bg-muted/30">
             <CreditCard className="h-5 w-5 mt-0.5 text-muted-foreground shrink-0" />
             <div className="text-sm">
-              <p>You&apos;ll be taken to our secure billing portal to add a payment method.</p>
+              <p>Save a payment method to activate your free $5 credit. No charge required.</p>
               <p className="text-muted-foreground mt-1">
-                Secured by Square. Your card details are never stored on our servers.
+                Your card details are securely stored. You won&apos;t be charged until you exceed your trial credit.
               </p>
             </div>
           </div>
