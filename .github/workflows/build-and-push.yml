@@ -45,3 +45,55 @@ jobs:
       image: ghcr.io/${{ github.repository_owner }}/console-worker
       dockerfile: worker/Dockerfile
     secrets: inherit
+
+  dispatch-to-universe:
+    needs: [web, worker]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Compute image URI
+        id: meta
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            TAG="${GITHUB_REF#refs/tags/v}"
+          elif [[ "$GITHUB_REF" == refs/heads/* ]]; then
+            TAG="${GITHUB_REF#refs/heads/}"
+          else
+            TAG="${GITHUB_SHA}"
+          fi
+          echo "console_image=ghcr.io/hanzoai/console:${TAG}" >> "$GITHUB_OUTPUT"
+          echo "worker_image=ghcr.io/hanzoai/console-worker:${TAG}" >> "$GITHUB_OUTPUT"
+
+      - name: Dispatch console image update to universe
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.UNIVERSE_DISPATCH_TOKEN }}
+          repository: hanzoai/universe
+          event-type: image-update
+          client-payload: |
+            {
+              "service": "console",
+              "image": "${{ steps.meta.outputs.console_image }}",
+              "sha": "${{ github.sha }}",
+              "repo": "${{ github.repository }}"
+            }
+
+      - name: Dispatch console-worker image update to universe
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.UNIVERSE_DISPATCH_TOKEN }}
+          repository: hanzoai/universe
+          event-type: image-update
+          client-payload: |
+            {
+              "service": "console-worker",
+              "image": "${{ steps.meta.outputs.worker_image }}",
+              "sha": "${{ github.sha }}",
+              "repo": "${{ github.repository }}"
+            }
+
+      - name: Summary
+        run: |
+          echo "### Deploy dispatched to universe" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Console:** ${{ steps.meta.outputs.console_image }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Worker:** ${{ steps.meta.outputs.worker_image }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Flow:** image-receiver -> staging -> E2E -> production" >> "$GITHUB_STEP_SUMMARY"
