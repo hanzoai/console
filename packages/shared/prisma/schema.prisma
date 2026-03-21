@@ -1264,10 +1264,10 @@ model ObservationMedia {
 
 model BillingMeterBackup {
   // unique
-  stripeCustomerId String   @map("stripe_customer_id")
-  meterId          String   @map("meter_id")
-  startTime        DateTime @map("start_time")
-  endTime          DateTime @map("end_time")
+  customerId String   @map("stripe_customer_id") // column name kept for backwards compat
+  meterId    String   @map("meter_id")
+  startTime  DateTime @map("start_time")
+  endTime    DateTime @map("end_time")
 
   // value
   aggregatedValue Int @map("aggregated_value")
@@ -1280,8 +1280,8 @@ model BillingMeterBackup {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
 
-  @@unique([stripeCustomerId, meterId, startTime, endTime])
-  @@index([stripeCustomerId, meterId, startTime, endTime])
+  @@unique([customerId, meterId, startTime, endTime])
+  @@index([customerId, meterId, startTime, endTime])
   @@map("billing_meter_backups")
 }
 

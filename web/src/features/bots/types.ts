@@ -1,24 +1,9 @@
 export type BotStatus = "running" | "stopped" | "provisioning" | "error";
 export type BotPlatform = "linux" | "macos" | "windows";
 export type BotTier = "free" | "cloud" | "cloud-pro";
-export type BotChannel =
-  | "whatsapp"
-  | "telegram"
-  | "discord"
-  | "slack"
-  | "web"
-  | "sms"
-  | "email";
+export type BotChannel = "whatsapp" | "telegram" | "discord" | "slack" | "web" | "sms" | "email";
 
-export const BOT_CHANNELS: BotChannel[] = [
-  "whatsapp",
-  "telegram",
-  "discord",
-  "slack",
-  "web",
-  "sms",
-  "email",
-];
+export const BOT_CHANNELS: BotChannel[] = ["whatsapp", "telegram", "discord", "slack", "web", "sms", "email"];
 
 export const BOT_REGIONS = [
   { value: "us-east-1", label: "US East (N. Virginia)" },
@@ -26,10 +11,7 @@ export const BOT_REGIONS = [
   { value: "eu-west-1", label: "EU West (Ireland)" },
 ] as const;
 
-export const BOT_PLATFORM_PRICING: Record<
-  BotPlatform,
-  { label: string; price: number }
-> = {
+export const BOT_PLATFORM_PRICING: Record<BotPlatform, { label: string; price: number }> = {
   linux: { label: "Linux", price: 5 },
   macos: { label: "macOS", price: 25 },
   windows: { label: "Windows", price: 25 },
@@ -109,7 +91,7 @@ export interface BotInvoice {
   paymentMethod?: PaymentMethodType;
 }
 
-// Payment methods — powered by Hanzo Commerce (not Stripe)
+// Payment methods — powered by Hanzo Commerce (Square)
 export type PaymentMethodType = "card" | "crypto" | "wire";
 
 export interface PaymentMethod {
@@ -125,5 +107,4 @@ export interface PaymentMethod {
 }
 
 // Hanzo Commerce API base URL
-export const COMMERCE_API_URL =
-  process.env.NEXT_PUBLIC_COMMERCE_API_URL ?? "https://commerce.hanzo.ai/api/v1";
+export const COMMERCE_API_URL = process.env.NEXT_PUBLIC_COMMERCE_API_URL ?? "https://commerce.hanzo.ai/api/v1";

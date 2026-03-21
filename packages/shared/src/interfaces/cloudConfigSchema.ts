@@ -22,7 +22,8 @@ export const CloudConfigSchema = z.object({
     }))
     .nullish(),
 
-  // Backwards compat: alias stripe → billing for orgs with old cloudConfig JSON
+  // Backwards compat: legacy "stripe" key in persisted cloudConfig JSON.
+  // Read-only — new writes always use "billing" above.
   stripe: z
     .object({
       customerId: z.string().nullish(),
