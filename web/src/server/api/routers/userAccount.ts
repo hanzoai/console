@@ -110,6 +110,20 @@ export const userAccountRouter = createTRPCRouter({
     };
   }),
 
+  connectedAccounts: authenticatedProcedure.query(async ({ ctx }) => {
+    const accounts = await ctx.prisma.account.findMany({
+      where: { userId: ctx.session.user.id },
+      select: {
+        id: true,
+        provider: true,
+        type: true,
+        providerAccountId: true,
+      },
+      orderBy: { provider: "asc" },
+    });
+    return accounts;
+  }),
+
   setV4BetaEnabled: authenticatedProcedure
     .input(z.object({ enabled: z.boolean() }))
     .mutation(async ({ input, ctx }) => {

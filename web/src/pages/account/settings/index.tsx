@@ -27,6 +27,7 @@ import Link from "next/link";
 import { showSuccessToast } from "@/src/features/notifications/showSuccessToast";
 import { showErrorToast } from "@/src/features/notifications/showErrorToast";
 import { env } from "@/src/env.mjs";
+import { Shield, Loader2 } from "lucide-react";
 
 const displayNameSchema = z.object({
   name: StringNoHTML.min(1, "Name cannot be empty").max(100, "Name must be at most 100 characters"),
@@ -221,6 +222,58 @@ function DeleteAccountButton() {
   );
 }
 
+const PROVIDER_DISPLAY_NAMES: Record<string, string> = {
+  google: "Google",
+  github: "GitHub",
+  gitlab: "GitLab",
+  hanzo: "Hanzo IAM",
+  okta: "Okta",
+  auth0: "Auth0",
+  "azure-ad": "Azure AD",
+  keycloak: "Keycloak",
+  cognito: "Amazon Cognito",
+  credentials: "Email & Password",
+};
+
+function ConnectedAccounts() {
+  const { data: accounts, isLoading } = api.userAccount.connectedAccounts.useQuery();
+
+  return (
+    <div>
+      <Header title="Connected Accounts" />
+      <Card className="p-3">
+        {isLoading ? (
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Loading connected accounts...
+          </div>
+        ) : accounts && accounts.length > 0 ? (
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground">
+              These are the authentication providers linked to your account.
+            </p>
+            {accounts.map((account) => (
+              <div key={account.id} className="flex items-center gap-3 rounded-md border p-3">
+                <Shield className="h-5 w-5 text-muted-foreground" />
+                <div className="flex-1">
+                  <p className="text-sm font-medium">{PROVIDER_DISPLAY_NAMES[account.provider] ?? account.provider}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {account.type === "oauth" ? "OAuth" : account.type} — ID: {account.providerAccountId}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">
+            No external authentication providers are linked to your account.
+          </p>
+        )}
+      </Card>
+    </div>
+  );
+}
+
 type AccountSettingsPage = {
   title: string;
   slug: string;
@@ -263,6 +316,7 @@ const getAccountSettingsPages = (userEmail: string): AccountSettingsPage[] => [
             </Button>
           </Card>
         </div>
+        <ConnectedAccounts />
         <SettingsDangerZone
           items={[
             {

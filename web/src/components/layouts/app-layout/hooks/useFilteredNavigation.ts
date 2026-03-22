@@ -49,6 +49,7 @@ function groupNavigationItems(items: NavigationItem[]): GroupedNavigation {
         ...(grouped[RouteGroup.Evaluation] || []),
         ...(grouped[RouteGroup.Agents] || []),
         ...(grouped[RouteGroup.KMS] || []),
+        ...(grouped[RouteGroup.Base] || []),
       ]
     : [];
 

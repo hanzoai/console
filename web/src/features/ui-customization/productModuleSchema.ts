@@ -17,6 +17,7 @@ export const PRODUCT_MODULES = [
   "functions",
   "kms",
   "infrastructure",
+  "base",
   "zt",
 ] as const;
 
