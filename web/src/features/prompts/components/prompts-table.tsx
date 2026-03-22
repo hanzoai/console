@@ -18,7 +18,7 @@ import { promptFilterConfig } from "@/src/features/filters/config/prompts-config
 import { useOrderByState } from "@/src/features/orderBy/hooks/useOrderByState";
 import { createColumnHelper } from "@tanstack/react-table";
 import { joinTableCoreAndMetrics } from "@/src/components/table/utils/joinTableCoreAndMetrics";
-import { Skeleton } from "@/src/components/ui/skeleton";
+import { Skeleton } from "@hanzo/ui";
 import { useDebounce } from "@/src/hooks/useDebounce";
 import { LocalIsoDate } from "@/src/components/LocalIsoDate";
 import { useFullTextSearch } from "@/src/components/table/use-cases/useFullTextSearch";

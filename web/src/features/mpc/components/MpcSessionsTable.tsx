@@ -2,8 +2,8 @@ import { Activity, Clock } from "lucide-react";
 
 import { Badge } from "@/src/components/ui/badge";
 import { Card, CardContent } from "@/src/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/src/components/ui/table";
-import { Skeleton } from "@/src/components/ui/skeleton";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@hanzo/ui";
+import { Skeleton } from "@hanzo/ui";
 
 import { useMpcSessions } from "../hooks";
 import type { MpcSigningSession } from "../types";

@@ -12,11 +12,11 @@ import {
   type CreateAnnotationScoreData,
 } from "@hanzo/console-core";
 import { Input } from "@/src/components/ui/input";
-import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
+import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from "@hanzo/ui";
 import { Combobox } from "@/src/components/ui/combobox";
-import { Textarea } from "@/src/components/ui/textarea";
+import { Textarea } from "@hanzo/ui";
 import { HoverCardContent } from "@radix-ui/react-hover-card";
-import { HoverCard, HoverCardTrigger } from "@/src/components/ui/hover-card";
+import { HoverCard, HoverCardTrigger } from "@hanzo/ui";
 import { formatAnnotateDescription, isNumericDataType, isScoreUnsaved } from "@/src/features/scores/lib/helpers";
 import { ToggleGroup, ToggleGroupItem } from "@/src/components/ui/toggle-group";
 import Header from "@/src/components/layouts/header";
@@ -44,7 +44,7 @@ import { DropdownMenuItem } from "@/src/components/ui/dropdown-menu";
 import { useScoreConfigSelection } from "@/src/features/scores/hooks/useScoreConfigSelection";
 import { useRouter } from "next/router";
 import { useAnnotationScoreConfigs } from "@/src/features/scores/hooks/useScoreConfigs";
-import { Skeleton } from "@/src/components/ui/skeleton";
+import { Skeleton } from "@hanzo/ui";
 
 const CHAR_CUTOFF = 6;
 

@@ -3,7 +3,7 @@ import { cn } from "@/src/utils/tailwind";
 import Image from "next/image";
 import { InfoIcon } from "lucide-react";
 import { ActionButton } from "@/src/components/ActionButton";
-import { Alert, AlertTitle, AlertDescription } from "@/src/components/ui/alert";
+import { Alert, AlertTitle, AlertDescription } from "@hanzo/ui";
 
 export interface ValueProposition {
   title: string;

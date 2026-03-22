@@ -16,7 +16,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/src/components/ui/dropdown-menu";
-import { Separator } from "@/src/components/ui/separator";
+import { Separator } from "@hanzo/ui";
 
 type MultiSelectOptions = {
   value: string;

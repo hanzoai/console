@@ -1,5 +1,5 @@
 import DocPopup from "@/src/components/layouts/doc-popup";
-import { Label } from "@/src/components/ui/label";
+import { Label } from "@hanzo/ui";
 
 export function VariableMappingDescription(p: { title: string; description: string; href: string }) {
   return (

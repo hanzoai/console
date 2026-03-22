@@ -9,7 +9,7 @@ import Link from "next/link";
 import { CreateOrEditAnnotationQueueButton } from "@/src/features/annotation-queues/components/CreateOrEditAnnotationQueueButton";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { SupportOrUpgradePage } from "@/src/features/billing/components/SupportOrUpgradePage";
-import { Skeleton } from "@/src/components/ui/skeleton";
+import { Skeleton } from "@hanzo/ui";
 import Page from "@/src/components/layouts/page";
 import { SidePanel, SidePanelContent, SidePanelHeader, SidePanelTitle } from "@/src/components/ui/side-panel";
 import { SubHeaderLabel } from "@/src/components/layouts/header";

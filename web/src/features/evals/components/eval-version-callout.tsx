@@ -1,4 +1,4 @@
-import { Alert, AlertDescription } from "@/src/components/ui/alert";
+import { Alert, AlertDescription } from "@hanzo/ui";
 import { Info } from "lucide-react";
 import { type EvalCapabilities } from "@/src/features/evals/hooks/useEvalCapabilities";
 import {

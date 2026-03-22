@@ -1,4 +1,4 @@
-import { Separator } from "@/src/components/ui/separator";
+import { Separator } from "@hanzo/ui";
 import { usePlaygroundContext } from "../context";
 import { MessagePlaceholderComponent } from "./MessagePlaceholderComponent";
 
@@ -24,9 +24,7 @@ export const MessagePlaceholders = () => {
             .map((placeholder, index) => (
               <div key={placeholder.name}>
                 <MessagePlaceholderComponent messagePlaceholder={placeholder} />
-                {index !== messagePlaceholders.length - 1 && (
-                  <Separator className="my-2" />
-                )}
+                {index !== messagePlaceholders.length - 1 && <Separator className="my-2" />}
               </div>
             ))}
         </div>

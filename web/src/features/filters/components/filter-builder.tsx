@@ -1,14 +1,14 @@
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
-import { Textarea } from "@/src/components/ui/textarea";
+import { Textarea } from "@hanzo/ui";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/src/components/ui/select";
 import { DatePicker } from "@/src/components/date-picker";
 import { useState, useEffect, useRef, type Dispatch, type SetStateAction } from "react";
 import useProjectIdFromURL from "@/src/hooks/useProjectIdFromURL";
 import { api } from "@/src/utils/api";
 import { Check, ChevronDown, ExternalLink, FilterIcon, Info, Plus, WandSparkles, X } from "lucide-react";
-import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/src/components/ui/tooltip";
+import { Popover, PopoverContent, PopoverTrigger } from "@hanzo/ui";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@hanzo/ui";
 import { MultiSelect } from "@/src/features/filters/components/multi-select";
 import {
   type WipFilterState,
@@ -113,7 +113,7 @@ export function PopoverFilterBuilder({
   return (
     <div className="flex items-center">
       <Popover
-        onOpenChange={(open) => {
+        onOpenChange={(open: boolean) => {
           if (open) {
             capture("table:filter_builder_open");
           }
@@ -526,10 +526,10 @@ function FilterBuilderForm({
                         </PopoverTrigger>
                         <PopoverContent
                           className="max-w-fit p-0"
-                          onWheel={(e) => {
+                          onWheel={(e: React.WheelEvent) => {
                             e.stopPropagation();
                           }}
-                          onTouchMove={(e) => {
+                          onTouchMove={(e: React.TouchEvent) => {
                             e.stopPropagation();
                           }}
                         >

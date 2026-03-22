@@ -22,7 +22,7 @@ import useLocalStorage from "@/src/components/useLocalStorage";
 import { getScoreDataTypeIcon } from "@/src/features/scores/lib/scoreColumns";
 import { useDatasetRunsCompare } from "@/src/features/datasets/hooks/useDatasetRunsCompare";
 import { useDatasetRunCompareChartData } from "@/src/features/datasets/hooks/useDatasetRunCompareChartData";
-import { Skeleton } from "@/src/components/ui/skeleton";
+import { Skeleton } from "@hanzo/ui";
 import {
   DATASET_RUN_COMPARE_TABS,
   getDatasetRunCompareTabs,

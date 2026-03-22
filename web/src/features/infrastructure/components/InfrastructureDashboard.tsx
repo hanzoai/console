@@ -14,8 +14,8 @@ import {
 import { api } from "@/src/utils/api";
 import { Badge } from "@/src/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/src/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/src/components/ui/table";
-import { Skeleton } from "@/src/components/ui/skeleton";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@hanzo/ui";
+import { Skeleton } from "@hanzo/ui";
 
 import type { ServiceHealth, ServiceHealthStatus, DeploymentEvent } from "../types";
 

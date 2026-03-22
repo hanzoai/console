@@ -1,4 +1,4 @@
-import { Checkbox } from "@/src/components/ui/checkbox";
+import { Checkbox } from "@hanzo/ui";
 import { type Table, type Row, type RowSelectionState } from "@tanstack/react-table";
 import { useSelectAll } from "@/src/features/table/hooks/useSelectAll";
 
@@ -24,7 +24,7 @@ export function TableSelectionManager<TData>({ projectId, tableName, setSelected
             checked={
               table.getIsAllPageRowsSelected() ? true : table.getIsSomePageRowsSelected() ? "indeterminate" : false
             }
-            onCheckedChange={(value) => {
+            onCheckedChange={(value: boolean | "indeterminate") => {
               table.toggleAllPageRowsSelected(!!value);
               if (!value) {
                 setSelectedRows({});
@@ -44,7 +44,7 @@ export function TableSelectionManager<TData>({ projectId, tableName, setSelected
         >
           <Checkbox
             checked={row.getIsSelected()}
-            onCheckedChange={(value) => {
+            onCheckedChange={(value: boolean | "indeterminate") => {
               row.toggleSelected(!!value);
               if (!value) setSelectAll(false);
             }}

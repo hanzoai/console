@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@hanzo/ui";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/src/components/ui/command";
 import { cn } from "@/src/utils/tailwind";
 import { api } from "@/src/utils/api";

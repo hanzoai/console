@@ -7,7 +7,7 @@ import { Button } from "@/src/components/ui/button";
 import { ItemBadge } from "@/src/components/ItemBadge";
 import { CopyIdsPopover } from "@/src/components/trace2/components/_shared/CopyIdsPopover";
 import { Badge } from "@/src/components/ui/badge";
-import { Separator } from "@/src/components/ui/separator";
+import { Separator } from "@hanzo/ui";
 import Link from "next/link";
 import { Card } from "@/src/components/ui/card";
 

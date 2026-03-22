@@ -1,11 +1,11 @@
 import * as React from "react";
 import { type ScoreSourceType, type AggregatedScoreData } from "@hanzo/console-core";
 import { MessageCircleMore } from "lucide-react";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/src/components/ui/hover-card";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/src/components/ui/tooltip";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@hanzo/ui";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@hanzo/ui";
 import { api } from "@/src/utils/api";
 import { JSONView } from "@/src/components/ui/CodeJsonViewer";
-import { Skeleton } from "@/src/components/ui/skeleton";
+import { Skeleton } from "@hanzo/ui";
 import { type BaselineDiff } from "@/src/features/datasets/lib/calculateBaselineDiff";
 import { DiffLabel } from "@/src/features/datasets/components/DiffLabel";
 

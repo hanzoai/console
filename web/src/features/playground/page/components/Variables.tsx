@@ -1,4 +1,4 @@
-import { Separator } from "@/src/components/ui/separator";
+import { Separator } from "@hanzo/ui";
 import { usePlaygroundContext } from "../context";
 import { PromptVariableComponent } from "./PromptVariableComponent";
 
@@ -24,9 +24,7 @@ export const Variables = () => {
         .map((promptVariable, index) => (
           <div key={promptVariable.name}>
             <PromptVariableComponent promptVariable={promptVariable} />
-            {index !== promptVariables.length - 1 && (
-              <Separator className="my-2" />
-            )}
+            {index !== promptVariables.length - 1 && <Separator className="my-2" />}
           </div>
         ))}
     </div>

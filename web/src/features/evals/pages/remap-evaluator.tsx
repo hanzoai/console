@@ -5,10 +5,10 @@ import { api } from "@/src/utils/api";
 import { InnerEvaluatorForm } from "@/src/features/evals/components/inner-evaluator-form";
 import { mapLegacyToModernTarget, isTraceTarget, isEventTarget } from "@/src/features/evals/utils/typeHelpers";
 import { type PartialConfig } from "@/src/features/evals/types";
-import { Alert, AlertDescription } from "@/src/components/ui/alert";
-import { Skeleton } from "@/src/components/ui/skeleton";
+import { Alert, AlertDescription } from "@hanzo/ui";
+import { Skeleton } from "@hanzo/ui";
 import { Button } from "@/src/components/ui/button";
-import { Separator } from "@/src/components/ui/separator";
+import { Separator } from "@hanzo/ui";
 import {
   DropdownMenu,
   DropdownMenuTrigger,

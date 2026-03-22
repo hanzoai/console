@@ -1,5 +1,5 @@
 import { Button } from "@/src/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@hanzo/ui";
 import { SmilePlusIcon } from "lucide-react";
 import { useState } from "react";
 import { EmojiPicker } from "@ferrucc-io/emoji-picker";

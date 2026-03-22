@@ -1,6 +1,6 @@
 import { BookOpen, LockIcon, MessageSquareText, PlusIcon, Settings, Users } from "lucide-react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/src/components/ui/card";
-import { Separator } from "@/src/components/ui/separator";
+import { Separator } from "@hanzo/ui";
 import Header from "@/src/components/layouts/header";
 import { Button } from "@/src/components/ui/button";
 import Link from "next/link";

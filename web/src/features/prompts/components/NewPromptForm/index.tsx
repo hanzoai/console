@@ -3,7 +3,7 @@ import router from "next/router";
 import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/src/components/ui/button";
-import { Checkbox } from "@/src/components/ui/checkbox";
+import { Checkbox } from "@hanzo/ui";
 import {
   Form,
   FormControl,
@@ -13,8 +13,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/src/components/ui/form";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/src/components/ui/tabs";
-import { Textarea } from "@/src/components/ui/textarea";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@hanzo/ui";
+import { Textarea } from "@hanzo/ui";
 import useProjectIdFromURL from "@/src/hooks/useProjectIdFromURL";
 import { api } from "@/src/utils/api";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -262,7 +262,7 @@ export const NewPromptForm: React.FC<NewPromptFormProps> = (props) => {
             </FormDescription>
             <Tabs
               value={form.watch("type")}
-              onValueChange={(e) => {
+              onValueChange={(e: string) => {
                 form.setValue("type", e as PromptType);
               }}
             >

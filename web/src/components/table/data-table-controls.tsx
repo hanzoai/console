@@ -4,16 +4,16 @@ import { useMediaQuery } from "react-responsive";
 import useSessionStorage from "@/src/components/useSessionStorage";
 import { cn } from "@/src/utils/tailwind";
 import { compactNumberFormatter } from "@/src/utils/numbers";
-import { Accordion } from "@/src/components/ui/accordion";
+import { Accordion } from "@hanzo/ui";
 import * as AccordionPrimitive from "@radix-ui/react-accordion";
 import { ChevronDown } from "lucide-react";
-import { Checkbox } from "@/src/components/ui/checkbox";
+import { Checkbox } from "@hanzo/ui";
 import { Button } from "@/src/components/ui/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/src/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@hanzo/ui";
 import { Slider } from "@/src/components/ui/slider";
 import { Input } from "@/src/components/ui/input";
-import { Label } from "@/src/components/ui/label";
-import { Skeleton } from "@/src/components/ui/skeleton";
+import { Label } from "@hanzo/ui";
+import { Skeleton } from "@hanzo/ui";
 import { X as IconX, Search, WandSparkles, InfoIcon } from "lucide-react";
 import type {
   UIFilter,
@@ -24,7 +24,7 @@ import type {
   PositionInTraceMode,
 } from "@/src/features/filters/hooks/useSidebarFilterState";
 import { KeyValueFilterBuilder } from "@/src/components/table/key-value-filter-builder";
-import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@hanzo/ui";
 import { DataTableAIFilters } from "@/src/components/table/data-table-ai-filters";
 import { type FilterState } from "@hanzo/console-core";
 import { useConsoleCloudRegion } from "@/src/features/organizations/hooks";

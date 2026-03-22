@@ -1,14 +1,8 @@
 import { useState } from "react";
 import { Button } from "@/src/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/src/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/src/components/ui/dialog";
 import { Input } from "@/src/components/ui/input";
-import { Textarea } from "@/src/components/ui/textarea";
+import { Textarea } from "@hanzo/ui";
 import { useCreateSecret } from "@/src/features/kms/hooks";
 import { PlusIcon } from "lucide-react";
 
@@ -64,11 +58,7 @@ export function CreateSecretDialog({
         <div className="flex flex-col gap-4">
           <div>
             <label className="mb-1 block text-sm font-medium">Key</label>
-            <Input
-              placeholder="SECRET_NAME"
-              value={secretName}
-              onChange={(e) => setSecretName(e.target.value)}
-            />
+            <Input placeholder="SECRET_NAME" value={secretName} onChange={(e) => setSecretName(e.target.value)} />
           </div>
           <div>
             <label className="mb-1 block text-sm font-medium">Value</label>
@@ -80,19 +70,10 @@ export function CreateSecretDialog({
             />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium">
-              Comment (optional)
-            </label>
-            <Input
-              placeholder="description"
-              value={secretComment}
-              onChange={(e) => setSecretComment(e.target.value)}
-            />
+            <label className="mb-1 block text-sm font-medium">Comment (optional)</label>
+            <Input placeholder="description" value={secretComment} onChange={(e) => setSecretComment(e.target.value)} />
           </div>
-          <Button
-            onClick={handleSubmit}
-            disabled={!secretName || !secretValue || createSecret.isPending}
-          >
+          <Button onClick={handleSubmit} disabled={!secretName || !secretValue || createSecret.isPending}>
             {createSecret.isPending ? "Creating..." : "Create"}
           </Button>
         </div>

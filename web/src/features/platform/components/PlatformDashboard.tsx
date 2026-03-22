@@ -17,8 +17,8 @@ import { api } from "@/src/utils/api";
 import { Button } from "@/src/components/ui/button";
 import { Badge } from "@/src/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/src/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/src/components/ui/table";
-import { Skeleton } from "@/src/components/ui/skeleton";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@hanzo/ui";
+import { Skeleton } from "@hanzo/ui";
 
 import type { PaasContainer, PipelineRun, PaasContainerStatus, PipelineRunStatus } from "../types";
 
@@ -346,7 +346,7 @@ export function PlatformDashboard({ projectId }: { projectId: string }) {
                     <TableCell className="font-mono text-xs">{container.region ?? "-"}</TableCell>
                     <TableCell className="text-center">{container.replicas ?? "-"}</TableCell>
                     <TableCell className="text-sm">{formatRelativeTime(container.updatedAt)}</TableCell>
-                    <TableCell onClick={(e) => e.stopPropagation()}>
+                    <TableCell onClick={(e: React.MouseEvent) => e.stopPropagation()}>
                       <Button
                         variant="outline"
                         size="sm"

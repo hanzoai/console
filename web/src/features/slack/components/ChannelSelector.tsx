@@ -11,8 +11,8 @@ import {
   CommandItem,
   CommandList,
 } from "@/src/components/ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
-import { Alert, AlertDescription } from "@/src/components/ui/alert";
+import { Popover, PopoverContent, PopoverTrigger } from "@hanzo/ui";
+import { Alert, AlertDescription } from "@hanzo/ui";
 import { api } from "@/src/utils/api";
 
 /**

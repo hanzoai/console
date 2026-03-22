@@ -20,10 +20,10 @@ import {
   InputCommandInput,
   InputCommandItem,
 } from "@/src/components/ui/input-command";
-import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@hanzo/ui";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { Badge } from "@/src/components/ui/badge";
-import { ScrollArea } from "@/src/components/ui/scroll-area";
+import { ScrollArea } from "@hanzo/ui";
 import { DialogBody, DialogFooter } from "@/src/components/ui/dialog";
 
 const formSchema = z.object({

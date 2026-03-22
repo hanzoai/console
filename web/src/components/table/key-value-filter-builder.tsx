@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/src/components/ui/select";
-import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@hanzo/ui";
 import {
   InputCommand,
   InputCommandEmpty,
@@ -172,7 +172,7 @@ export function KeyValueFilterBuilder(props: KeyValueFilterBuilderProps) {
                 // Combobox for known keys
                 <Popover
                   open={openPopoverIndex === index}
-                  onOpenChange={(open) => setOpenPopoverIndex(open ? index : null)}
+                  onOpenChange={(open: boolean) => setOpenPopoverIndex(open ? index : null)}
                 >
                   <PopoverTrigger asChild>
                     <Button variant="outline" role="combobox" className="flex-1 justify-between text-left font-normal">

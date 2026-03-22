@@ -2,7 +2,7 @@ import { Trash2 } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { Badge } from "@/src/components/ui/badge";
-import { AccordionContent, AccordionItem, AccordionTrigger } from "@/src/components/ui/accordion";
+import { AccordionContent, AccordionItem, AccordionTrigger } from "@hanzo/ui";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/src/components/ui/form";
 import { TierConditionsEditor } from "./TierConditionsEditor";
 import { TierPriceEditor } from "./TierPriceEditor";

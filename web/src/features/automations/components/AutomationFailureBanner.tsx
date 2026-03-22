@@ -1,7 +1,7 @@
 import React from "react";
 import { AlertTriangle, X } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
-import { Alert, AlertDescription } from "@/src/components/ui/alert";
+import { Alert, AlertDescription } from "@hanzo/ui";
 import { api } from "@/src/utils/api";
 
 interface AutomationFailureBannerProps {

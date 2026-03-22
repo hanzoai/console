@@ -13,7 +13,7 @@ import { type EvalFormType, fieldHasJsonSelectorOption } from "@/src/features/ev
 import { EvalTargetObject } from "@hanzo/console-core";
 import { VariableMappingDescription } from "@/src/features/evals/components/eval-form-descriptions";
 import { EvaluationPromptPreview, getVariableColor } from "@/src/features/evals/components/evaluation-prompt-preview";
-import { Skeleton } from "@/src/components/ui/skeleton";
+import { Skeleton } from "@hanzo/ui";
 import {
   isEventTarget,
   isLegacyEvalTarget,

@@ -21,9 +21,9 @@ import { useSession } from "next-auth/react";
 import { Download, ExternalLinkIcon } from "lucide-react";
 import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import Page from "@/src/components/layouts/page";
-import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
-import { ScrollArea } from "@/src/components/ui/scroll-area";
-import { Label } from "@/src/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@hanzo/ui";
+import { ScrollArea } from "@hanzo/ui";
+import { Label } from "@hanzo/ui";
 import {
   AnnotationQueueObjectType,
   type ColumnDefinition,
@@ -52,7 +52,7 @@ import {
   type SystemFilterPreset,
   SYSTEM_PRESET_ID_PREFIX,
 } from "@/src/components/table/table-view-presets/components/data-table-view-presets-drawer";
-import { Separator } from "@/src/components/ui/separator";
+import { Separator } from "@hanzo/ui";
 import { type VisibilityState, type ColumnOrderState } from "@tanstack/react-table";
 
 // some projects have thousands of users in a session, paginate to avoid rendering all at once

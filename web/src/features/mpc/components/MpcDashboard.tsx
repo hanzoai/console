@@ -4,8 +4,8 @@ import Link from "next/link";
 import { Badge } from "@/src/components/ui/badge";
 import { Button } from "@/src/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/src/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/src/components/ui/table";
-import { Skeleton } from "@/src/components/ui/skeleton";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@hanzo/ui";
+import { Skeleton } from "@hanzo/ui";
 
 import { useMpcDashboard, useMpcWallets, useMpcHealth } from "../hooks";
 import type { MpcWallet, MpcWalletStatus } from "../types";

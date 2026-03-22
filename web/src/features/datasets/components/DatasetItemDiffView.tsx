@@ -1,6 +1,6 @@
 import type { DatasetItemDomain } from "@hanzo/console-core";
 import DiffViewer from "@/src/components/DiffViewer";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/src/components/ui/accordion";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@hanzo/ui";
 import { stringifyDatasetItemData } from "../utils/datasetItemUtils";
 
 type DatasetItemDiffViewProps = {

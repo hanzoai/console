@@ -12,7 +12,7 @@ import { useRowHeightLocalStorage } from "@/src/components/table/data-table-row-
 import { ListTree } from "lucide-react";
 import { useScoreColumns } from "@/src/features/scores/hooks/useScoreColumns";
 import useColumnOrder from "@/src/features/column-visibility/hooks/useColumnOrder";
-import { Skeleton } from "@/src/components/ui/skeleton";
+import { Skeleton } from "@hanzo/ui";
 import { scoreFilters } from "@/src/features/scores/lib/scoreColumns";
 import { DatasetItemIOCell, TraceObservationIOCell } from "@/src/features/datasets/components/DatasetIOCells";
 import { datasetRunItemsTableColsWithOptions } from "@hanzo/console-core";

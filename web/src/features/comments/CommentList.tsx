@@ -1,10 +1,10 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/src/components/ui/avatar";
 import { Button } from "@/src/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/src/components/ui/form";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/src/components/ui/hover-card";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/src/components/ui/tooltip";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@hanzo/ui";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@hanzo/ui";
 import { MarkdownView } from "@/src/components/ui/MarkdownViewer";
-import { Textarea } from "@/src/components/ui/textarea";
+import { Textarea } from "@hanzo/ui";
 import { Input } from "@/src/components/ui/input";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { api } from "@/src/utils/api";

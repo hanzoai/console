@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/router";
-import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@hanzo/ui";
 import { Button } from "@/src/components/ui/button";
 import { LockIcon, TrashIcon } from "lucide-react";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
@@ -8,7 +8,7 @@ import { type ProjectScope } from "@/src/features/rbac/constants/projectAccessRi
 import { api } from "@/src/utils/api";
 import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { Input } from "@/src/components/ui/input";
-import { Label } from "@/src/components/ui/label";
+import { Label } from "@hanzo/ui";
 import { showSuccessToast } from "@/src/features/notifications/showSuccessToast";
 import { useHasEntitlement } from "@/src/features/entitlements/hooks";
 
@@ -92,7 +92,7 @@ export function DeleteButton({
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent onClick={(e) => e.stopPropagation()}>
+      <PopoverContent onClick={(e: React.MouseEvent) => e.stopPropagation()}>
         <h2 className="text-md mb-3 font-semibold">Please confirm</h2>
         <p className="mb-3 max-w-72 text-sm">
           {customDeletePrompt ??

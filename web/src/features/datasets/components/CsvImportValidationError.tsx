@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "@/src/components/ui/alert";
+import { Alert, AlertDescription, AlertTitle } from "@hanzo/ui";
 import { Button } from "@/src/components/ui/button";
 import { type BulkDatasetItemValidationError } from "@hanzo/console-core";
 

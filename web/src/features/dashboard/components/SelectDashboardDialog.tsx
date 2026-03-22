@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { api } from "@/src/utils/api";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogBody } from "@/src/components/ui/dialog";
 import { Button } from "@/src/components/ui/button";
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/src/components/ui/table";
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@hanzo/ui";
 
 export interface SelectDashboardDialogProps {
   open: boolean;

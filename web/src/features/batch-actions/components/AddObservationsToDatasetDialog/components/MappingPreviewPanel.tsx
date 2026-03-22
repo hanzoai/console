@@ -1,7 +1,7 @@
 import { useMemo, useEffect, useRef } from "react";
 import { ArrowDown, AlertCircle, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { JSONView } from "@/src/components/ui/CodeJsonViewer";
-import { Skeleton } from "@/src/components/ui/skeleton";
+import { Skeleton } from "@hanzo/ui";
 import type { FieldMappingConfig, SourceField, ObservationPreviewData, SchemaValidationError } from "../types";
 import { applyFieldMappingConfig, validateFieldAgainstSchema } from "@hanzo/console-core";
 

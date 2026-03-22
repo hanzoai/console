@@ -5,7 +5,7 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/src/components/ui/breadcrumb";
+} from "@hanzo/ui";
 import { createBreadcrumbItems } from "@/src/features/folders/utils";
 import { Home, Slash } from "lucide-react";
 

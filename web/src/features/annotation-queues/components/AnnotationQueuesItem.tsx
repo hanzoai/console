@@ -1,5 +1,5 @@
-import { Tabs, TabsList, TabsTrigger } from "@/src/components/ui/tabs";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/src/components/ui/tooltip";
+import { Tabs, TabsList, TabsTrigger } from "@hanzo/ui";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@hanzo/ui";
 import useSessionStorage from "@/src/components/useSessionStorage";
 import { SupportOrUpgradePage } from "@/src/features/billing/components/SupportOrUpgradePage";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";

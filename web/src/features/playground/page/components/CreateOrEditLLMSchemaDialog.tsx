@@ -25,7 +25,7 @@ import {
   FormDescription,
 } from "@/src/components/ui/form";
 import { Input } from "@/src/components/ui/input";
-import { Textarea } from "@/src/components/ui/textarea";
+import { Textarea } from "@hanzo/ui";
 import { LLMSchemaNameSchema } from "@/src/features/llm-schemas/validation";
 import { api } from "@/src/utils/api";
 

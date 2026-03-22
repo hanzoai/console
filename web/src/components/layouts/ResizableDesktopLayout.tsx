@@ -1,10 +1,6 @@
 import { type ReactNode, useLayoutEffect, useRef } from "react";
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-  type ImperativePanelHandle,
-} from "@/src/components/ui/resizable";
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@hanzo/ui";
+import type { ImperativePanelHandle } from "react-resizable-panels";
 
 interface ResizableDesktopLayoutProps {
   mainContent: ReactNode;
@@ -70,15 +66,8 @@ export function ResizableDesktopLayout({
         </ResizablePanel>
       )}
       {open && <ResizableHandle withHandle />}
-      <ResizablePanel
-        ref={mainPanelRef}
-        defaultSize={defaultMainSize}
-        minSize={minMainSize}
-      >
-        <div
-          className="relative h-full w-full overflow-scroll"
-          style={{ overscrollBehaviorY: "none" }}
-        >
+      <ResizablePanel ref={mainPanelRef} defaultSize={defaultMainSize} minSize={minMainSize}>
+        <div className="relative h-full w-full overflow-scroll" style={{ overscrollBehaviorY: "none" }}>
           {mainContent}
         </div>
       </ResizablePanel>

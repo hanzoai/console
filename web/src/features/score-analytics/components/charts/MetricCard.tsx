@@ -1,6 +1,6 @@
 import { Badge } from "@/src/components/ui/badge";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/src/components/ui/tooltip";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/src/components/ui/hover-card";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@hanzo/ui";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@hanzo/ui";
 import { HelpCircle, AlertCircle } from "lucide-react";
 import type { InterpretationResult } from "@/src/features/score-analytics/lib/statistics-utils";
 

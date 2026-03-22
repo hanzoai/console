@@ -1,11 +1,11 @@
 import Page from "@/src/components/layouts/page";
-import { BreadcrumbSeparator } from "@/src/components/ui/breadcrumb";
-import { BreadcrumbPage } from "@/src/components/ui/breadcrumb";
-import { BreadcrumbItem } from "@/src/components/ui/breadcrumb";
+import { BreadcrumbSeparator } from "@hanzo/ui";
+import { BreadcrumbPage } from "@hanzo/ui";
+import { BreadcrumbItem } from "@hanzo/ui";
 import { Check } from "lucide-react";
 import { cn } from "@/src/utils/tailwind";
-import { BreadcrumbList } from "@/src/components/ui/breadcrumb";
-import { Breadcrumb } from "@/src/components/ui/breadcrumb";
+import { BreadcrumbList } from "@hanzo/ui";
+import { Breadcrumb } from "@hanzo/ui";
 import { useRouter } from "next/router";
 import { SelectEvaluatorList } from "@/src/features/evals/components/select-evaluator-list";
 import { RunEvaluatorForm } from "@/src/features/evals/components/run-evaluator-form";

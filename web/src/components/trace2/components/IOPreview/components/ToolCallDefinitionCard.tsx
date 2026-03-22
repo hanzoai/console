@@ -2,7 +2,7 @@ import { ChevronRight, ChevronDown, Wrench } from "lucide-react";
 import { Badge } from "@/src/components/ui/badge";
 import { cn } from "@/src/utils/tailwind";
 import { PrettyJsonView } from "@/src/components/ui/PrettyJsonView";
-import { Tabs, TabsList, TabsTrigger } from "@/src/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@hanzo/ui";
 import useLocalStorage from "@/src/components/useLocalStorage";
 import { useState } from "react";
 
@@ -102,7 +102,7 @@ export function ToolCallDefinitionCard({
                   <Tabs
                     className="h-fit py-0.5"
                     value={currentView}
-                    onValueChange={(value) => setCurrentView(value as "formatted" | "json")}
+                    onValueChange={(value: string) => setCurrentView(value as "formatted" | "json")}
                   >
                     <TabsList className="h-fit p-0.5">
                       <TabsTrigger value="formatted" className="h-fit px-1 text-xs">

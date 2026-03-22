@@ -6,7 +6,7 @@ import { cn } from "@/src/utils/tailwind";
 import React from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/src/components/ui/sheet";
 import { useIsMobile } from "@/src/hooks/use-mobile";
-import { Separator } from "@/src/components/ui/separator";
+import { Separator } from "@hanzo/ui";
 import useSessionStorage from "@/src/components/useSessionStorage";
 
 const SidePanelContext = React.createContext<{

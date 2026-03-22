@@ -1,5 +1,5 @@
 import { ItemBadge, type ConsoleItemType } from "@/src/components/ItemBadge";
-import { Skeleton } from "@/src/components/ui/skeleton";
+import { Skeleton } from "@hanzo/ui";
 import { useExtractVariables } from "@/src/features/evals/hooks/useExtractVariables";
 import { type VariableMapping } from "@/src/features/evals/utils/evaluator-form-utils";
 import { cn } from "@/src/utils/tailwind";

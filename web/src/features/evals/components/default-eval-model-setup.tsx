@@ -6,7 +6,7 @@ import { useModelParams } from "@/src/features/playground/page/hooks/useModelPar
 import { Button } from "@/src/components/ui/button";
 import { api } from "@/src/utils/api";
 import { showSuccessToast } from "@/src/features/notifications/showSuccessToast";
-import { Skeleton } from "@/src/components/ui/skeleton";
+import { Skeleton } from "@hanzo/ui";
 import { useEvaluationModel } from "@/src/features/evals/hooks/useEvaluationModel";
 import { DeleteEvaluationModelButton } from "@/src/components/deleteButton";
 import { ManageDefaultEvalModel } from "@/src/features/evals/components/manage-default-eval-model";
@@ -15,8 +15,8 @@ import { DialogContent, DialogTrigger } from "@/src/components/ui/dialog";
 import { getFinalModelParams } from "@/src/utils/getFinalModelParams";
 import { Dialog } from "@/src/components/ui/dialog";
 import { Pencil } from "lucide-react";
-import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
-import { Label } from "@/src/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@hanzo/ui";
+import { Label } from "@hanzo/ui";
 import { Input } from "@/src/components/ui/input";
 
 export function DefaultEvalModelSetup({ projectId }: { projectId: string }) {
@@ -183,7 +183,7 @@ function UpdateButton({
           Update
         </Button>
       </PopoverTrigger>
-      <PopoverContent onClick={(e) => e.stopPropagation()} className="w-fit max-w-[500px]">
+      <PopoverContent onClick={(e: React.MouseEvent) => e.stopPropagation()} className="w-fit max-w-[500px]">
         <h2 className="text-md mb-3 font-semibold">Please confirm</h2>
         <p className="mb-3 text-sm">
           Updating the default model will impact any currently running evaluators that use it. Please confirm that you

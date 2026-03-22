@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/src/components/ui/card";
-import { Tabs, TabsList, TabsTrigger } from "@/src/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@hanzo/ui";
 import { Loader2 } from "lucide-react";
 import { useScoreAnalytics } from "../ScoreAnalyticsProvider";
 import { ScoreDistributionBooleanChart } from "../charts/ScoreDistributionBooleanChart";
@@ -179,7 +179,7 @@ export function DistributionBooleanCard() {
             </div>
           </div>
           {showTabs && (
-            <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as DistributionTab)}>
+            <Tabs value={activeTab} onValueChange={(v: string) => setActiveTab(v as DistributionTab)}>
               <TabsList className="h-7">
                 <TabsTrigger value="score1" title={score1FullLabel} className="h-5 px-2 text-xs">
                   {truncateLabel(score1FullLabel)}

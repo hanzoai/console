@@ -1,10 +1,10 @@
 import { useRouter } from "next/router";
-import { Skeleton } from "@/src/components/ui/skeleton";
+import { Skeleton } from "@hanzo/ui";
 import TableLink from "@/src/components/table/table-link";
 import { CardDescription } from "@/src/components/ui/card";
 import { EvaluatorForm } from "@/src/features/evals/components/evaluator-form";
 import { usePeekEvalConfigData } from "@/src/components/table/peek/hooks/usePeekEvalConfigData";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/src/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@hanzo/ui";
 import { HanzoIcon } from "@/src/components/HanzoLogo";
 import { UserCircle2Icon } from "lucide-react";
 import { StatusBadge } from "@/src/components/layouts/status-badge";
@@ -41,16 +41,9 @@ export const PeekViewEvaluatorConfigDetail = ({ projectId }: { projectId: string
         <div className="flex flex-row items-center gap-2">
           <span className="max-h-fit text-lg font-medium">Configuration</span>
           <div className="flex items-center gap-2">
-            <StatusBadge
-              type={evalConfig.finalStatus.toLowerCase()}
-              isLive
-              className="max-h-8"
-            />
+            <StatusBadge type={evalConfig.finalStatus.toLowerCase()} isLive className="max-h-8" />
             {isLegacyEvalTarget(evalConfig.targetObject) && (
-              <DeactivateEvalConfig
-                projectId={projectId}
-                evalConfig={evalConfig}
-              />
+              <DeactivateEvalConfig projectId={projectId} evalConfig={evalConfig} />
             )}
           </div>
         </div>
@@ -69,16 +62,9 @@ export const PeekViewEvaluatorConfigDetail = ({ projectId }: { projectId: string
         </div>
       </div>
 
-      {evalConfig &&
-        evalConfig.targetObject &&
-        evalConfig.evalTemplate &&
-        evalConfig.finalStatus === "ACTIVE" && (
-          <LegacyEvalCallout
-            projectId={projectId}
-            evalConfigId={evalConfig.id}
-            targetObject={evalConfig.targetObject}
-          />
-        )}
+      {evalConfig && evalConfig.targetObject && evalConfig.evalTemplate && evalConfig.finalStatus === "ACTIVE" && (
+        <LegacyEvalCallout projectId={projectId} evalConfigId={evalConfig.id} targetObject={evalConfig.targetObject} />
+      )}
 
       <CardDescription className="flex items-center text-sm">
         <span className="mr-2 text-sm font-medium">Referenced Evaluator</span>

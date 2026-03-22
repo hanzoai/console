@@ -1,5 +1,5 @@
-import { Label } from "@/src/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/src/components/ui/radio-group";
+import { Label } from "@hanzo/ui";
+import { RadioGroup, RadioGroupItem } from "@hanzo/ui";
 import type { MappingMode } from "../types";
 
 type MappingModeSelectorProps = {
@@ -11,7 +11,7 @@ type MappingModeSelectorProps = {
 
 export function MappingModeSelector({ value, onChange, fullLabel, fieldName }: MappingModeSelectorProps) {
   return (
-    <RadioGroup value={value} onValueChange={(v) => onChange(v as MappingMode)}>
+    <RadioGroup value={value} onValueChange={(v: string) => onChange(v as MappingMode)}>
       <div className="flex items-center space-x-3 rounded-md border px-3 hover:bg-muted/50">
         <RadioGroupItem value="full" id={`${fieldName}-full`} />
         <Label htmlFor={`${fieldName}-full`} className="flex-1 cursor-pointer py-3 text-sm font-medium">

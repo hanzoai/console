@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { Label } from "@/src/components/ui/label";
+import { Label } from "@hanzo/ui";
 import { api } from "@/src/utils/api";
 import { type UIModelParams } from "@hanzo/console-core";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";

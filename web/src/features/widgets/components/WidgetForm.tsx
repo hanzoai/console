@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from "@/src/components/ui/select";
 import { WidgetPropertySelectItem } from "@/src/features/widgets/components/WidgetPropertySelectItem";
-import { Label } from "@/src/components/ui/label";
+import { Label } from "@hanzo/ui";
 import { viewDeclarations } from "@/src/features/query/dataModel";
 import { type z } from "zod/v4";
 import { views } from "@/src/features/query/types";

@@ -8,7 +8,7 @@ import { ModelParameters } from "@/src/components/ModelParameters";
 import { usePlaygroundContext } from "../context";
 import { Messages } from "@/src/features/playground/page/components/Messages";
 import { ConfigurationDropdowns } from "@/src/features/playground/page/components/ConfigurationDropdowns";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/src/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@hanzo/ui";
 import { useIsMobile } from "@/src/hooks/use-mobile";
 
 /**

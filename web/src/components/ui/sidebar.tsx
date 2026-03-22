@@ -9,10 +9,10 @@ import useLocalStorage from "@/src/components/useLocalStorage";
 import { cn } from "@/src/utils/tailwind";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
-import { Separator } from "@/src/components/ui/separator";
+import { Separator } from "@hanzo/ui";
 import { Sheet, SheetContent } from "@/src/components/ui/sheet";
-import { Skeleton } from "@/src/components/ui/skeleton";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/src/components/ui/tooltip";
+import { Skeleton } from "@hanzo/ui";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@hanzo/ui";
 import { Portal } from "@radix-ui/react-tooltip";
 
 const SIDEBAR_STORAGE_KEY = "sidebar:state";

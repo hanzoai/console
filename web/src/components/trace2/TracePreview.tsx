@@ -29,7 +29,7 @@ import { ExternalLinkIcon, InfoIcon } from "lucide-react";
 import { LocalIsoDate } from "@/src/components/LocalIsoDate";
 import { ItemBadge } from "@/src/components/ItemBadge";
 import Link from "next/link";
-import { Tabs, TabsList, TabsTrigger } from "@/src/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@hanzo/ui";
 import { Switch } from "@/src/components/ui/switch";
 import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { useRouter } from "next/router";
@@ -40,7 +40,7 @@ import { useParsedTrace } from "@/src/hooks/useParsedTrace";
 import { useJsonBetaToggle } from "@/src/components/trace2/hooks/useJsonBetaToggle";
 import { TraceDataProvider } from "@/src/components/trace2/contexts/TraceDataContext";
 import { ViewPreferencesProvider } from "@/src/components/trace2/contexts/ViewPreferencesContext";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/src/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@hanzo/ui";
 import { getMostRecentCorrection } from "@/src/features/corrections/utils/getMostRecentCorrection";
 import TagList from "@/src/features/tag/components/TagList";
 import {
@@ -314,7 +314,7 @@ export const TracePreview = ({
         <TabsBar
           value={selectedTab === "log" ? "log" : selectedTab.includes("preview") ? "preview" : "scores"}
           className="flex min-h-0 flex-1 flex-col overflow-hidden"
-          onValueChange={(value) => {
+          onValueChange={(value: string) => {
             // on tab click, is confirmation is needed?
             if (value === "log" && requiresConfirmation && !hasLogViewConfirmed) {
               setShowLogViewDialog(true);
@@ -350,7 +350,7 @@ export const TracePreview = ({
                     <Tabs
                       className="ml-auto h-fit px-2 py-0.5"
                       value={selectedViewTab}
-                      onValueChange={(value) => {
+                      onValueChange={(value: string) => {
                         capture("trace_detail:io_mode_switch", { view: value });
                         handleViewTabChange(value);
                       }}

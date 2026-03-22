@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from "react";
 
 import { usePlaygroundContext } from "@/src/features/playground/page/context";
 import { Button } from "@/src/components/ui/button";
-import { ScrollArea } from "@/src/components/ui/scroll-area";
+import { ScrollArea } from "@hanzo/ui";
 import { PlusIcon, PencilIcon, MinusCircle, BoxIcon } from "lucide-react";
 import { type LlmSchema } from "@hanzo/console-core";
 import { api } from "@/src/utils/api";

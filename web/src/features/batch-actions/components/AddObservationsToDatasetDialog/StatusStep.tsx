@@ -1,5 +1,5 @@
 import { Button } from "@/src/components/ui/button";
-import { Progress } from "@/src/components/ui/progress";
+import { Progress } from "@hanzo/ui";
 import { api } from "@/src/utils/api";
 import { StatusBadge } from "@/src/components/layouts/status-badge";
 import { BatchActionStatus } from "@hanzo/console-core";

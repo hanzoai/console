@@ -17,7 +17,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Edit, PlusIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { Form } from "@/src/components/ui/form";
-import { Textarea } from "@/src/components/ui/textarea";
+import { Textarea } from "@hanzo/ui";
 import {
   type CreateQueueWithAssignments,
   CreateQueueWithAssignmentsData,
@@ -31,7 +31,7 @@ import { useEntitlementLimit } from "@/src/features/entitlements/hooks";
 import { ActionButton } from "@/src/components/ActionButton";
 import { DropdownMenuItem } from "@/src/components/ui/dropdown-menu";
 import { useUniqueNameValidation } from "@/src/hooks/useUniqueNameValidation";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/src/components/ui/collapsible";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@hanzo/ui";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { UserAssignmentSection } from "@/src/features/annotation-queues/components/UserAssignmentSection";
 import { showErrorToast } from "@/src/features/notifications/showErrorToast";
@@ -310,7 +310,7 @@ export const CreateOrEditAnnotationQueueButton = ({
                       <div className="mt-1 rounded-md border">
                         <Collapsible
                           open={isAdvancedOpen && hasQueueAssignmentsReadAccess}
-                          onOpenChange={(open) => {
+                          onOpenChange={(open: boolean) => {
                             if (!hasQueueAssignmentsReadAccess) {
                               setIsAdvancedOpen(false);
                             } else {

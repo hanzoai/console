@@ -1,4 +1,4 @@
-import { Alert, AlertDescription, AlertTitle } from "@/src/components/ui/alert";
+import { Alert, AlertDescription, AlertTitle } from "@hanzo/ui";
 import { AlertCircle } from "lucide-react";
 
 type DatasetError = {

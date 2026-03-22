@@ -1,5 +1,5 @@
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/src/components/ui/accordion";
-import { Skeleton } from "@/src/components/ui/skeleton";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@hanzo/ui";
+import { Skeleton } from "@hanzo/ui";
 import { Button } from "@/src/components/ui/button";
 import {
   DropdownMenu,

@@ -2,7 +2,7 @@ import React, { useState, useRef, useLayoutEffect, useMemo } from "react";
 import { type LegendProps } from "recharts";
 import { MoreVertical } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@hanzo/ui";
 import { cn } from "@/src/utils/tailwind";
 import { useChart, getPayloadConfigFromPayload } from "@/src/components/ui/chart";
 

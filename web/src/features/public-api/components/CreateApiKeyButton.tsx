@@ -17,7 +17,7 @@ import { useHasOrganizationAccess } from "@/src/features/rbac/utils/checkOrganiz
 import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { Input } from "@/src/components/ui/input";
 import { useConsoleEnvCode } from "@/src/features/public-api/hooks/useConsoleEnvCode";
-import { Label } from "@/src/components/ui/label";
+import { Label } from "@hanzo/ui";
 import { cn } from "@/src/utils/tailwind";
 import { SubHeader } from "@/src/components/layouts/header";
 

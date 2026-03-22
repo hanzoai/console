@@ -1,14 +1,8 @@
 import { useState } from "react";
 import { Button } from "@/src/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/src/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/src/components/ui/dialog";
 import { Input } from "@/src/components/ui/input";
-import { Checkbox } from "@/src/components/ui/checkbox";
+import { Checkbox } from "@hanzo/ui";
 import { useCreateZtRouter } from "@/src/features/zt/hooks";
 import { PlusIcon } from "lucide-react";
 
@@ -69,28 +63,17 @@ export function CreateRouterDialog({ projectId }: { projectId: string }) {
         <div className="flex flex-col gap-4">
           <div>
             <label className="mb-1 block text-sm font-medium">Name</label>
-            <Input
-              placeholder="edge-router-01"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
+            <Input placeholder="edge-router-01" value={name} onChange={(e) => setName(e.target.value)} />
           </div>
           <div>
             <label className="mb-1 block text-sm font-medium">Cost</label>
-            <Input
-              type="number"
-              min={0}
-              value={cost}
-              onChange={(e) => setCost(Number(e.target.value))}
-            />
+            <Input type="number" min={0} value={cost} onChange={(e) => setCost(Number(e.target.value))} />
           </div>
           <div className="flex items-center gap-2">
             <Checkbox
               id="tunneler"
               checked={isTunnelerEnabled}
-              onCheckedChange={(checked) =>
-                setIsTunnelerEnabled(checked === true)
-              }
+              onCheckedChange={(checked: boolean | "indeterminate") => setIsTunnelerEnabled(checked === true)}
             />
             <label htmlFor="tunneler" className="text-sm font-medium">
               Tunneler Enabled
@@ -100,26 +83,21 @@ export function CreateRouterDialog({ projectId }: { projectId: string }) {
             <Checkbox
               id="noTraversal"
               checked={noTraversal}
-              onCheckedChange={(checked) => setNoTraversal(checked === true)}
+              onCheckedChange={(checked: boolean | "indeterminate") => setNoTraversal(checked === true)}
             />
             <label htmlFor="noTraversal" className="text-sm font-medium">
               No Traversal
             </label>
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium">
-              Role Attributes (comma-separated)
-            </label>
+            <label className="mb-1 block text-sm font-medium">Role Attributes (comma-separated)</label>
             <Input
               placeholder="public, us-east"
               value={roleAttributes}
               onChange={(e) => setRoleAttributes(e.target.value)}
             />
           </div>
-          <Button
-            onClick={handleSubmit}
-            disabled={!name || createRouter.isPending}
-          >
+          <Button onClick={handleSubmit} disabled={!name || createRouter.isPending}>
             {createRouter.isPending ? "Creating..." : "Create"}
           </Button>
         </div>

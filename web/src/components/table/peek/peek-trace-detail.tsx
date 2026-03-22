@@ -1,7 +1,7 @@
 import { usePeekData } from "@/src/components/table/peek/hooks/usePeekData";
 import { useRouter } from "next/router";
 import { Trace } from "@/src/components/trace2/Trace";
-import { Skeleton } from "@/src/components/ui/skeleton";
+import { Skeleton } from "@hanzo/ui";
 import { StringParam, useQueryParam, withDefault } from "use-query-params";
 
 export const PeekViewTraceDetail = ({ projectId }: { projectId: string }) => {

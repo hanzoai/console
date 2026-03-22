@@ -1,5 +1,5 @@
 import { Badge } from "@/src/components/ui/badge";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/src/components/ui/hover-card";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@hanzo/ui";
 import { type LastUserScore, type ScoreDomain } from "@hanzo/console-core";
 import { BracesIcon, MessageCircleMoreIcon, ExternalLinkIcon } from "lucide-react";
 import { JSONView } from "@/src/components/ui/CodeJsonViewer";

@@ -1,13 +1,8 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/src/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/src/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/src/components/ui/dialog";
 import { Input } from "@/src/components/ui/input";
-import { Textarea } from "@/src/components/ui/textarea";
+import { Textarea } from "@hanzo/ui";
 import { useUpdateSecret } from "@/src/features/kms/hooks";
 
 export function EditSecretDialog({
@@ -67,25 +62,13 @@ export function EditSecretDialog({
         <div className="flex flex-col gap-4">
           <div>
             <label className="mb-1 block text-sm font-medium">Value</label>
-            <Textarea
-              value={secretValue}
-              onChange={(e) => setSecretValue(e.target.value)}
-              rows={3}
-            />
+            <Textarea value={secretValue} onChange={(e) => setSecretValue(e.target.value)} rows={3} />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium">
-              Comment (optional)
-            </label>
-            <Input
-              value={secretComment}
-              onChange={(e) => setSecretComment(e.target.value)}
-            />
+            <label className="mb-1 block text-sm font-medium">Comment (optional)</label>
+            <Input value={secretComment} onChange={(e) => setSecretComment(e.target.value)} />
           </div>
-          <Button
-            onClick={handleSubmit}
-            disabled={!secretValue || updateSecret.isPending}
-          >
+          <Button onClick={handleSubmit} disabled={!secretValue || updateSecret.isPending}>
             {updateSecret.isPending ? "Saving..." : "Save"}
           </Button>
         </div>

@@ -4,7 +4,7 @@ import { Github, Bug, Lightbulb, Sparkles, LibraryBig, LifeBuoy, Radio, Calendar
 //eslint-disable-next-line no-restricted-imports
 import { SiDiscord } from "react-icons/si";
 import { RainbowButton } from "@/src/components/magicui/rainbow-button";
-import { Separator } from "@/src/components/ui/separator";
+import { Separator } from "@hanzo/ui";
 import { usePlan } from "@/src/features/entitlements/hooks";
 import { isCloudPlan } from "@hanzo/console-core";
 import { useUiCustomization } from "@/src/features/ui-customization/useUiCustomization";

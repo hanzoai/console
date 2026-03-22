@@ -1,4 +1,4 @@
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/src/components/ui/hover-card";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@hanzo/ui";
 import { Info } from "lucide-react";
 
 interface SamplingMetadata {

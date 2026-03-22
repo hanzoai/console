@@ -1,10 +1,6 @@
 import { Switch } from "@/src/components/ui/switch";
-import { Label } from "@/src/components/ui/label";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/src/components/ui/tooltip";
+import { Label } from "@hanzo/ui";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@hanzo/ui";
 import { useV4Beta } from "@/src/features/events/hooks/useV4Beta";
 import { cn } from "@/src/utils/tailwind";
 
@@ -36,9 +32,7 @@ export function V4BetaSidebarToggle() {
           </Label>
         </div>
       </TooltipTrigger>
-      <TooltipContent className="max-w-xs text-xs">
-        Toggle to use new events based v4 architecture.
-      </TooltipContent>
+      <TooltipContent className="max-w-xs text-xs">Toggle to use new events based v4 architecture.</TooltipContent>
     </Tooltip>
   );
 }

@@ -2,18 +2,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/src/components/ui/ca
 import { cn } from "@/src/utils/tailwind";
 import { useDraggable, useDroppable } from "@dnd-kit/core";
 import { InfoIcon, X } from "lucide-react";
-import {
-  type CsvColumnPreview,
-  type FieldMapping,
-} from "@/src/features/datasets/lib/csv/types";
+import { type CsvColumnPreview, type FieldMapping } from "@/src/features/datasets/lib/csv/types";
 import { isSchemaField } from "@/src/features/datasets/lib/csv/helpers";
 import { Switch } from "@/src/components/ui/switch";
-import { Label } from "@/src/components/ui/label";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/src/components/ui/tooltip";
+import { Label } from "@hanzo/ui";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@hanzo/ui";
 
 function SchemaKeyDropZone({
   schemaKey,
@@ -159,9 +152,7 @@ export function MappingCard({
         {/* INPUT SECTION */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold tracking-wide text-muted-foreground">
-              Input
-            </h3>
+            <h3 className="text-sm font-semibold tracking-wide text-muted-foreground">Input</h3>
             {inputSchemaKeys && inputSchemaKeys.length > 0 && (
               <div className="flex items-center gap-1.5">
                 <Switch
@@ -209,36 +200,33 @@ export function MappingCard({
         {/* OUTPUT SECTION */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold tracking-wide text-muted-foreground">
-              Expected Output
-            </h3>
-            {expectedOutputSchemaKeys &&
-              expectedOutputSchemaKeys.length > 0 && (
-                <div className="flex items-center gap-1.5">
-                  <Switch
-                    id="direct-mapping-expected"
-                    checked={useDirectMappingForExpectedOutput}
-                    onCheckedChange={onToggleDirectMappingForExpectedOutput}
-                    className="scale-75"
-                  />
-                  <Label
-                    htmlFor="direct-mapping-expected"
-                    className="cursor-pointer text-xs font-normal text-muted-foreground"
-                  >
-                    Direct mapping
-                  </Label>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <InfoIcon className="h-3 w-3 text-muted-foreground" />
-                    </TooltipTrigger>
-                    <TooltipContent className="max-w-[250px]" side="left">
-                      {useDirectMappingForExpectedOutput
-                        ? "Map entire CSV columns directly to the expected output field."
-                        : "Map CSV columns to individual schema fields."}
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-              )}
+            <h3 className="text-sm font-semibold tracking-wide text-muted-foreground">Expected Output</h3>
+            {expectedOutputSchemaKeys && expectedOutputSchemaKeys.length > 0 && (
+              <div className="flex items-center gap-1.5">
+                <Switch
+                  id="direct-mapping-expected"
+                  checked={useDirectMappingForExpectedOutput}
+                  onCheckedChange={onToggleDirectMappingForExpectedOutput}
+                  className="scale-75"
+                />
+                <Label
+                  htmlFor="direct-mapping-expected"
+                  className="cursor-pointer text-xs font-normal text-muted-foreground"
+                >
+                  Direct mapping
+                </Label>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <InfoIcon className="h-3 w-3 text-muted-foreground" />
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-[250px]" side="left">
+                    {useDirectMappingForExpectedOutput
+                      ? "Map entire CSV columns directly to the expected output field."
+                      : "Map CSV columns to individual schema fields."}
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+            )}
           </div>
           {expectedOutput.type === "schema" ? (
             <div className="space-y-2">

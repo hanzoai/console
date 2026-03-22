@@ -15,7 +15,7 @@ import { Input } from "@/src/components/ui/input";
 import { PasswordInput } from "@/src/components/ui/password-input";
 import { Switch } from "@/src/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/src/components/ui/select";
-import { Tooltip, TooltipTrigger, TooltipContent } from "@/src/components/ui/tooltip";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@hanzo/ui";
 import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import {
   blobStorageIntegrationFormSchema,

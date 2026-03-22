@@ -1,5 +1,5 @@
 import { type UseFormReturn, useForm } from "react-hook-form";
-import { AlertDescription } from "@/src/components/ui/alert";
+import { AlertDescription } from "@hanzo/ui";
 import { Input } from "@/src/components/ui/input";
 import { Button } from "@/src/components/ui/button";
 import {
@@ -12,7 +12,7 @@ import {
   FormMessage,
 } from "@/src/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Tabs, TabsList, TabsTrigger } from "@/src/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@hanzo/ui";
 import { Badge } from "@/src/components/ui/badge";
 import {
   tracesTableColsWithOptions,
@@ -34,7 +34,7 @@ import { useRouter } from "next/router";
 import { Slider } from "@/src/components/ui/slider";
 import { Card } from "@/src/components/ui/card";
 import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
-import { Checkbox } from "@/src/components/ui/checkbox";
+import { Checkbox } from "@hanzo/ui";
 import { Switch } from "@/src/components/ui/switch";
 import {
   evalConfigFormSchema,
@@ -51,9 +51,9 @@ import { getDateFromOption, type TableDateRange } from "@/src/utils/date-range-u
 import { type PartialConfig } from "@/src/features/evals/types";
 import { type EvalCapabilities } from "@/src/features/evals/hooks/useEvalCapabilities";
 import { EvalVersionCallout } from "@/src/features/evals/components/eval-version-callout";
-import { Skeleton } from "@/src/components/ui/skeleton";
+import { Skeleton } from "@hanzo/ui";
 import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/src/components/ui/dialog";
-import { Tooltip, TooltipTrigger, TooltipContent } from "@/src/components/ui/tooltip";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@hanzo/ui";
 import { BetweenHorizonalStart, CircleDot, AlertTriangle, FlaskConical, InfoIcon, ListTree } from "lucide-react";
 import {
   isDatasetTarget,
@@ -496,7 +496,7 @@ export const InnerEvaluatorForm = (props: {
                     <FormControl>
                       <Tabs
                         value={userFacingTarget}
-                        onValueChange={(value) => {
+                        onValueChange={(value: string) => {
                           const actualTarget = handleAndResolveTarget(value);
                           if (actualTarget) {
                             field.onChange(actualTarget);
@@ -555,7 +555,7 @@ export const InnerEvaluatorForm = (props: {
                   <FormLabel className="text-sm">Experiment Method</FormLabel>
                   <Tabs
                     value={useOtelDataForExperiment ? "otel" : "non-otel"}
-                    onValueChange={(value) => {
+                    onValueChange={(value: string) => {
                       // Don't allow changes in edit mode or disabled mode
                       if (props.mode === "edit" || props.disabled) {
                         return;
@@ -625,7 +625,7 @@ export const InnerEvaluatorForm = (props: {
                           <Checkbox
                             id="newObjects"
                             checked={field.value.includes("NEW")}
-                            onCheckedChange={(checked) => {
+                            onCheckedChange={(checked: boolean | "indeterminate") => {
                               const newValue = checked
                                 ? [...field.value, "NEW"]
                                 : field.value.filter((v) => v !== "NEW");
@@ -646,7 +646,7 @@ export const InnerEvaluatorForm = (props: {
                           <Checkbox
                             id="existingObjects"
                             checked={field.value.includes("EXISTING")}
-                            onCheckedChange={(checked) => {
+                            onCheckedChange={(checked: boolean | "indeterminate") => {
                               const newValue = checked
                                 ? [...field.value, "EXISTING"]
                                 : field.value.filter((v) => v !== "EXISTING");
@@ -832,7 +832,7 @@ export const InnerEvaluatorForm = (props: {
                                 max={1}
                                 step={0.0001}
                                 value={[field.value]}
-                                onValueChange={(value) => field.onChange(value[0])}
+                                onValueChange={(value: number[]) => field.onChange(value[0])}
                                 showInput={true}
                                 displayAsPercentage={true}
                               />

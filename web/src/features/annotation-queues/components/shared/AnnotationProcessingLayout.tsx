@@ -1,4 +1,4 @@
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/src/components/ui/resizable";
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@hanzo/ui";
 import useSessionStorage from "@/src/components/useSessionStorage";
 
 interface AnnotationProcessingLayoutProps {
@@ -27,7 +27,7 @@ export const AnnotationProcessingLayout: React.FC<AnnotationProcessingLayoutProp
         <ResizablePanelGroup
           direction="horizontal"
           className="h-full overflow-hidden"
-          onLayout={(sizes) => {
+          onLayout={(sizes: number[]) => {
             setPanelSize(sizes[0]);
           }}
         >

@@ -1,21 +1,9 @@
 import { useState } from "react";
 import { Button } from "@/src/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/src/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/src/components/ui/dialog";
 import { Input } from "@/src/components/ui/input";
-import { Textarea } from "@/src/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/src/components/ui/select";
+import { Textarea } from "@hanzo/ui";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/src/components/ui/select";
 import { useCreateKey } from "@/src/features/kms/hooks";
 import { PlusIcon } from "lucide-react";
 
@@ -23,12 +11,8 @@ export function CreateKeyDialog({ projectId }: { projectId: string }) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [algorithm, setAlgorithm] = useState<"aes-256-gcm" | "aes-128-gcm">(
-    "aes-256-gcm",
-  );
-  const [usage, setUsage] = useState<"encrypt-decrypt" | "sign-verify">(
-    "encrypt-decrypt",
-  );
+  const [algorithm, setAlgorithm] = useState<"aes-256-gcm" | "aes-128-gcm">("aes-256-gcm");
+  const [usage, setUsage] = useState<"encrypt-decrypt" | "sign-verify">("encrypt-decrypt");
 
   const createKey = useCreateKey();
 
@@ -68,16 +52,10 @@ export function CreateKeyDialog({ projectId }: { projectId: string }) {
         <div className="flex flex-col gap-4">
           <div>
             <label className="mb-1 block text-sm font-medium">Name</label>
-            <Input
-              placeholder="my-encryption-key"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
+            <Input placeholder="my-encryption-key" value={name} onChange={(e) => setName(e.target.value)} />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium">
-              Description (optional)
-            </label>
+            <label className="mb-1 block text-sm font-medium">Description (optional)</label>
             <Textarea
               placeholder="Key description"
               value={description}
@@ -87,12 +65,7 @@ export function CreateKeyDialog({ projectId }: { projectId: string }) {
           </div>
           <div>
             <label className="mb-1 block text-sm font-medium">Algorithm</label>
-            <Select
-              value={algorithm}
-              onValueChange={(v) =>
-                setAlgorithm(v as "aes-256-gcm" | "aes-128-gcm")
-              }
-            >
+            <Select value={algorithm} onValueChange={(v) => setAlgorithm(v as "aes-256-gcm" | "aes-128-gcm")}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -104,27 +77,17 @@ export function CreateKeyDialog({ projectId }: { projectId: string }) {
           </div>
           <div>
             <label className="mb-1 block text-sm font-medium">Key Usage</label>
-            <Select
-              value={usage}
-              onValueChange={(v) =>
-                setUsage(v as "encrypt-decrypt" | "sign-verify")
-              }
-            >
+            <Select value={usage} onValueChange={(v) => setUsage(v as "encrypt-decrypt" | "sign-verify")}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="encrypt-decrypt">
-                  Encrypt / Decrypt
-                </SelectItem>
+                <SelectItem value="encrypt-decrypt">Encrypt / Decrypt</SelectItem>
                 <SelectItem value="sign-verify">Sign / Verify</SelectItem>
               </SelectContent>
             </Select>
           </div>
-          <Button
-            onClick={handleSubmit}
-            disabled={!name || createKey.isPending}
-          >
+          <Button onClick={handleSubmit} disabled={!name || createKey.isPending}>
             {createKey.isPending ? "Creating..." : "Create"}
           </Button>
         </div>

@@ -6,8 +6,8 @@
  */
 
 import { useRef, useState, useEffect } from "react";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/src/components/ui/hover-card";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/src/components/ui/tooltip";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@hanzo/ui";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@hanzo/ui";
 import { type JSONTheme } from "../types";
 import { highlightTextWithComments, COMMENT_HIGHLIGHT_COLOR } from "../utils/highlightText";
 import { type CommentRange } from "../utils/commentRanges";

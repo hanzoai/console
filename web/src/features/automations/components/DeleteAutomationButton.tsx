@@ -3,7 +3,7 @@ import { Button } from "@/src/components/ui/button";
 import { Trash } from "lucide-react";
 import { api } from "@/src/utils/api";
 import { showSuccessToast } from "@/src/features/notifications/showSuccessToast";
-import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@hanzo/ui";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 
 interface DeleteAutomationButtonProps {

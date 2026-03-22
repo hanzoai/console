@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Button } from "@/src/components/ui/button";
 import { ImageOff, Maximize2, Minimize2 } from "lucide-react";
 import { api } from "@/src/utils/api";
-import { Skeleton } from "@/src/components/ui/skeleton";
+import { Skeleton } from "@hanzo/ui";
 import { captureException } from "@sentry/nextjs";
 import { useSession } from "next-auth/react";
 

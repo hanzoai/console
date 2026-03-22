@@ -1,35 +1,19 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
-import {
-  Play,
-  Square,
-  RotateCw,
-  Trash2,
-  Plus,
-  MessageSquare,
-  Cpu,
-  DollarSign,
-} from "lucide-react";
+import { Play, Square, RotateCw, Trash2, Plus, MessageSquare, Cpu, DollarSign } from "lucide-react";
 
 import { api } from "@/src/utils/api";
 import { Button } from "@/src/components/ui/button";
 import { Badge } from "@/src/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/src/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/src/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@hanzo/ui";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/src/components/ui/dropdown-menu";
-import { Skeleton } from "@/src/components/ui/skeleton";
+import { Skeleton } from "@hanzo/ui";
 
 import { BotCreateDialog } from "./BotCreateDialog";
 import { BotDetail } from "./BotDetail";
@@ -61,10 +45,7 @@ export function BotDashboard({ projectId }: { projectId: string }) {
   const [selectedBotId, setSelectedBotId] = useState<string | null>(null);
 
   const utils = api.useUtils();
-  const { data: bots, isLoading } = api.bots.list.useQuery(
-    { projectId },
-    { enabled: !!projectId },
-  );
+  const { data: bots, isLoading } = api.bots.list.useQuery({ projectId }, { enabled: !!projectId });
 
   const startMut = api.bots.start.useMutation({
     onSuccess: () => utils.bots.list.invalidate(),
@@ -86,13 +67,7 @@ export function BotDashboard({ projectId }: { projectId: string }) {
   const totalCost = bots?.reduce((s, b) => s + b.monthlyUsage.cost, 0) ?? 0;
 
   if (selectedBotId) {
-    return (
-      <BotDetail
-        projectId={projectId}
-        botId={selectedBotId}
-        onBack={() => setSelectedBotId(null)}
-      />
-    );
+    return <BotDetail projectId={projectId} botId={selectedBotId} onBack={() => setSelectedBotId(null)} />;
   }
 
   return (
@@ -101,9 +76,7 @@ export function BotDashboard({ projectId }: { projectId: string }) {
       <div className="flex items-center justify-between" data-testid="bot-dashboard-header">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Bots</h1>
-          <p className="text-sm text-muted-foreground">
-            Deploy and manage conversational bots across channels.
-          </p>
+          <p className="text-sm text-muted-foreground">Deploy and manage conversational bots across channels.</p>
         </div>
         <Button data-testid="btn-create-bot" onClick={() => setCreateOpen(true)}>
           <Plus className="mr-2 h-4 w-4" />
@@ -119,11 +92,7 @@ export function BotDashboard({ projectId }: { projectId: string }) {
             <Cpu className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            {isLoading ? (
-              <Skeleton className="h-7 w-12" />
-            ) : (
-              <div className="text-2xl font-bold">{totalBots}</div>
-            )}
+            {isLoading ? <Skeleton className="h-7 w-12" /> : <div className="text-2xl font-bold">{totalBots}</div>}
           </CardContent>
         </Card>
         <Card>
@@ -132,11 +101,7 @@ export function BotDashboard({ projectId }: { projectId: string }) {
             <Play className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            {isLoading ? (
-              <Skeleton className="h-7 w-12" />
-            ) : (
-              <div className="text-2xl font-bold">{runningBots}</div>
-            )}
+            {isLoading ? <Skeleton className="h-7 w-12" /> : <div className="text-2xl font-bold">{runningBots}</div>}
           </CardContent>
         </Card>
         <Card>
@@ -196,7 +161,11 @@ export function BotDashboard({ projectId }: { projectId: string }) {
                 ))
               ) : !bots || bots.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="h-24 text-center text-muted-foreground" data-testid="bot-empty-state">
+                  <TableCell
+                    colSpan={8}
+                    className="h-24 text-center text-muted-foreground"
+                    data-testid="bot-empty-state"
+                  >
                     No bots yet. Create one to get started.
                   </TableCell>
                 </TableRow>
@@ -229,10 +198,8 @@ export function BotDashboard({ projectId }: { projectId: string }) {
                     <TableCell className="text-right font-mono text-sm">
                       {formatNumber(bot.monthlyUsage.messages)}
                     </TableCell>
-                    <TableCell className="text-right font-mono text-sm">
-                      ${bot.monthlyUsage.cost.toFixed(2)}
-                    </TableCell>
-                    <TableCell onClick={(e) => e.stopPropagation()}>
+                    <TableCell className="text-right font-mono text-sm">${bot.monthlyUsage.cost.toFixed(2)}</TableCell>
+                    <TableCell onClick={(e: React.MouseEvent) => e.stopPropagation()}>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
@@ -252,22 +219,14 @@ export function BotDashboard({ projectId }: { projectId: string }) {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           {bot.status === "stopped" && (
-                            <DropdownMenuItem
-                              onClick={() =>
-                                startMut.mutate({ projectId, botId: bot.id })
-                              }
-                            >
+                            <DropdownMenuItem onClick={() => startMut.mutate({ projectId, botId: bot.id })}>
                               <Play className="mr-2 h-4 w-4" />
                               Start
                             </DropdownMenuItem>
                           )}
                           {bot.status === "running" && (
                             <>
-                              <DropdownMenuItem
-                                onClick={() =>
-                                  stopMut.mutate({ projectId, botId: bot.id })
-                                }
-                              >
+                              <DropdownMenuItem onClick={() => stopMut.mutate({ projectId, botId: bot.id })}>
                                 <Square className="mr-2 h-4 w-4" />
                                 Stop
                               </DropdownMenuItem>
@@ -286,9 +245,7 @@ export function BotDashboard({ projectId }: { projectId: string }) {
                           )}
                           <DropdownMenuItem
                             className="text-destructive focus:text-destructive"
-                            onClick={() =>
-                              deleteMut.mutate({ projectId, botId: bot.id })
-                            }
+                            onClick={() => deleteMut.mutate({ projectId, botId: bot.id })}
                           >
                             <Trash2 className="mr-2 h-4 w-4" />
                             Delete
@@ -304,11 +261,7 @@ export function BotDashboard({ projectId }: { projectId: string }) {
         </CardContent>
       </Card>
 
-      <BotCreateDialog
-        projectId={projectId}
-        open={createOpen}
-        onOpenChange={setCreateOpen}
-      />
+      <BotCreateDialog projectId={projectId} open={createOpen} onOpenChange={setCreateOpen} />
     </div>
   );
 }

@@ -13,7 +13,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/src/components/ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@hanzo/ui";
 
 export interface ComboboxOption<T extends string | number | boolean | { id: string }> {
   value: T;

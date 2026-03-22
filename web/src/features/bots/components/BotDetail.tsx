@@ -1,29 +1,12 @@
-import {
-  ArrowLeft,
-  Play,
-  Square,
-  RotateCw,
-  Settings,
-  Activity,
-  MessageSquare,
-  ScrollText,
-  Bot,
-} from "lucide-react";
+import { ArrowLeft, Play, Square, RotateCw, Settings, Activity, MessageSquare, ScrollText, Bot } from "lucide-react";
 
 import { api } from "@/src/utils/api";
 import { Button } from "@/src/components/ui/button";
 import { Badge } from "@/src/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/src/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/src/components/ui/tabs";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/src/components/ui/table";
-import { Skeleton } from "@/src/components/ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@hanzo/ui";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@hanzo/ui";
+import { Skeleton } from "@hanzo/ui";
 
 import { BotBilling } from "./BotBilling";
 import { BotChatWidget } from "./BotChatWidget";
@@ -61,21 +44,17 @@ interface Props {
 export function BotDetail({ projectId, botId, onBack }: Props) {
   const utils = api.useUtils();
 
-  const { data: bot, isLoading } = api.bots.getById.useQuery(
-    { projectId, botId },
-    { enabled: !!projectId && !!botId },
-  );
+  const { data: bot, isLoading } = api.bots.getById.useQuery({ projectId, botId }, { enabled: !!projectId && !!botId });
 
   const { data: logs, isLoading: logsLoading } = api.bots.getLogs.useQuery(
     { projectId, botId, limit: 100 },
     { enabled: !!projectId && !!botId },
   );
 
-  const { data: balance, isLoading: balanceLoading } =
-    api.bots.getBalance.useQuery(
-      { projectId },
-      { enabled: !!projectId },
-    );
+  const { data: balance, isLoading: balanceLoading } = api.bots.getBalance.useQuery(
+    { projectId },
+    { enabled: !!projectId },
+  );
 
   const hasCredit = (balance?.available ?? 0) > 0;
 
@@ -119,13 +98,9 @@ export function BotDetail({ projectId, botId, onBack }: Props) {
         </Button>
         <div className="flex-1">
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-semibold tracking-tight">
-              {bot.name}
-            </h1>
+            <h1 className="text-2xl font-semibold tracking-tight">{bot.name}</h1>
             <Badge variant="secondary" className={statusColor[bot.status]}>
-              <span
-                className={`mr-1.5 inline-block h-2 w-2 rounded-full ${statusDot[bot.status]}`}
-              />
+              <span className={`mr-1.5 inline-block h-2 w-2 rounded-full ${statusDot[bot.status]}`} />
               {bot.status}
             </Badge>
           </div>
@@ -134,12 +109,7 @@ export function BotDetail({ projectId, botId, onBack }: Props) {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          {balance && (
-            <BalanceBadge
-              availableCents={balance?.available ?? 0}
-              loading={balanceLoading}
-            />
-          )}
+          {balance && <BalanceBadge availableCents={balance?.available ?? 0} loading={balanceLoading} />}
           {bot.status === "stopped" && (
             <Button
               size="sm"
@@ -210,38 +180,26 @@ export function BotDetail({ projectId, botId, onBack }: Props) {
           <div className="grid gap-4 md:grid-cols-3">
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Memory Usage
-                </CardTitle>
+                <CardTitle className="text-sm font-medium text-muted-foreground">Memory Usage</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">
-                  {bot.memoryUsageMb} MB
-                </div>
+                <div className="text-2xl font-bold">{bot.memoryUsageMb} MB</div>
               </CardContent>
             </Card>
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Messages (MTD)
-                </CardTitle>
+                <CardTitle className="text-sm font-medium text-muted-foreground">Messages (MTD)</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">
-                  {bot.monthlyUsage.messages.toLocaleString()}
-                </div>
+                <div className="text-2xl font-bold">{bot.monthlyUsage.messages.toLocaleString()}</div>
               </CardContent>
             </Card>
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Tokens (MTD)
-                </CardTitle>
+                <CardTitle className="text-sm font-medium text-muted-foreground">Tokens (MTD)</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">
-                  {bot.monthlyUsage.tokens.toLocaleString()}
-                </div>
+                <div className="text-2xl font-bold">{bot.monthlyUsage.tokens.toLocaleString()}</div>
               </CardContent>
             </Card>
           </div>
@@ -302,29 +260,19 @@ export function BotDetail({ projectId, botId, onBack }: Props) {
             </CardHeader>
             <CardContent>
               {bot.channels.length === 0 ? (
-                <p className="text-sm text-muted-foreground">
-                  No channels connected.
-                </p>
+                <p className="text-sm text-muted-foreground">No channels connected.</p>
               ) : (
                 <div className="space-y-3">
                   {bot.channels.map((ch) => (
-                    <div
-                      key={ch}
-                      className="flex items-center justify-between rounded-md border p-3"
-                    >
+                    <div key={ch} className="flex items-center justify-between rounded-md border p-3">
                       <div className="flex items-center gap-3">
                         <MessageSquare className="h-5 w-5 text-muted-foreground" />
                         <div>
                           <p className="text-sm font-medium capitalize">{ch}</p>
-                          <p className="text-xs text-muted-foreground">
-                            Connected
-                          </p>
+                          <p className="text-xs text-muted-foreground">Connected</p>
                         </div>
                       </div>
-                      <Badge
-                        variant="secondary"
-                        className="bg-green-500/15 text-green-700 dark:text-green-400"
-                      >
+                      <Badge variant="secondary" className="bg-green-500/15 text-green-700 dark:text-green-400">
                         Active
                       </Badge>
                     </div>
@@ -367,10 +315,7 @@ export function BotDetail({ projectId, botId, onBack }: Props) {
                     ))
                   ) : !logs || logs.length === 0 ? (
                     <TableRow>
-                      <TableCell
-                        colSpan={3}
-                        className="h-24 text-center text-muted-foreground"
-                      >
+                      <TableCell colSpan={3} className="h-24 text-center text-muted-foreground">
                         No logs available.
                       </TableCell>
                     </TableRow>
@@ -381,15 +326,11 @@ export function BotDetail({ projectId, botId, onBack }: Props) {
                           {new Date(entry.timestamp).toLocaleString()}
                         </TableCell>
                         <TableCell>
-                          <span
-                            className={`text-xs font-medium uppercase ${logLevelColor[entry.level] ?? ""}`}
-                          >
+                          <span className={`text-xs font-medium uppercase ${logLevelColor[entry.level] ?? ""}`}>
                             {entry.level}
                           </span>
                         </TableCell>
-                        <TableCell className="text-sm">
-                          {entry.message}
-                        </TableCell>
+                        <TableCell className="text-sm">{entry.message}</TableCell>
                       </TableRow>
                     ))
                   )}
@@ -413,25 +354,18 @@ export function BotDetail({ projectId, botId, onBack }: Props) {
             <CardContent>
               <div className="space-y-4 text-sm">
                 <div className="grid grid-cols-2 gap-y-3">
-                  <span className="text-muted-foreground">
-                    Base Platform Cost
-                  </span>
-                  <span className="font-medium">
-                    ${BOT_PLATFORM_PRICING[bot.platform].price}/mo
-                  </span>
+                  <span className="text-muted-foreground">Base Platform Cost</span>
+                  <span className="font-medium">${BOT_PLATFORM_PRICING[bot.platform].price}/mo</span>
 
                   <span className="text-muted-foreground">Auto-restart</span>
                   <span>Enabled</span>
 
-                  <span className="text-muted-foreground">
-                    Health Check Interval
-                  </span>
+                  <span className="text-muted-foreground">Health Check Interval</span>
                   <span>30s</span>
                 </div>
                 <p className="text-xs text-muted-foreground pt-2">
-                  Full settings management will be available when the bot
-                  backend is deployed. This is a preview of the configuration
-                  surface.
+                  Full settings management will be available when the bot backend is deployed. This is a preview of the
+                  configuration surface.
                 </p>
               </div>
             </CardContent>

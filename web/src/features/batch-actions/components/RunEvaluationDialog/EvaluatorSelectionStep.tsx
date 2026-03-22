@@ -4,7 +4,7 @@ import { type RouterOutputs } from "@/src/utils/api";
 import { Button } from "@/src/components/ui/button";
 import { Card, CardContent } from "@/src/components/ui/card";
 import { Badge } from "@/src/components/ui/badge";
-import { Checkbox } from "@/src/components/ui/checkbox";
+import { Checkbox } from "@hanzo/ui";
 import { Input } from "@/src/components/ui/input";
 import { EvaluatorPromptPreview } from "./EvaluatorPromptPreview";
 import { renderPromptPreviewFromObservation } from "./utils";
@@ -186,7 +186,7 @@ export function EvaluatorSelectionStep(props: EvaluatorSelectionStepProps) {
                               event.preventDefault();
                               event.stopPropagation();
                             }}
-                            onClick={(event) => event.stopPropagation()}
+                            onClick={(event: React.MouseEvent) => event.stopPropagation()}
                             aria-label={`Preview ${item.scoreName}`}
                           >
                             <Eye className="h-4 w-4" />
@@ -196,7 +196,7 @@ export function EvaluatorSelectionStep(props: EvaluatorSelectionStepProps) {
                       <Checkbox
                         checked={selectedEvaluatorIds.includes(item.id)}
                         aria-label={`Select ${item.scoreName}`}
-                        onClick={(event) => event.stopPropagation()}
+                        onClick={(event: React.MouseEvent) => event.stopPropagation()}
                         onCheckedChange={() => onToggleEvaluator(item.id)}
                         className="mr-1"
                       />

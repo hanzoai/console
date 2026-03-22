@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "@/src/components/ui/button";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/src/components/ui/hover-card";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@hanzo/ui";
 import { StatusBadge } from "@/src/components/layouts/status-badge";
 import { PRODUCTION_LABEL, LATEST_PROMPT_LABEL } from "@hanzo/console-core";
 import { cn } from "@/src/utils/tailwind";

@@ -1,12 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/src/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/src/components/ui/dialog";
-import { Textarea } from "@/src/components/ui/textarea";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/src/components/ui/dialog";
+import { Textarea } from "@hanzo/ui";
 import { api } from "@/src/utils/api";
 
 export function EncryptDecryptDialog({
@@ -83,9 +78,7 @@ export function EncryptDecryptDialog({
             </Button>
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium">
-              Ciphertext (base64)
-            </label>
+            <label className="mb-1 block text-sm font-medium">Ciphertext (base64)</label>
             <Textarea
               placeholder="Ciphertext will appear here..."
               value={ciphertext}

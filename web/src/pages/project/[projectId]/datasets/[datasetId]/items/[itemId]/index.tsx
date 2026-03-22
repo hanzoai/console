@@ -9,7 +9,7 @@ import { api } from "@/src/utils/api";
 import { useDatasetVersion } from "@/src/features/datasets/hooks/useDatasetVersion";
 import { toDatasetSchema } from "@/src/features/datasets/utils/datasetItemUtils";
 import { Switch } from "@/src/components/ui/switch";
-import { Label } from "@/src/components/ui/label";
+import { Label } from "@hanzo/ui";
 import { Button } from "@/src/components/ui/button";
 import useSessionStorage from "@/src/components/useSessionStorage";
 import { History, PanelRightOpen } from "lucide-react";

@@ -1,5 +1,5 @@
 import { AlertCircle } from "lucide-react";
-import { Alert, AlertTitle, AlertDescription } from "@/src/components/ui/alert";
+import { Alert, AlertTitle, AlertDescription } from "@hanzo/ui";
 
 export const SupportOrUpgradePage = () => {
   return (

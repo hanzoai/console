@@ -10,7 +10,7 @@ import {
   DialogTrigger,
 } from "@/src/components/ui/dialog";
 import { Input } from "@/src/components/ui/input";
-import { Label } from "@/src/components/ui/label";
+import { Label } from "@hanzo/ui";
 import { useCreateIndex } from "@/src/features/search/hooks";
 import { Plus } from "lucide-react";
 

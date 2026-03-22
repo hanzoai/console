@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { api } from "@/src/utils/api";
 import Header from "@/src/components/layouts/header";
 import { Card, CardContent } from "@/src/components/ui/card";
-import { Label } from "@/src/components/ui/label";
+import { Label } from "@hanzo/ui";
 import { Switch } from "@/src/components/ui/switch";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 

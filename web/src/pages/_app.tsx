@@ -7,7 +7,7 @@ const geistMono = Geist_Mono({ variable: "--font-mono", subsets: ["latin"] });
 import { SessionProvider } from "next-auth/react";
 import { setUser } from "@sentry/nextjs";
 import { useSession } from "next-auth/react";
-import { TooltipProvider } from "@/src/components/ui/tooltip";
+import { TooltipProvider } from "@hanzo/ui";
 import { CommandMenuProvider } from "@/src/features/command-k-menu/CommandMenuProvider";
 
 import { api } from "@/src/utils/api";

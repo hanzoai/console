@@ -1,5 +1,5 @@
 import { Button } from "@/src/components/ui/button";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/src/components/ui/hover-card";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@hanzo/ui";
 import { cn } from "@/src/utils/tailwind";
 import { api } from "@/src/utils/api";
 

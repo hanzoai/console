@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/src/components/ui/card";
-import { Skeleton } from "@/src/components/ui/skeleton";
+import { Skeleton } from "@hanzo/ui";
 import { useSearchStats } from "@/src/features/search/hooks";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 

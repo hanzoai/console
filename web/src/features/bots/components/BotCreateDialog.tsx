@@ -2,8 +2,8 @@ import { useState } from "react";
 import { api } from "@/src/utils/api";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
-import { Label } from "@/src/components/ui/label";
-import { Checkbox } from "@/src/components/ui/checkbox";
+import { Label } from "@hanzo/ui";
+import { Checkbox } from "@hanzo/ui";
 import {
   Dialog,
   DialogContent,
@@ -12,13 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/src/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/src/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/src/components/ui/select";
 
 import {
   BOT_CHANNELS,
@@ -62,32 +56,23 @@ export function BotCreateDialog({ projectId, open, onOpenChange }: Props) {
   }
 
   function toggleChannel(ch: BotChannel) {
-    setChannels((prev) =>
-      prev.includes(ch) ? prev.filter((c) => c !== ch) : [...prev, ch],
-    );
+    setChannels((prev) => (prev.includes(ch) ? prev.filter((c) => c !== ch) : [...prev, ch]));
   }
 
   function toggleModel(m: string) {
-    setModels((prev) =>
-      prev.includes(m) ? prev.filter((x) => x !== m) : [...prev, m],
-    );
+    setModels((prev) => (prev.includes(m) ? prev.filter((x) => x !== m) : [...prev, m]));
   }
 
   const monthlyCost = BOT_PLATFORM_PRICING[platform].price;
-  const canProceed =
-    name.trim().length > 0 && channels.length > 0 && models.length > 0;
+  const canProceed = name.trim().length > 0 && channels.length > 0 && models.length > 0;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>
-            {step === "config" ? "Create Bot" : "Review & Confirm"}
-          </DialogTitle>
+          <DialogTitle>{step === "config" ? "Create Bot" : "Review & Confirm"}</DialogTitle>
           <DialogDescription>
-            {step === "config"
-              ? "Configure your new bot instance."
-              : "Review the configuration before provisioning."}
+            {step === "config" ? "Configure your new bot instance." : "Review the configuration before provisioning."}
           </DialogDescription>
         </DialogHeader>
 
@@ -109,24 +94,18 @@ export function BotCreateDialog({ projectId, open, onOpenChange }: Props) {
             {/* Platform */}
             <div className="space-y-2">
               <Label>Platform</Label>
-              <Select
-                value={platform}
-                onValueChange={(v) => setPlatform(v as BotPlatform)}
-              >
+              <Select value={platform} onValueChange={(v) => setPlatform(v as BotPlatform)}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {(
-                    Object.entries(BOT_PLATFORM_PRICING) as [
-                      BotPlatform,
-                      { label: string; price: number },
-                    ][]
-                  ).map(([key, { label, price }]) => (
-                    <SelectItem key={key} value={key}>
-                      {label} - ${price}/mo
-                    </SelectItem>
-                  ))}
+                  {(Object.entries(BOT_PLATFORM_PRICING) as [BotPlatform, { label: string; price: number }][]).map(
+                    ([key, { label, price }]) => (
+                      <SelectItem key={key} value={key}>
+                        {label} - ${price}/mo
+                      </SelectItem>
+                    ),
+                  )}
                 </SelectContent>
               </Select>
             </div>
@@ -157,10 +136,7 @@ export function BotCreateDialog({ projectId, open, onOpenChange }: Props) {
                     key={ch}
                     className="flex items-center gap-2 rounded-md border p-2 text-sm capitalize cursor-pointer hover:bg-accent"
                   >
-                    <Checkbox
-                      checked={channels.includes(ch)}
-                      onCheckedChange={() => toggleChannel(ch)}
-                    />
+                    <Checkbox checked={channels.includes(ch)} onCheckedChange={() => toggleChannel(ch)} />
                     {ch}
                   </label>
                 ))}
@@ -176,10 +152,7 @@ export function BotCreateDialog({ projectId, open, onOpenChange }: Props) {
                     key={m}
                     className="flex items-center gap-2 rounded-md border p-2 text-sm font-mono cursor-pointer hover:bg-accent"
                   >
-                    <Checkbox
-                      checked={models.includes(m)}
-                      onCheckedChange={() => toggleModel(m)}
-                    />
+                    <Checkbox checked={models.includes(m)} onCheckedChange={() => toggleModel(m)} />
                     {m}
                   </label>
                 ))}
@@ -199,14 +172,10 @@ export function BotCreateDialog({ projectId, open, onOpenChange }: Props) {
               <span className="font-mono">{region}</span>
 
               <span className="text-muted-foreground">Channels</span>
-              <span className="capitalize">
-                {channels.join(", ")}
-              </span>
+              <span className="capitalize">{channels.join(", ")}</span>
 
               <span className="text-muted-foreground">Models</span>
-              <span className="font-mono text-xs">
-                {models.join(", ")}
-              </span>
+              <span className="font-mono text-xs">{models.join(", ")}</span>
             </div>
             <div className="rounded-md border p-3 bg-muted/50">
               <div className="flex items-center justify-between">

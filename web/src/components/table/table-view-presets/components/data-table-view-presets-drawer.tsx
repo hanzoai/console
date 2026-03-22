@@ -10,7 +10,7 @@ import {
   Drawer,
   DrawerClose,
 } from "@/src/components/ui/drawer";
-import { Separator } from "@/src/components/ui/separator";
+import { Separator } from "@hanzo/ui";
 import { useViewData } from "@/src/components/table/table-view-presets/hooks/useViewData";
 import {
   Command,
@@ -38,8 +38,8 @@ import { DropdownMenu } from "@/src/components/ui/dropdown-menu";
 import { DropdownMenuContent } from "@/src/components/ui/dropdown-menu";
 import { DeleteButton } from "@/src/components/deleteButton";
 import { api } from "@/src/utils/api";
-import { Popover, PopoverContent } from "@/src/components/ui/popover";
-import { PopoverTrigger } from "@/src/components/ui/popover";
+import { Popover, PopoverContent } from "@hanzo/ui";
+import { PopoverTrigger } from "@hanzo/ui";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/src/components/ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -342,7 +342,7 @@ export function TableViewPresetsDrawer({ viewConfig, currentState, systemFilterP
   return (
     <>
       <Drawer
-        onOpenChange={(open) => {
+        onOpenChange={(open: boolean) => {
           if (open) {
             capture("saved_views:drawer_open", { tableName });
           } else {
@@ -501,7 +501,7 @@ export function TableViewPresetsDrawer({ viewConfig, currentState, systemFilterP
                           </Button>
                           <DropdownMenu
                             open={dropdownId === view.id}
-                            onOpenChange={(open) => {
+                            onOpenChange={(open: boolean) => {
                               setDropdownId(open ? view.id : null);
                             }}
                           >
@@ -522,7 +522,7 @@ export function TableViewPresetsDrawer({ viewConfig, currentState, systemFilterP
                                 <Popover
                                   key={view.id + "-edit"}
                                   open={isEditPopoverOpen}
-                                  onOpenChange={(open) => {
+                                  onOpenChange={(open: boolean) => {
                                     setIsEditPopoverOpen(open);
                                     if (open) {
                                       form.reset({ name: view.name });
@@ -551,7 +551,7 @@ export function TableViewPresetsDrawer({ viewConfig, currentState, systemFilterP
                                       Rename
                                     </Button>
                                   </PopoverTrigger>
-                                  <PopoverContent onClick={(e) => e.stopPropagation()}>
+                                  <PopoverContent onClick={(e: React.MouseEvent) => e.stopPropagation()}>
                                     <h2 className="text-md mb-3 font-semibold">Edit</h2>
                                     <Form {...form}>
                                       <form onSubmit={form.handleSubmit(onSubmit(view.id))} className="space-y-2">
@@ -687,7 +687,7 @@ export function TableViewPresetsDrawer({ viewConfig, currentState, systemFilterP
       {/* Create View Dialog */}
       <Dialog
         open={isCreateDialogOpen}
-        onOpenChange={(open) => {
+        onOpenChange={(open: boolean) => {
           setIsCreateDialogOpen(open);
           if (!open) {
             form.reset({ name: "" });

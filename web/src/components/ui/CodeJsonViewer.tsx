@@ -5,7 +5,7 @@ import { cn } from "@/src/utils/tailwind";
 import { default as React18JsonView } from "react18-json-view";
 import "react18-json-view/src/dark.css";
 import { deepParseJson } from "@hanzo/console-core";
-import { Skeleton } from "@/src/components/ui/skeleton";
+import { Skeleton } from "@hanzo/ui";
 import { useTheme } from "next-themes";
 import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { useMarkdownContext } from "@/src/features/theming/useMarkdownContext";

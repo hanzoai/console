@@ -1,34 +1,16 @@
 import { useState } from "react";
 import { Button } from "@/src/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/src/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/src/components/ui/dialog";
 import { Input } from "@/src/components/ui/input";
-import { Checkbox } from "@/src/components/ui/checkbox";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/src/components/ui/select";
+import { Checkbox } from "@hanzo/ui";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/src/components/ui/select";
 import { useCreateZtIdentity } from "@/src/features/zt/hooks";
 import { PlusIcon } from "lucide-react";
 
-export function CreateIdentityDialog({
-  projectId,
-}: {
-  projectId: string;
-}) {
+export function CreateIdentityDialog({ projectId }: { projectId: string }) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
-  const [type, setType] = useState<"Device" | "User" | "Service" | "Router">(
-    "Device",
-  );
+  const [type, setType] = useState<"Device" | "User" | "Service" | "Router">("Device");
   const [isAdmin, setIsAdmin] = useState(false);
   const [roleAttributesRaw, setRoleAttributesRaw] = useState("");
 
@@ -75,11 +57,7 @@ export function CreateIdentityDialog({
         <div className="flex flex-col gap-4">
           <div>
             <label className="mb-1 block text-sm font-medium">Name</label>
-            <Input
-              placeholder="my-identity"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
+            <Input placeholder="my-identity" value={name} onChange={(e) => setName(e.target.value)} />
           </div>
           <div>
             <label className="mb-1 block text-sm font-medium">Type</label>
@@ -99,26 +77,21 @@ export function CreateIdentityDialog({
             <Checkbox
               id="isAdmin"
               checked={isAdmin}
-              onCheckedChange={(checked) => setIsAdmin(checked === true)}
+              onCheckedChange={(checked: boolean | "indeterminate") => setIsAdmin(checked === true)}
             />
             <label htmlFor="isAdmin" className="text-sm font-medium">
               Admin
             </label>
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium">
-              Role Attributes (comma separated)
-            </label>
+            <label className="mb-1 block text-sm font-medium">Role Attributes (comma separated)</label>
             <Input
               placeholder="edge, web-servers"
               value={roleAttributesRaw}
               onChange={(e) => setRoleAttributesRaw(e.target.value)}
             />
           </div>
-          <Button
-            onClick={handleSubmit}
-            disabled={!name || createIdentity.isPending}
-          >
+          <Button onClick={handleSubmit} disabled={!name || createIdentity.isPending}>
             {createIdentity.isPending ? "Creating..." : "Create"}
           </Button>
         </div>

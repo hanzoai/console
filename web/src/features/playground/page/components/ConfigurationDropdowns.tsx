@@ -2,7 +2,7 @@ import React from "react";
 import { Button } from "@/src/components/ui/button";
 import { Badge } from "@/src/components/ui/badge";
 import { ChevronDown, Wrench, Braces, Variable } from "lucide-react";
-import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@hanzo/ui";
 import { usePlaygroundContext } from "../context";
 import { usePlaygroundWindowSize } from "../hooks/usePlaygroundWindowSize";
 import { PlaygroundTools, PlaygroundToolsPopover } from "./PlaygroundTools";

@@ -1,4 +1,4 @@
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/src/components/ui/hover-card";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@hanzo/ui";
 import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { cn } from "@/src/utils/tailwind";
 import { Portal } from "@radix-ui/react-hover-card";
@@ -16,7 +16,7 @@ export default function DocPopup({ description, href, className }: DocPopupProps
   return (
     <HoverCard
       openDelay={200}
-      onOpenChange={(open) => {
+      onOpenChange={(open: boolean) => {
         if (open) {
           capture("help_popup:opened", {
             hfref: href,

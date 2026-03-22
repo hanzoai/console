@@ -10,7 +10,7 @@ import {
 } from "@/src/components/table/data-table-row-height-switch";
 import { type ConsoleColumnDef } from "@/src/components/table/types";
 import { type ModelTableRow } from "@/src/components/table/use-cases/models";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/src/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@hanzo/ui";
 import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { cn } from "@/src/utils/tailwind";
 import {
@@ -277,7 +277,7 @@ export function DataTable<TData extends object, TValue>({
                           width,
                           ...getCommonPinningStyles(header.column),
                         }}
-                        onClick={(event) => {
+                        onClick={(event: React.MouseEvent) => {
                           event.preventDefault();
 
                           if (!setOrderBy || !columnDef.id || !sortingEnabled) {
@@ -442,8 +442,8 @@ function TableRowComponent<TData>({
   return (
     <TableRow
       data-row-index={row.index}
-      onClick={(e) => onRowClick?.(row.original, e)}
-      onKeyDown={(e) => {
+      onClick={(e: React.MouseEvent) => onRowClick?.(row.original, e)}
+      onKeyDown={(e: React.KeyboardEvent) => {
         if (e.key === "Enter") {
           onRowClick?.(row.original);
         }

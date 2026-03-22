@@ -10,8 +10,8 @@ import {
   DialogTrigger,
 } from "@/src/components/ui/dialog";
 import { Input } from "@/src/components/ui/input";
-import { Label } from "@/src/components/ui/label";
-import { Checkbox } from "@/src/components/ui/checkbox";
+import { Label } from "@hanzo/ui";
+import { Checkbox } from "@hanzo/ui";
 import { useCreateZtService } from "@/src/features/zt/hooks";
 import { Plus } from "lucide-react";
 
@@ -72,9 +72,7 @@ export function CreateServiceDialog({ projectId }: { projectId: string }) {
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>Create Service</DialogTitle>
-            <DialogDescription>
-              Add a new ZT service to this project.
-            </DialogDescription>
+            <DialogDescription>Add a new ZT service to this project.</DialogDescription>
           </DialogHeader>
 
           <div className="flex flex-col gap-4 py-4">
@@ -93,9 +91,7 @@ export function CreateServiceDialog({ projectId }: { projectId: string }) {
               <Checkbox
                 id="encryption-required"
                 checked={encryptionRequired}
-                onCheckedChange={(checked) =>
-                  setEncryptionRequired(checked === true)
-                }
+                onCheckedChange={(checked: boolean | "indeterminate") => setEncryptionRequired(checked === true)}
               />
               <Label htmlFor="encryption-required">Encryption Required</Label>
             </div>
@@ -108,18 +104,12 @@ export function CreateServiceDialog({ projectId }: { projectId: string }) {
                 value={roleAttributesInput}
                 onChange={(e) => setRoleAttributesInput(e.target.value)}
               />
-              <p className="text-xs text-muted-foreground">
-                Comma-separated list of role attributes.
-              </p>
+              <p className="text-xs text-muted-foreground">Comma-separated list of role attributes.</p>
             </div>
           </div>
 
           <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setOpen(false)}
-            >
+            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
               Cancel
             </Button>
             <Button type="submit" disabled={createMut.isPending || !name.trim()}>

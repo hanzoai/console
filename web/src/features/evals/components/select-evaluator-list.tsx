@@ -10,7 +10,7 @@ import { showSuccessToast } from "@/src/features/notifications/showSuccessToast"
 import { SetupDefaultEvalModelCard } from "@/src/features/evals/components/set-up-default-eval-model-card";
 import { useTemplateValidation } from "@/src/features/evals/hooks/useTemplateValidation";
 import { Card } from "@/src/components/ui/card";
-import { Skeleton } from "@/src/components/ui/skeleton";
+import { Skeleton } from "@hanzo/ui";
 import { type EvalTemplate } from "@hanzo/console-core";
 
 type SelectEvaluatorListProps = {

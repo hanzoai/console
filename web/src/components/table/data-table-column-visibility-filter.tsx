@@ -27,9 +27,9 @@ import {
   Drawer,
   DrawerClose,
 } from "@/src/components/ui/drawer";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/src/components/ui/collapsible";
-import { Checkbox } from "@/src/components/ui/checkbox";
-import { Separator } from "@/src/components/ui/separator";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@hanzo/ui";
+import { Checkbox } from "@hanzo/ui";
+import { Separator } from "@hanzo/ui";
 
 interface DataTableColumnVisibilityFilterProps<TData, TValue> {
   columns: ConsoleColumnDef<TData, TValue>[];

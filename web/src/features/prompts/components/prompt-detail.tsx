@@ -4,7 +4,7 @@ import { NumberParam, StringParam, useQueryParam, withDefault } from "use-query-
 import type { z } from "zod/v4";
 import { OpenAiMessageView } from "@/src/components/trace2/components/IOPreview/components/ChatMessageList";
 import { TabsBar, TabsBarList, TabsBarContent, TabsBarTrigger } from "@/src/components/ui/tabs-bar";
-import { Tabs, TabsList, TabsTrigger } from "@/src/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@hanzo/ui";
 import { Badge } from "@/src/components/ui/badge";
 import { CodeView, JSONView } from "@/src/components/ui/CodeJsonViewer";
 import { DetailPageNav } from "@/src/features/navigate-detail-pages/DetailPageNav";
@@ -403,7 +403,7 @@ export const PromptDetail = ({ promptName: promptNameProp }: { promptName?: stri
               </div>
             </div>
           </div>
-          <TabsBar value={currentTab} className="min-h-0" onValueChange={(value) => setCurrentTab(value)}>
+          <TabsBar value={currentTab} className="min-h-0" onValueChange={(value: string) => setCurrentTab(value)}>
             <TabsBarList className="min-w-0 max-w-full justify-start overflow-x-auto">
               <TabsBarTrigger value="prompt">Prompt</TabsBarTrigger>
               <TabsBarTrigger value="config">Config</TabsBarTrigger>
@@ -429,7 +429,7 @@ export const PromptDetail = ({ promptName: promptNameProp }: { promptName?: stri
                   <div className="flex items-center justify-end py-2">
                     <Tabs
                       value={resolutionMode}
-                      onValueChange={(value) => {
+                      onValueChange={(value: string) => {
                         setResolutionMode(value as "tagged" | "resolved");
                       }}
                     >

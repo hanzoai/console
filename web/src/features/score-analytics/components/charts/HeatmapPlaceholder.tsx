@@ -1,4 +1,4 @@
-import { Skeleton } from "@/src/components/ui/skeleton";
+import { Skeleton } from "@hanzo/ui";
 
 /**
  * HeatmapPlaceholder component displays a skeleton grid placeholder

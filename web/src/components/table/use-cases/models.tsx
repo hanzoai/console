@@ -16,8 +16,8 @@ import { EditModelButton } from "@/src/features/models/components/EditModelButto
 import { CloneModelButton } from "@/src/features/models/components/CloneModelButton";
 import { PriceBreakdownTooltip } from "@/src/features/models/components/PriceBreakdownTooltip";
 import { UserCircle2Icon, PlusIcon } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/src/components/ui/tooltip";
-import { Skeleton } from "@/src/components/ui/skeleton";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@hanzo/ui";
+import { Skeleton } from "@hanzo/ui";
 import { HanzoIcon as _HanzoIcon, HanzoCloudIcon } from "@/src/components/HanzoLogo";
 import { useRouter } from "next/router";
 import { PriceUnitSelector } from "@/src/features/models/components/PriceUnitSelector";

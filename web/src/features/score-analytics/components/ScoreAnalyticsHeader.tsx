@@ -8,7 +8,7 @@ import { useAnalyticsUrlState } from "@/src/features/score-analytics/lib/analyti
 import { type TimeRange } from "@/src/utils/date-range-utils";
 import { type ScoreOption } from "./charts/ScoreCombobox";
 import { Badge } from "@/src/components/ui/badge";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/src/components/ui/hover-card";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@hanzo/ui";
 
 export interface ScoreAnalyticsHeaderProps {
   scoreOptions: ScoreOption[];

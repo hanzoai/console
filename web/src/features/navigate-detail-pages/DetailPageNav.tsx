@@ -1,6 +1,6 @@
 import { Button } from "@/src/components/ui/button";
 import { InputCommandShortcut } from "@/src/components/ui/input-command";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/src/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@hanzo/ui";
 import { type ListEntry, useDetailPageLists } from "@/src/features/navigate-detail-pages/context";
 import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { ChevronDown, ChevronUp } from "lucide-react";

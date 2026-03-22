@@ -2,7 +2,7 @@ import { useMemo, useState, useRef } from "react";
 import { type MediaReturnType } from "@/src/features/media/validation";
 import { File, Image as ImageIcon, Volume2, Video } from "lucide-react";
 import { HanzoMediaView } from "@/src/components/ui/HanzoMediaView";
-import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@hanzo/ui";
 import { api } from "@/src/utils/api";
 import useProjectIdFromURL from "@/src/hooks/useProjectIdFromURL";
 
@@ -176,7 +176,7 @@ export function MediaButtonGroup({ media }: MediaButtonGroupProps) {
         <Popover
           key={group.category}
           open={openCategory === group.category}
-          onOpenChange={(open) => {
+          onOpenChange={(open: boolean) => {
             setOpenCategory(open ? group.category : null);
             if (!open) {
               setClickedCategory(null);

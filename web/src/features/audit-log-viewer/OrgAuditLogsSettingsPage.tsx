@@ -1,5 +1,5 @@
 import Header from "@/src/components/layouts/header";
-import { Alert, AlertDescription, AlertTitle } from "@/src/components/ui/alert";
+import { Alert, AlertDescription, AlertTitle } from "@hanzo/ui";
 import { AuditLogsTable } from "@/src/features/audit-log-viewer/AuditLogsTable";
 import { useHasOrganizationAccess } from "@/src/features/rbac/utils/checkOrganizationAccess";
 

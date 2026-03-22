@@ -17,7 +17,7 @@ import { Input } from "@/src/components/ui/input";
 import { CodeMirrorEditor } from "@/src/components/editor";
 import { DatasetNameSchema, isValidJSONSchema, type Prisma } from "@hanzo/console-core";
 import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
-import { Label } from "@/src/components/ui/label";
+import { Label } from "@hanzo/ui";
 import { useRouter } from "next/router";
 import { useUniqueNameValidation } from "@/src/hooks/useUniqueNameValidation";
 import { DialogBody, DialogFooter } from "@/src/components/ui/dialog";

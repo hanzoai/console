@@ -3,11 +3,11 @@ import TagCreateItem from "@/src/features/tag/components/TagCreateItem";
 import { TagInput } from "@/src/features/tag/components/TagInput";
 import TagList from "@/src/features/tag/components/TagList";
 import { useTagManager } from "@/src/features/tag/hooks/useTagManager";
-import { Popover, PopoverTrigger, PopoverContent } from "@/src/components/ui/popover";
+import { Popover, PopoverTrigger, PopoverContent } from "@hanzo/ui";
 import { Command, CommandList, CommandGroup } from "cmdk";
 import { cn } from "@/src/utils/tailwind";
 import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
-import { Label } from "@/src/components/ui/label";
+import { Label } from "@hanzo/ui";
 
 type TagManagerProps = {
   itemName: "prompt" | "trace";
@@ -60,11 +60,11 @@ const TagManager = ({
   }
 
   return (
-    <Popover onOpenChange={(open) => handlePopoverChange(open)}>
+    <Popover onOpenChange={(open: boolean) => handlePopoverChange(open)}>
       <PopoverTrigger
         className="select-none"
         asChild
-        onClick={(e) => {
+        onClick={(e: React.MouseEvent) => {
           if (isTableCell) {
             e.stopPropagation();
           }
@@ -76,12 +76,12 @@ const TagManager = ({
       </PopoverTrigger>
       <PopoverContent
         className="space-y-2"
-        onClick={(e) => {
+        onClick={(e: React.MouseEvent) => {
           if (isTableCell) {
             e.stopPropagation();
           }
         }}
-        onKeyDown={(e) => {
+        onKeyDown={(e: React.KeyboardEvent) => {
           if (isTableCell) {
             e.stopPropagation();
           }

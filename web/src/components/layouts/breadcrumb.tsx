@@ -1,11 +1,5 @@
 import { Badge } from "@/src/components/ui/badge";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbSeparator,
-} from "@/src/components/ui/breadcrumb";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@hanzo/ui";
 import { Button } from "@/src/components/ui/button";
 import {
   DropdownMenu,

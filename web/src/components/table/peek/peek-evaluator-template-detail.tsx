@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { Skeleton } from "@/src/components/ui/skeleton";
+import { Skeleton } from "@hanzo/ui";
 import { usePeekEvalTemplateData } from "@/src/components/table/peek/hooks/usePeekEvalTemplateData";
 import { EvalTemplateForm } from "@/src/features/evals/components/template-form";
 import { MaintainerTooltip } from "@/src/features/evals/components/maintainer-tooltip";

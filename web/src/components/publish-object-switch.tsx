@@ -1,6 +1,6 @@
 import { Button } from "@/src/components/ui/button";
-import { Label } from "@/src/components/ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
+import { Label } from "@hanzo/ui";
+import { Popover, PopoverContent, PopoverTrigger } from "@hanzo/ui";
 import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { api } from "@/src/utils/api";

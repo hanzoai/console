@@ -30,7 +30,7 @@ import { UpsertModelFormDialog } from "@/src/features/models/components/UpsertMo
 import { LocalIsoDate } from "@/src/components/LocalIsoDate";
 import { ItemBadge } from "@/src/components/ItemBadge";
 import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
-import { Tabs, TabsList, TabsTrigger } from "@/src/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@hanzo/ui";
 import { Switch } from "@/src/components/ui/switch";
 import { useRouter } from "next/router";
 import { CopyIdsPopover } from "@/src/components/trace2/components/_shared/CopyIdsPopover";
@@ -374,7 +374,7 @@ export const ObservationPreview = ({
         <TabsBar
           value={selectedTab.includes("preview") ? "preview" : "scores"}
           className="flex min-h-0 flex-1 flex-col overflow-hidden"
-          onValueChange={(value) => setSelectedTab(value)}
+          onValueChange={(value: string) => setSelectedTab(value)}
         >
           {viewType === "detailed" && (
             <TabsBarList>
@@ -385,7 +385,7 @@ export const ObservationPreview = ({
                   <Tabs
                     className="ml-auto h-fit px-2 py-0.5"
                     value={selectedViewTab}
-                    onValueChange={(value) => {
+                    onValueChange={(value: string) => {
                       capture("trace_detail:io_mode_switch", { view: value });
                       handleViewTabChange(value);
                     }}

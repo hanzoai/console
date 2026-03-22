@@ -3,7 +3,7 @@ import { InfoIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { type RowHeight } from "@/src/components/table/data-table-row-height-switch";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/src/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@hanzo/ui";
 import { usePriceUnitMultiplier } from "@/src/features/models/hooks/usePriceUnitMultiplier";
 import { getMaxDecimals } from "@/src/features/models/utils";
 import { type PriceUnit } from "@/src/features/models/validation";

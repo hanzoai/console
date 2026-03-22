@@ -7,7 +7,7 @@
 import { type JsonKeyProps } from "../types";
 import { isArrayIndex } from "../utils/jsonTypes";
 import { highlightTextWithComments, COMMENT_HIGHLIGHT_COLOR } from "../utils/highlightText";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/src/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@hanzo/ui";
 
 export function JsonKey({
   keyName,

@@ -4,7 +4,7 @@ import { api } from "@/src/utils/api";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogBody } from "@/src/components/ui/dialog";
 import { Button } from "@/src/components/ui/button";
 import { PlusIcon } from "lucide-react";
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/src/components/ui/table";
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@hanzo/ui";
 import startCase from "lodash/startCase";
 import { getChartTypeDisplayName } from "@/src/features/widgets/chart-library/utils";
 import { type DashboardWidgetChartType } from "@hanzo/console-core/src/db";

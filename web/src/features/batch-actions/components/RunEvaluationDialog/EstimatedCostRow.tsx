@@ -1,8 +1,8 @@
 import { InfoIcon } from "lucide-react";
 import { api } from "@/src/utils/api";
 import { usdFormatter } from "@/src/utils/numbers";
-import { Skeleton } from "@/src/components/ui/skeleton";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/src/components/ui/tooltip";
+import { Skeleton } from "@hanzo/ui";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@hanzo/ui";
 
 type EstimatedCostRowProps = {
   projectId: string;

@@ -4,13 +4,13 @@ import { DndContext, closestCenter, MeasuringStrategy, DragOverlay } from "@dnd-
 import { useState, useEffect } from "react";
 import { Button } from "@/src/components/ui/button";
 import { api } from "@/src/utils/api";
-import { Progress } from "@/src/components/ui/progress";
+import { Progress } from "@hanzo/ui";
 import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { DialogBody, DialogFooter } from "@/src/components/ui/dialog";
 import { CsvImportValidationError } from "./CsvImportValidationError";
-import { Checkbox } from "@/src/components/ui/checkbox";
-import { Label } from "@/src/components/ui/label";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/src/components/ui/tooltip";
+import { Checkbox } from "@hanzo/ui";
+import { Label } from "@hanzo/ui";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@hanzo/ui";
 import { InfoIcon, GripVertical } from "lucide-react";
 import { useCsvMapping } from "@/src/features/datasets/hooks/useCsvMapping";
 import { useCsvDragAndDrop } from "@/src/features/datasets/hooks/useCsvDragAndDrop";
@@ -199,7 +199,7 @@ export function PreviewCsvImport({
             <Checkbox
               id="wrapSingleColumn"
               checked={wrapSingleColumn}
-              onCheckedChange={(checked) => setWrapSingleColumn(checked === true)}
+              onCheckedChange={(checked: boolean | "indeterminate") => setWrapSingleColumn(checked === true)}
             />
             <Label htmlFor="wrapSingleColumn" className="cursor-pointer text-sm font-normal">
               Force Objects

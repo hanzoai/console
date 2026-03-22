@@ -24,9 +24,9 @@ import {
   FormLabel,
   FormMessage,
 } from "@/src/components/ui/form";
-import { RadioGroup } from "@/src/components/ui/radio-group";
+import { RadioGroup } from "@hanzo/ui";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/src/components/ui/select";
-import { Textarea } from "@/src/components/ui/textarea";
+import { Textarea } from "@hanzo/ui";
 import { useQueryProjectOrOrganization } from "@/src/features/projects/hooks";
 import { useMemo, useState } from "react";
 

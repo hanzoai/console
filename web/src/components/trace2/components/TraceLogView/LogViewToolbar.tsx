@@ -11,8 +11,8 @@ import { memo, useState } from "react";
 import { FoldVertical, UnfoldVertical, Copy, Download, Check, IndentIncrease, Timer, Loader2 } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { Command, CommandInput } from "@/src/components/ui/command";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/src/components/ui/tooltip";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/src/components/ui/hover-card";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@hanzo/ui";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@hanzo/ui";
 import { cn } from "@/src/utils/tailwind";
 
 export interface LogViewToolbarProps {

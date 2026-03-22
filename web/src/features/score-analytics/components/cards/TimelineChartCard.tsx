@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/src/components/ui/card";
-import { Tabs, TabsList, TabsTrigger } from "@/src/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@hanzo/ui";
 import { Loader2 } from "lucide-react";
 import { useScoreAnalytics } from "../ScoreAnalyticsProvider";
 import { ScoreTimeSeriesChart } from "../charts/ScoreTimeSeriesChart";
@@ -256,7 +256,7 @@ export function TimelineChartCard() {
             </div>
           </div>
           {showTabs && (
-            <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TimelineTab)}>
+            <Tabs value={activeTab} onValueChange={(v: string) => setActiveTab(v as TimelineTab)}>
               <TabsList className="h-7">
                 <TabsTrigger value="score1" title={score1FullLabel} className="h-5 px-2 text-xs">
                   {truncateLabel(score1FullLabel)}

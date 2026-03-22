@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/src/components/ui/card";
-import { Skeleton } from "@/src/components/ui/skeleton";
+import { Skeleton } from "@hanzo/ui";
 import { useVectorStats } from "@/src/features/vector/hooks";
 import { Database, Hash, HardDrive } from "lucide-react";
 

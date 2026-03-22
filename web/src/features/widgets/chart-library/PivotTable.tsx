@@ -21,7 +21,7 @@
 
 import React, { useMemo, useCallback, useState, useEffect } from "react";
 import { cn } from "@/src/utils/tailwind";
-import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@/src/components/ui/table";
+import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@hanzo/ui";
 import {
   transformToPivotTable,
   extractDimensionValues,

@@ -1,7 +1,7 @@
 import { PlusCircle } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { FormDescription, FormLabel } from "@/src/components/ui/form";
-import { Accordion } from "@/src/components/ui/accordion";
+import { Accordion } from "@hanzo/ui";
 import { TierAccordionItem } from "./TierAccordionItem";
 import { TierPriceEditor } from "./TierPriceEditor";
 import { TierPrefillButtons } from "./TierPrefillButtons";

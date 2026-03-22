@@ -1,5 +1,5 @@
 import { Button } from "@/src/components/ui/button";
-import { Separator } from "@/src/components/ui/separator";
+import { Separator } from "@hanzo/ui";
 import { CheckCircle2 } from "lucide-react";
 import { IntroSection } from "@/src/features/support-chat/IntroSection";
 

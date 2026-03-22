@@ -8,7 +8,7 @@ import {
   BreadcrumbLink,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/src/components/ui/breadcrumb";
+} from "@hanzo/ui";
 import { DialogHeader, DialogTitle, DialogDescription, DialogBody, DialogFooter } from "@/src/components/ui/dialog";
 import { Check, ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
@@ -24,7 +24,7 @@ import { useExperimentNameValidation } from "@/src/features/experiments/hooks/us
 import { useExperimentPromptData } from "@/src/features/experiments/hooks/useExperimentPromptData";
 import { getFinalModelParams } from "@/src/utils/getFinalModelParams";
 import { showErrorToast } from "@/src/features/notifications/showErrorToast";
-import { Skeleton } from "@/src/components/ui/skeleton";
+import { Skeleton } from "@hanzo/ui";
 import { CreateExperimentData, type CreateExperiment } from "@/src/features/experiments/types";
 import {
   generateDefaultExperimentName,

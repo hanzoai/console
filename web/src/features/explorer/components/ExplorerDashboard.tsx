@@ -15,7 +15,7 @@ import { api } from "@/src/utils/api";
 import { Badge } from "@/src/components/ui/badge";
 import { Button } from "@/src/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/src/components/ui/card";
-import { Skeleton } from "@/src/components/ui/skeleton";
+import { Skeleton } from "@hanzo/ui";
 
 import type { ChainNetwork, ChainStats, IndexerHealth } from "../types";
 

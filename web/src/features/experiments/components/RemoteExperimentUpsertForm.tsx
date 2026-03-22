@@ -21,7 +21,7 @@ import { showErrorToast } from "@/src/features/notifications/showErrorToast";
 import { CodeMirrorEditor } from "@/src/components/editor/CodeMirrorEditor";
 import { Loader2 } from "lucide-react";
 import { type Prisma } from "@hanzo/console-core";
-import { Skeleton } from "@/src/components/ui/skeleton";
+import { Skeleton } from "@hanzo/ui";
 import { getFormattedPayload } from "@/src/features/experiments/utils/format";
 
 const RemoteExperimentSetupSchema = z.object({

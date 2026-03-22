@@ -19,7 +19,7 @@
  */
 
 import { type ReactNode } from "react";
-import { ResizablePanel, ResizablePanelGroup, ResizableHandle } from "@/src/components/ui/resizable";
+import { ResizablePanel, ResizablePanelGroup, ResizableHandle } from "@hanzo/ui";
 import { useDesktopLayoutContext } from "./TraceLayoutDesktop";
 import { TracePanelNavigationHeader } from "./TracePanelNavigationHeader";
 import { TracePanelNavigationHiddenNotice } from "./TracePanelNavigationHiddenNotice";

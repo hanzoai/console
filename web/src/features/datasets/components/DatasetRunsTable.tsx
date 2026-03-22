@@ -27,11 +27,11 @@ import {
 import { Button } from "@/src/components/ui/button";
 import { DeleteDatasetRunButton } from "@/src/features/datasets/components/DeleteDatasetRunButton";
 import useColumnOrder from "@/src/features/column-visibility/hooks/useColumnOrder";
-import { Checkbox } from "@/src/components/ui/checkbox";
+import { Checkbox } from "@hanzo/ui";
 import { type RowSelectionState } from "@tanstack/react-table";
 import Link from "next/link";
 import { joinTableCoreAndMetrics } from "@/src/components/table/utils/joinTableCoreAndMetrics";
-import { Skeleton } from "@/src/components/ui/skeleton";
+import { Skeleton } from "@hanzo/ui";
 import {
   RESOURCE_METRICS,
   transformAggregatedRunMetricsToChartData,
@@ -49,7 +49,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/src/components/ui/dialog";
-import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/src/components/ui/resizable";
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@hanzo/ui";
 import useSessionStorage from "@/src/components/useSessionStorage";
 import { useScoreColumns } from "@/src/features/scores/hooks/useScoreColumns";
 import {
@@ -317,7 +317,7 @@ export function DatasetRunsTable(props: {
               checked={
                 table.getIsAllPageRowsSelected() ? true : table.getIsSomePageRowsSelected() ? "indeterminate" : false
               }
-              onCheckedChange={(value) => {
+              onCheckedChange={(value: boolean | "indeterminate") => {
                 table.toggleAllPageRowsSelected(!!value);
                 if (!value) {
                   setSelectedRows({});
@@ -333,7 +333,7 @@ export function DatasetRunsTable(props: {
         return (
           <Checkbox
             checked={row.getIsSelected()}
-            onCheckedChange={(value) => row.toggleSelected(!!value)}
+            onCheckedChange={(value: boolean | "indeterminate") => row.toggleSelected(!!value)}
             aria-label="Select row"
             className="opacity-60"
           />
@@ -529,7 +529,7 @@ export function DatasetRunsTable(props: {
         <ResizablePanelGroup
           direction="vertical"
           className="h-full"
-          onLayout={(sizes) => {
+          onLayout={(sizes: number[]) => {
             setChartsPanelSize(sizes[0]);
           }}
         >

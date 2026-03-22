@@ -10,7 +10,7 @@ import {
   InputCommand,
   InputCommandItem,
 } from "@/src/components/ui/input-command";
-import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@hanzo/ui";
 import { ChevronDown, CheckIcon, PlusIcon, EyeIcon } from "lucide-react";
 import { CreateOrEditLLMSchemaDialog } from "@/src/features/playground/page/components/CreateOrEditLLMSchemaDialog";
 import { type LlmSchema } from "@hanzo/console-core";
