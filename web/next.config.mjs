@@ -63,6 +63,7 @@ const nextConfig = {
     "@opentelemetry/api",
     "@appsignal/opentelemetry-instrumentation-bullmq",
     "@hanzo/mq",
+    "@hanzo/insights-node",
     "@opentelemetry/sdk-node",
     "@opentelemetry/instrumentation-winston",
     "kysely",
