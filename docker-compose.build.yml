@@ -57,6 +57,12 @@ services:
       REDIS_TLS_CA: ${REDIS_TLS_CA:-/certs/ca.crt}
       REDIS_TLS_CERT: ${REDIS_TLS_CERT:-/certs/redis.crt}
       REDIS_TLS_KEY: ${REDIS_TLS_KEY:-/certs/redis.key}
+      IAM_CLIENT_ID: ${IAM_CLIENT_ID:-}
+      IAM_CLIENT_SECRET: ${IAM_CLIENT_SECRET:-}
+      IAM_SERVER_URL: ${IAM_SERVER_URL:-}
+      IAM_ORG_NAME: ${IAM_ORG_NAME:-}
+      IAM_APP_NAME: ${IAM_APP_NAME:-}
+      IAM_ALLOW_ACCOUNT_LINKING: ${IAM_ALLOW_ACCOUNT_LINKING:-false}
     restart: always
     healthcheck:
       # Use node http module — curl/wget may be absent or broken in node:24-alpine
@@ -110,9 +116,9 @@ services:
       start_period: 30s
 
   s3:
-    image: ghcr.io/hanzoai/s3:latest
-    entrypoint: sh
+    image: minio/minio
     # create the 'hanzo' bucket before starting the service
+    entrypoint: sh
     command: -c 'mkdir -p /data/hanzo && minio server --address ":9000" --console-address ":9001" /data'
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minio}

@@ -26,7 +26,7 @@ services:
       - default
 
   s3:
-    image: ghcr.io/hanzoai/s3:latest
+    image: minio/minio
     container_name: ${S3_CONTAINER_NAME:-hanzo-s3}
     entrypoint: sh
     # create the 'hanzo' bucket before starting the service

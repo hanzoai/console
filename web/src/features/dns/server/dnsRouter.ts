@@ -178,7 +178,7 @@ export const dnsRouter = createTRPCRouter({
         zoneId: input.zoneId,
         userId: ctx.session.user.id,
         action: "update_record",
-        details: { recordId: input.recordId, changes: data },
+        details: { recordId: input.recordId, changes: data } as Record<string, unknown> as any,
       },
     });
 

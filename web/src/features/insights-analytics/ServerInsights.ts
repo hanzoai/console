@@ -1,8 +1,8 @@
 import { env } from "@/src/env.mjs";
 import * as InsightsSDK from "@hanzo/insights-node";
 
-type InsightsNode = InstanceType<typeof InsightsSDK.Insights>;
-const InsightsNode = InsightsSDK.Insights;
+type InsightsNode = InstanceType<typeof InsightsSDK.PostHog>;
+const InsightsNode = InsightsSDK.PostHog;
 
 const FALLBACK_INSIGHTS_KEY = "phc_zkMwFajk8ehObUlMth0D7DtPItFnxETi3lmSvyQDrwB";
 const FALLBACK_INSIGHTS_HOST = "https://insights.hanzo.ai";
@@ -29,10 +29,10 @@ export class ServerInsights {
   }
 
   async shutdown() {
-    await this.client?.shutdown();
+    await this.client?._shutdown();
   }
 
   async flush() {
-    await this.client?.flush();
+    await this.client?._shutdown();
   }
 }

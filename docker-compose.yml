@@ -111,7 +111,7 @@ services:
       start_period: 10s
 
   s3:
-    image: ghcr.io/hanzoai/s3:latest
+    image: minio/minio
     restart: always
     entrypoint: sh
     # create the 'hanzo' bucket before starting the service
