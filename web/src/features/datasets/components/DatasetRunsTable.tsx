@@ -49,7 +49,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/src/components/ui/dialog";
-import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@hanzo/ui";
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/src/components/ui/resizable";
 import useSessionStorage from "@/src/components/useSessionStorage";
 import { useScoreColumns } from "@/src/features/scores/hooks/useScoreColumns";
 import {

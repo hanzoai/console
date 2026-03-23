@@ -14,7 +14,7 @@ import { env } from "@/src/env.mjs";
 import { GenerationOutput } from "./GenerationOutput";
 import { ChatMessages } from "@/src/components/ChatMessages";
 import { type MessagesContext } from "@/src/components/ChatMessages/types";
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@hanzo/ui";
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/src/components/ui/resizable";
 
 export const Messages: React.FC<MessagesContext> = (props) => {
   return (

@@ -1,4 +1,4 @@
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@hanzo/ui";
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/src/components/ui/resizable";
 import useSessionStorage from "@/src/components/useSessionStorage";
 
 interface AnnotationProcessingLayoutProps {

@@ -1,5 +1,5 @@
 import { Button } from "@/src/components/ui/button";
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@hanzo/ui";
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/src/components/ui/resizable";
 import { Skeleton } from "@hanzo/ui";
 import useSessionStorage from "@/src/components/useSessionStorage";
 import { CommentsSection } from "@/src/features/annotation-queues/components/shared/CommentsSection";

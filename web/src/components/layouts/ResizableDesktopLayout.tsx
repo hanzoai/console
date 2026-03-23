@@ -1,5 +1,5 @@
 import { type ReactNode, useLayoutEffect, useRef } from "react";
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@hanzo/ui";
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/src/components/ui/resizable";
 import type { ImperativePanelHandle } from "react-resizable-panels";
 
 interface ResizableDesktopLayoutProps {
