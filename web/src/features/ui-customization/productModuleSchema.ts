@@ -19,6 +19,7 @@ export const PRODUCT_MODULES = [
   "infrastructure",
   "base",
   "zt",
+  "referrals",
 ] as const;
 
 /**

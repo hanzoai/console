@@ -44,6 +44,9 @@ import {
   Layers,
   Eye,
   Zap,
+  Gift,
+  Link,
+  DollarSign,
 } from "lucide-react";
 import { type ReactNode } from "react";
 import { type Entitlement } from "@/src/features/entitlements/constants/entitlements";
@@ -76,6 +79,7 @@ export enum RouteGroup {
   KMS = "KMS",
   ZT = "Zero Trust",
   Infrastructure = "Infrastructure",
+  Referrals = "Referrals",
 }
 
 export type Route = {
@@ -424,6 +428,39 @@ export const ROUTES: Route[] = [
     icon: Activity,
     productModule: "functions",
     group: RouteGroup.Functions,
+    section: RouteSection.Main,
+  },
+  // Referrals — referral program management
+  {
+    title: "Referral Dashboard",
+    pathname: `/project/[projectId]/referrals`,
+    icon: Gift,
+    productModule: "referrals",
+    group: RouteGroup.Referrals,
+    section: RouteSection.Main,
+  },
+  {
+    title: "Referral Link",
+    pathname: `/project/[projectId]/referrals/link`,
+    icon: Link,
+    productModule: "referrals",
+    group: RouteGroup.Referrals,
+    section: RouteSection.Main,
+  },
+  {
+    title: "Referral History",
+    pathname: `/project/[projectId]/referrals/history`,
+    icon: UsersIcon,
+    productModule: "referrals",
+    group: RouteGroup.Referrals,
+    section: RouteSection.Main,
+  },
+  {
+    title: "Earnings",
+    pathname: `/project/[projectId]/referrals/earnings`,
+    icon: DollarSign,
+    productModule: "referrals",
+    group: RouteGroup.Referrals,
     section: RouteSection.Main,
   },
   // KMS — embedded per-project pages (multi-tenant via org metadata)
