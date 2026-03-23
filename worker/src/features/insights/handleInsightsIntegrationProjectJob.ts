@@ -18,7 +18,7 @@ import {
   transformScoreForInsights,
 } from "./transformers";
 import { decrypt } from "@hanzo/console-core/encryption";
-import { Insights } from "@hanzo/insights-node";
+import { PostHog as Insights } from "@hanzo/insights-node";
 
 type InsightsExecutionConfig = {
   projectId: string;
