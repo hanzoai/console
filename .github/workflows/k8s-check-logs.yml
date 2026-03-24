@@ -8,7 +8,7 @@ env:
 jobs:
   check-logs:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 3
     steps:
       - name: Install doctl
         uses: digitalocean/action-doctl@v2
@@ -16,32 +16,7 @@ jobs:
           token: ${{ secrets.DO_API_TOKEN }}
       - name: Configure kubectl
         run: doctl kubernetes cluster kubeconfig save "${{ env.HANZO_CLUSTER_ID }}"
-      - name: Deploy new image and test
+      - name: Get events.filterOptions error
         run: |
-          CONTAINER=$(kubectl get deploy console -n hanzo -o jsonpath='{.spec.template.spec.containers[0].name}')
-          W_CONTAINER=$(kubectl get deploy console-worker -n hanzo -o jsonpath='{.spec.template.spec.containers[0].name}' 2>/dev/null) || true
-
-          echo "=== Scale down ==="
-          kubectl scale deploy/console -n hanzo --replicas=0
-          kubectl scale deploy/console-worker -n hanzo --replicas=0 2>/dev/null || true
-          sleep 5
-
-          echo "=== Set new image ==="
-          kubectl set image "deploy/console" -n hanzo "${CONTAINER}=ghcr.io/hanzoai/console:main-amd64"
-          [ -n "$W_CONTAINER" ] && kubectl set image "deploy/console-worker" -n hanzo "${W_CONTAINER}=ghcr.io/hanzoai/console-worker:main-amd64" 2>/dev/null || true
-
-          echo "=== Scale up ==="
-          kubectl scale deploy/console -n hanzo --replicas=2
-          kubectl scale deploy/console-worker -n hanzo --replicas=1 2>/dev/null || true
-          kubectl rollout status deploy/console -n hanzo --timeout=180s || echo "Timed out"
-
-          echo ""
-          echo "=== Test environmentFilterOptions ==="
-          sleep 10
           POD=$(kubectl get pods -n hanzo -l app=console -o name | head -1)
-          kubectl exec -n hanzo "$POD" -- wget -q -O - --timeout=10 \
-            "http://localhost:3000/api/trpc/projects.environmentFilterOptions?input=%7B%22json%22%3A%7B%22projectId%22%3A%22d444910c-426e-4a0b-9041-a6eefd6fd53d%22%2C%22fromTimestamp%22%3A%222026-03-23T14%3A11%3A52.989Z%22%7D%2C%22meta%22%3A%7B%22values%22%3A%7B%22fromTimestamp%22%3A%5B%22Date%22%5D%7D%2C%22v%22%3A1%7D%7D" 2>&1 | head -3
-          
-          echo ""
-          echo "=== Check logs ==="
-          kubectl logs "$POD" -n hanzo --tail=10 2>&1 | grep -i "error\|DB::Exception" || echo "No errors!"
+          kubectl logs "$POD" -n hanzo --tail=100 2>&1 | grep -B1 -A3 "events.filterOptions\|events\.filter\|UNKNOWN_IDENTIFIER\|cannot be parsed\|DB::Exception" | head -15
