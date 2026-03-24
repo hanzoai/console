@@ -16,27 +16,35 @@ jobs:
           token: ${{ secrets.DO_API_TOKEN }}
       - name: Configure kubectl
         run: doctl kubernetes cluster kubeconfig save "${{ env.HANZO_CLUSTER_ID }}"
-      - name: Debug bot ingress
+      - name: Debug nginx ingress for bot
         run: |
-          echo "=== bot-gateway-ws ingress details ==="
-          kubectl get ingress bot-gateway-ws -n hanzo -o yaml | grep -A 20 "spec:" | head -25
+          echo "=== Nginx ingress controller pods ==="
+          kubectl get pods --all-namespaces | grep -i "nginx\|ingress" | grep -v "cm-acme"
+
+          echo ""
+          echo "=== Nginx ingress controller service ==="
+          kubectl get svc --all-namespaces | grep -i "nginx\|ingress" | grep -v "cm-acme"
+
+          echo ""
+          echo "=== Check if nginx ingress LB has IP 24.199.71.111 ==="
+          kubectl get svc --all-namespaces -o json | python3 -c "
+import json,sys
+data=json.load(sys.stdin)
+for svc in data['items']:
+  lb = svc.get('status',{}).get('loadBalancer',{}).get('ingress',[])
+  for l in lb:
+    if l.get('ip') == '24.199.71.111':
+      print(f\"FOUND: {svc['metadata']['namespace']}/{svc['metadata']['name']} -> 24.199.71.111\")
+" 2>&1 || echo "Not found via API"
+
+          echo ""
+          echo "=== hanzo-playground service exists? ==="
+          kubectl get svc hanzo-playground -n hanzo 2>&1 || echo "NO hanzo-playground service"
+
+          echo ""
+          echo "=== Check cert status for gw.hanzo.bot ==="
+          kubectl get certificate -n hanzo 2>/dev/null | grep -i "gw\|bot" || echo "No certs found"
           
           echo ""
-          echo "=== hanzo-playground ingress details ==="
-          kubectl get ingress hanzo-playground -n hanzo -o yaml | grep -A 20 "spec:" | head -25
-          
-          echo ""
-          echo "=== TLS certs for bot ingresses ==="
-          kubectl get ingress -n hanzo -o custom-columns='NAME:.metadata.name,HOSTS:.spec.rules[*].host,TLS:.spec.tls[*].hosts' | grep -i bot
-          
-          echo ""
-          echo "=== Ingress controllers ==="
-          kubectl get ingress bot-gateway-ws -n hanzo -o jsonpath='{.metadata.annotations}' | tr ',' '\n'
-          
-          echo ""
-          echo "=== All LB services ==="
-          kubectl get svc -n hanzo --field-selector spec.type=LoadBalancer -o custom-columns='NAME:.metadata.name,IP:.status.loadBalancer.ingress[0].ip'
-          
-          echo ""
-          echo "=== bot-gateway pod logs ==="
-          kubectl logs -n hanzo -l app=bot-gateway --tail=5 2>/dev/null | head -10
+          echo "=== Check cert-manager challenges ==="
+          kubectl get challenges --all-namespaces 2>/dev/null | head -5 || echo "No challenges"
