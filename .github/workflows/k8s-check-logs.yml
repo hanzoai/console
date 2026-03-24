@@ -22,37 +22,28 @@ jobs:
       - name: Configure kubectl
         run: doctl kubernetes cluster kubeconfig save "${{ env.HANZO_CLUSTER_ID }}"
 
-      - name: Check console ClickHouse config and create tables
+      - name: Enable CH migrations and restart
         run: |
-          echo "=== Console CLICKHOUSE env vars ==="
-          kubectl exec -n hanzo deploy/console -- env 2>&1 | grep -i "CLICKHOUSE\|DATASTORE" || echo "No CLICKHOUSE vars found"
+          echo "=== Enable auto migrations ==="
+          kubectl set env deploy/console -n hanzo "DATASTORE_AUTO_MIGRATION_DISABLED=false" 2>&1
+          kubectl set env deploy/console-worker -n hanzo "DATASTORE_AUTO_MIGRATION_DISABLED=false" 2>&1 || true
 
           echo ""
-          echo "=== Test datastore service (where console points) ==="
-          kubectl exec -n hanzo deploy/console -- wget -q -O - --timeout=5 "http://datastore:8123/?query=SHOW+DATABASES" 2>&1
+          echo "=== Wait for rollout ==="
+          kubectl rollout status deploy/console -n hanzo --timeout=180s 2>&1 || echo "Rollout timed out (may still be in progress)"
 
           echo ""
-          echo "=== Check if default DB has events_core ==="
-          kubectl exec -n hanzo deploy/console -- wget -q -O - --timeout=5 "http://datastore:8123/?query=SELECT+name+FROM+system.tables+WHERE+name+IN+('events_core','traces','observations','scores')" 2>&1
-
-          echo ""
-          echo "=== Check ALL databases for events_core ==="
-          kubectl exec -n hanzo deploy/console -- wget -q -O - --timeout=5 "http://datastore:8123/?query=SELECT+database,name+FROM+system.tables+WHERE+name+IN+('events_core','traces','observations','scores')+FORMAT+TabSeparated" 2>&1 || echo "Not found in any DB"
-
-          echo ""
-          echo "=== Console worker pod - check if it runs CH migrations ==="
+          echo "=== Check worker logs for migration activity ==="
+          sleep 10
           WORKER=$(kubectl get pods -n hanzo -l app=console-worker -o name 2>/dev/null | head -1)
           if [ -n "$WORKER" ]; then
-            kubectl logs "$WORKER" -n hanzo --tail=30 2>&1 | grep -i "migration\|clickhouse\|datastore\|events_core\|table" | head -10
-          else
-            echo "No console-worker pod found"
+            kubectl logs "$WORKER" -n hanzo --tail=50 2>&1 | grep -i "migration\|events_core\|table\|create\|alter" | head -20
           fi
 
           echo ""
-          echo "=== hanzo-datastore service endpoints ==="
-          kubectl get endpoints -n hanzo hanzo-datastore 2>&1
+          echo "=== Check if events_core now exists ==="
+          kubectl exec -n hanzo deploy/console -- wget -q -O - --timeout=5 "http://datastore:8123/?database=console&query=SHOW+TABLES" 2>&1
 
           echo ""
-          echo "=== All datastore endpoints ==="
-          kubectl get endpoints -n hanzo datastore 2>&1
-          kubectl get endpoints -n hanzo insights-datastore 2>&1
+          echo "=== Test environmentFilterOptions query directly ==="
+          kubectl exec -n hanzo deploy/console -- wget -q -O - --timeout=5 "http://datastore:8123/?database=console&query=SELECT+1+FROM+traces+LIMIT+1" 2>&1 || echo "traces query failed"
