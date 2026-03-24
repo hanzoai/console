@@ -16,7 +16,35 @@ jobs:
           token: ${{ secrets.DO_API_TOKEN }}
       - name: Configure kubectl
         run: doctl kubernetes cluster kubeconfig save "${{ env.HANZO_CLUSTER_ID }}"
-      - name: Get events.filterOptions error
+      - name: Diagnose all backend services
         run: |
-          POD=$(kubectl get pods -n hanzo -l app=console -o name | head -1)
-          kubectl logs "$POD" -n hanzo --tail=100 2>&1 | grep -B1 -A3 "events.filterOptions\|events\.filter\|UNKNOWN_IDENTIFIER\|cannot be parsed\|DB::Exception" | head -15
+          echo "=== All services in hanzo namespace ==="
+          kubectl get svc -n hanzo -o custom-columns='NAME:.metadata.name,TYPE:.spec.type,CLUSTER-IP:.spec.clusterIP,PORTS:.spec.ports[*].port' | head -40
+
+          echo ""
+          echo "=== All ingress rules ==="
+          kubectl get ingress -n hanzo -o custom-columns='NAME:.metadata.name,HOSTS:.spec.rules[*].host' 2>/dev/null | head -20
+
+          echo ""
+          echo "=== Check agents service ==="
+          kubectl get svc,deploy,pods -n hanzo | grep -i agent || echo "No agents service found"
+
+          echo ""
+          echo "=== Check compute service ==="
+          kubectl get svc,deploy,pods -n hanzo | grep -i compute || echo "No compute service found"
+
+          echo ""
+          echo "=== Check KMS env vars ==="
+          kubectl exec -n hanzo deploy/console -- env 2>&1 | grep -iE "KMS_|INFISICAL" | head -5
+
+          echo ""
+          echo "=== Check zap service ==="
+          kubectl get svc,deploy,pods -n hanzo | grep -i zap || echo "No zap service found"
+
+          echo ""
+          echo "=== Check static/CDN ingress ==="
+          kubectl get ingress -n hanzo -o yaml 2>/dev/null | grep -B2 "static.hanzo.ai\|cdn.hanzo.ai" || echo "No static/cdn ingress"
+
+          echo ""
+          echo "=== Console AGENTS_* env vars ==="
+          kubectl exec -n hanzo deploy/console -- env 2>&1 | grep -iE "AGENT|BOT|PLATFORM|INFRASTRUCTURE|COMPUTE" | head -10
