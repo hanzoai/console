@@ -8,7 +8,7 @@ env:
 jobs:
   check-logs:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 3
     steps:
       - name: Install doctl
         uses: digitalocean/action-doctl@v2
@@ -16,23 +16,15 @@ jobs:
           token: ${{ secrets.DO_API_TOKEN }}
       - name: Configure kubectl
         run: doctl kubernetes cluster kubeconfig save "${{ env.HANZO_CLUSTER_ID }}"
-      - name: Pull new image and restart
+      - name: Get events.all errors
         run: |
-          echo "=== Restart to pull latest image ==="
-          kubectl rollout restart deploy/console -n hanzo 2>&1
-          kubectl rollout restart deploy/console-worker -n hanzo 2>&1 || true
+          echo "=== Latest errors from all pods ==="
+          for POD in $(kubectl get pods -n hanzo -l app=console -o name | head -2); do
+            echo "--- $POD ---"
+            kubectl logs "$POD" -n hanzo --tail=50 2>&1 | grep -i "events.all\|UNKNOWN_IDENTIFIER\|cannot be resolved\|DB::Exception" | head -3
+          done
           
           echo ""
-          echo "=== Wait ==="
-          kubectl rollout status deploy/console -n hanzo --timeout=180s 2>&1 || echo "Timed out"
-          
-          echo ""
-          echo "=== Verify new image ==="
-          kubectl get pods -n hanzo -l app=console -o jsonpath='{range .items[0]}{.status.containerStatuses[0].imageID}{end}' 2>&1
-          echo ""
-          
-          echo ""
-          echo "=== Check for errors ==="
-          sleep 5
-          POD=$(kubectl get pods -n hanzo -l app=console --sort-by=.metadata.creationTimestamp -o name | tail -1)
-          kubectl logs "$POD" -n hanzo --tail=20 2>&1 | grep -i "error\|DB::Exception" | head -5 || echo "No errors"
+          echo "=== Current events_core columns ==="
+          kubectl exec -n hanzo deploy/console -- wget -q -O - --timeout=5 \
+            "http://hanzo-datastore:8123/?database=console&query=DESCRIBE+events_core+FORMAT+TabSeparated" 2>&1 | awk '{print $1}'
