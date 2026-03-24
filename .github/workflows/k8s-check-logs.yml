@@ -8,7 +8,7 @@ env:
 jobs:
   check-logs:
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    timeout-minutes: 5
     steps:
       - name: Install doctl
         uses: digitalocean/action-doctl@v2
@@ -16,35 +16,44 @@ jobs:
           token: ${{ secrets.DO_API_TOKEN }}
       - name: Configure kubectl
         run: doctl kubernetes cluster kubeconfig save "${{ env.HANZO_CLUSTER_ID }}"
-      - name: Diagnose all backend services
+      - name: Scale up services and fix DNS
         run: |
-          echo "=== All services in hanzo namespace ==="
-          kubectl get svc -n hanzo -o custom-columns='NAME:.metadata.name,TYPE:.spec.type,CLUSTER-IP:.spec.clusterIP,PORTS:.spec.ports[*].port' | head -40
-
+          echo "=== 1. Scale up cloud-agent ==="
+          kubectl scale deploy/cloud-agent -n hanzo --replicas=1
+          
+          echo "=== 2. Scale up neon-compute ==="
+          kubectl scale deploy/neon-compute -n hanzo --replicas=1
+          
+          echo "=== 3. Wait for pods ==="
+          sleep 30
+          kubectl get pods -n hanzo | grep -E "cloud-agent|neon-compute"
+          
           echo ""
-          echo "=== All ingress rules ==="
-          kubectl get ingress -n hanzo -o custom-columns='NAME:.metadata.name,HOSTS:.spec.rules[*].host' 2>/dev/null | head -20
-
+          echo "=== 4. Check agents connectivity ==="
+          kubectl exec -n hanzo deploy/console -- wget -q -O - --timeout=5 "http://agents:8080/api/health" 2>&1 | head -3 || echo "Agents not ready yet"
+          
           echo ""
-          echo "=== Check agents service ==="
-          kubectl get svc,deploy,pods -n hanzo | grep -i agent || echo "No agents service found"
-
+          echo "=== 5. Check KMS connectivity ==="
+          kubectl exec -n hanzo deploy/console -- wget -q -O - --timeout=5 "https://kms.hanzo.ai/api/status" 2>&1 | head -3 || echo "KMS unreachable"
+          
           echo ""
-          echo "=== Check compute service ==="
-          kubectl get svc,deploy,pods -n hanzo | grep -i compute || echo "No compute service found"
-
-          echo ""
-          echo "=== Check KMS env vars ==="
-          kubectl exec -n hanzo deploy/console -- env 2>&1 | grep -iE "KMS_|INFISICAL" | head -5
-
-          echo ""
-          echo "=== Check zap service ==="
-          kubectl get svc,deploy,pods -n hanzo | grep -i zap || echo "No zap service found"
-
-          echo ""
-          echo "=== Check static/CDN ingress ==="
-          kubectl get ingress -n hanzo -o yaml 2>/dev/null | grep -B2 "static.hanzo.ai\|cdn.hanzo.ai" || echo "No static/cdn ingress"
-
-          echo ""
-          echo "=== Console AGENTS_* env vars ==="
-          kubectl exec -n hanzo deploy/console -- env 2>&1 | grep -iE "AGENT|BOT|PLATFORM|INFRASTRUCTURE|COMPUTE" | head -10
+          echo "=== 6. Fix static.hanzo.ai DNS ==="
+          # Get Cloudflare zone
+          CF_ZONE="bac51c3900e73fd28aa75a59898bcee0"
+          CF_EMAIL=$(kubectl get secret cloudflare-api-credentials -n hanzo -o jsonpath='{.data.email}' | base64 -d)
+          CF_KEY=$(kubectl get secret cloudflare-api-credentials -n hanzo -o jsonpath='{.data.api-key}' | base64 -d)
+          
+          # Find static.hanzo.ai record
+          RECORD=$(curl -s -H "X-Auth-Email: $CF_EMAIL" -H "X-Auth-Key: $CF_KEY" \
+            "https://api.cloudflare.com/client/v4/zones/$CF_ZONE/dns_records?name=static.hanzo.ai" | \
+            python3 -c "import json,sys; r=json.load(sys.stdin); print(r['result'][0]['id'] if r['result'] else 'NOT_FOUND')")
+          echo "static.hanzo.ai record: $RECORD"
+          
+          if [ "$RECORD" != "NOT_FOUND" ]; then
+            # Update to CNAME to console.hanzo.ai (proxied through Cloudflare for SSL)
+            curl -s -X PATCH -H "X-Auth-Email: $CF_EMAIL" -H "X-Auth-Key: $CF_KEY" \
+              -H "Content-Type: application/json" \
+              --data '{"type":"CNAME","name":"static","content":"console.hanzo.ai","proxied":true}' \
+              "https://api.cloudflare.com/client/v4/zones/$CF_ZONE/dns_records/$RECORD" | \
+              python3 -c "import json,sys; r=json.load(sys.stdin); print('Updated!' if r.get('success') else r)"
+          fi
