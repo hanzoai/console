@@ -8,6 +8,7 @@ permissions:
 
 env:
   HANZO_CLUSTER_ID: 1a153000-90a6-48ad-9375-7ef901a9bf7f
+  IAM_DB_URL: "postgresql://iam:iam@iam-db:5432/iam?sslmode=disable"
 
 jobs:
   update-console-iam:
@@ -22,30 +23,31 @@ jobs:
       - name: Configure kubectl
         run: doctl kubernetes cluster kubeconfig save "${{ env.HANZO_CLUSTER_ID }}"
 
-      - name: Create hanzo-console app via IAM database
+      - name: Create hanzo-console IAM app
         run: |
           CLIENT_SECRET=$(openssl rand -hex 24)
           echo "::add-mask::${CLIENT_SECRET}"
 
-          echo "=== Finding IAM DB pod ==="
-          DB_POD=$(kubectl get pods -n hanzo | grep iam-db | grep Running | head -1 | awk '{print $1}')
-          echo "DB Pod: $DB_POD"
+          # Helper function to run psql via temp pod
+          run_psql() {
+            local name="psql-$(date +%s)-$RANDOM"
+            kubectl run --rm -i --restart=Never --image=postgres:16-alpine "$name" -n hanzo -- \
+              psql "${{ env.IAM_DB_URL }}" -c "$1" 2>&1
+          }
 
-          if [ -z "$DB_POD" ]; then
-            echo "ERROR: No iam-db pod found"
-            kubectl get pods -n hanzo | grep -i iam
-            exit 1
-          fi
+          run_psql_val() {
+            local name="psql-$(date +%s)-$RANDOM"
+            kubectl run --rm -i --restart=Never --image=postgres:16-alpine "$name" -n hanzo -- \
+              psql "${{ env.IAM_DB_URL }}" -t -c "$1" 2>&1 | grep -v "^pod\|^If you" | tr -d ' '
+          }
 
-          echo "=== Check if hanzo-console app exists ==="
-          EXISTS=$(kubectl exec -n hanzo "$DB_POD" -- psql -U iam -d iam -t -c \
-            "SELECT count(*) FROM application WHERE name='hanzo-console' AND owner='admin';")
-          EXISTS=$(echo "$EXISTS" | tr -d ' ')
-          echo "Count: $EXISTS"
+          echo "=== Check if hanzo-console exists ==="
+          EXISTS=$(run_psql_val "SELECT count(*) FROM application WHERE name='hanzo-console' AND owner='admin';")
+          echo "Count: [$EXISTS]"
 
-          if [ "$EXISTS" = "0" ]; then
-            echo "=== Creating hanzo-console by copying from hanzo-app ==="
-            kubectl exec -n hanzo "$DB_POD" -- psql -U iam -d iam -c "
+          if [ "$EXISTS" = "0" ] || [ -z "$EXISTS" ]; then
+            echo "=== Creating hanzo-console app (copy from hanzo-app) ==="
+            run_psql "
               INSERT INTO application (
                 owner, name, created_time, display_name, logo, homepage_url,
                 organization, cert, client_id, client_secret, redirect_uris,
@@ -65,27 +67,30 @@ jobs:
                 signin_methods, signup_items, providers, grant_types, tags,
                 signin_items, scopes, token_fields, form_offset,
                 cookie_expire_in_hours, category, type
-              FROM application
-              WHERE name='hanzo-app' AND owner='admin'
-              LIMIT 1;
+              FROM application WHERE name='hanzo-app' AND owner='admin' LIMIT 1;
             "
           else
-            echo "hanzo-console already exists, fetching client_secret..."
-            CLIENT_SECRET=$(kubectl exec -n hanzo "$DB_POD" -- psql -U iam -d iam -t -c \
-              "SELECT client_secret FROM application WHERE name='hanzo-console' AND owner='admin';" | tr -d ' ')
+            echo "hanzo-console exists, fetching secret..."
+            CLIENT_SECRET=$(run_psql_val "SELECT client_secret FROM application WHERE name='hanzo-console' AND owner='admin';")
             echo "::add-mask::${CLIENT_SECRET}"
           fi
 
           echo ""
-          echo "=== Verify hanzo-console in DB ==="
-          kubectl exec -n hanzo "$DB_POD" -- psql -U iam -d iam -c \
-            "SELECT name, client_id, display_name, redirect_uris FROM application WHERE name='hanzo-console';"
+          echo "=== Verify ==="
+          run_psql "SELECT name, client_id, display_name FROM application WHERE name='hanzo-console';"
 
-          echo ""
-          echo "=== Update console k8s deployment ==="
+      - name: Update console deployment
+        run: |
+          # Get client_secret from DB
+          CLIENT_SECRET=$(kubectl run --rm -i --restart=Never --image=postgres:16-alpine psql-getsecret -n hanzo -- \
+            psql "${{ env.IAM_DB_URL }}" -t -c \
+            "SELECT client_secret FROM application WHERE name='hanzo-console' AND owner='admin';" 2>&1 | grep -v "^pod\|^If you" | tr -d ' ')
+          echo "::add-mask::${CLIENT_SECRET}"
+
           NEXTAUTH_SECRET=$(openssl rand -hex 32)
           echo "::add-mask::${NEXTAUTH_SECRET}"
 
+          echo "=== Setting console env vars ==="
           kubectl set env deploy/console -n hanzo \
             "IAM_CLIENT_ID=hanzo-console" \
             "IAM_CLIENT_SECRET=${CLIENT_SECRET}" \
@@ -97,7 +102,7 @@ jobs:
             "NEXTAUTH_SECRET=${NEXTAUTH_SECRET}" \
             "SALT=${NEXTAUTH_SECRET}" 2>/dev/null || true
 
-          echo "=== Restart IAM to clear app cache ==="
+          echo "=== Restart IAM to clear cache ==="
           kubectl rollout restart deploy/iam -n hanzo
           kubectl rollout status deploy/iam -n hanzo --timeout=120s
 
@@ -105,5 +110,5 @@ jobs:
           kubectl rollout status deploy/console -n hanzo --timeout=180s
 
           echo ""
-          echo "=== Final verification ==="
+          echo "=== Done ==="
           kubectl exec -n hanzo deploy/console -- printenv IAM_CLIENT_ID
