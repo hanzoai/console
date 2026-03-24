@@ -119,12 +119,17 @@ jobs:
           NEXTAUTH_SECRET=$(openssl rand -hex 32)
           echo "::add-mask::${NEXTAUTH_SECRET}"
 
+          echo "=== Fix IAM origin to hanzo.id (JWT issuer must match OIDC well-known) ==="
+          kubectl set env deploy/iam -n hanzo \
+            "origin=https://hanzo.id" \
+            "originFrontend=https://hanzo.id"
+
           echo "=== Setting console env vars ==="
-          # Fix issuer mismatch: JWT iss=https://iam.hanzo.ai but IAM_SERVER_URL was https://hanzo.id
+          # Revert IAM_SERVER_URL back to hanzo.id (the public OAuth frontend)
           kubectl set env deploy/console -n hanzo \
             "IAM_CLIENT_ID=hanzo-console" \
             "IAM_CLIENT_SECRET=${CLIENT_SECRET}" \
-            "IAM_SERVER_URL=https://iam.hanzo.ai" \
+            "IAM_SERVER_URL=https://hanzo.id" \
             "NEXTAUTH_SECRET=${NEXTAUTH_SECRET}" \
             "SALT=${NEXTAUTH_SECRET}" \
             "NEXTAUTH_DEBUG=true"
