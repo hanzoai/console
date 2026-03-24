@@ -22,13 +22,22 @@ jobs:
       - name: Configure kubectl
         run: doctl kubernetes cluster kubeconfig save "${{ env.HANZO_CLUSTER_ID }}"
 
-      - name: Get recent console logs
+      - name: Check Datastore config and connectivity
         run: |
-          echo "=== Pod 1 logs (last 5 min) ==="
-          POD1=$(kubectl get pods -n hanzo -l app=console -o name | head -1)
-          kubectl logs "$POD1" -n hanzo --since=5m 2>&1 | tail -100
+          echo "=== Console Datastore env vars ==="
+          kubectl exec -n hanzo deploy/console -- env | grep -iE 'CLICK|DATASTORE|CH_' | sort
 
           echo ""
-          echo "=== Pod 2 logs (last 5 min) ==="
-          POD2=$(kubectl get pods -n hanzo -l app=console -o name | tail -1)
-          kubectl logs "$POD2" -n hanzo --since=5m 2>&1 | tail -100
+          echo "=== Test Datastore connectivity from console pod ==="
+          CH_URL=$(kubectl exec -n hanzo deploy/console -- printenv CLICKHOUSE_URL 2>/dev/null)
+          echo "CLICKHOUSE_URL: $CH_URL"
+
+          kubectl exec -n hanzo deploy/console -- wget -q -O - --timeout=5 "${CH_URL}/?query=SELECT+1" 2>&1 || echo "Datastore connection FAILED"
+
+          echo ""
+          echo "=== Check if tables exist ==="
+          kubectl exec -n hanzo deploy/console -- wget -q -O - --timeout=5 "${CH_URL}/?query=SHOW+TABLES" 2>&1 | head -20 || echo "Cannot list tables"
+
+          echo ""
+          echo "=== Console env: ENCRYPTION_KEY ==="
+          kubectl exec -n hanzo deploy/console -- env | grep -iE 'ENCRYPTION' | sed 's/=.*/=***/'
