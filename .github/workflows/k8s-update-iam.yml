@@ -87,14 +87,15 @@ jobs:
               FROM application WHERE name='hanzo-app' AND owner='admin' LIMIT 1;
             "
           else
-            echo "hanzo-console exists, fetching secret..."
+            echo "hanzo-console exists, updating redirect_uris and fetching secret..."
+            run_psql "UPDATE application SET redirect_uris = '[\"https://console.hanzo.ai/api/auth/callback/iam\",\"http://localhost:3000/api/auth/callback/iam\",\"http://localhost:3001/api/auth/callback/iam\"]'::jsonb WHERE name='hanzo-console' AND owner='admin';"
             CLIENT_SECRET=$(run_psql_val "SELECT client_secret FROM application WHERE name='hanzo-console' AND owner='admin';")
             echo "::add-mask::${CLIENT_SECRET}"
           fi
 
           echo ""
           echo "=== Verify ==="
-          run_psql "SELECT name, client_id, display_name FROM application WHERE name='hanzo-console';"
+          run_psql "SELECT name, client_id, display_name, redirect_uris FROM application WHERE name='hanzo-console';"
 
       - name: Update console deployment
         run: |
