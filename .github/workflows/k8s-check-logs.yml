@@ -12,7 +12,7 @@ env:
 jobs:
   check-logs:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 5
     steps:
       - name: Install doctl
         uses: digitalocean/action-doctl@v2
@@ -22,66 +22,29 @@ jobs:
       - name: Configure kubectl
         run: doctl kubernetes cluster kubeconfig save "${{ env.HANZO_CLUSTER_ID }}"
 
-      - name: Expand PVC and restart Datastore
+      - name: Restart console pods and verify Datastore
         run: |
-          echo "=== Current PVC size ==="
-          kubectl get pvc datastore-data-datastore-0 -n hanzo -o jsonpath='{.spec.resources.requests.storage}' 2>&1
-          echo ""
-
-          echo "=== Check StorageClass allows expansion ==="
-          SC=$(kubectl get pvc datastore-data-datastore-0 -n hanzo -o jsonpath='{.spec.storageClassName}')
-          echo "StorageClass: $SC"
-          kubectl get storageclass "$SC" -o jsonpath='{.allowVolumeExpansion}' 2>&1
-          echo ""
-
-          echo ""
-          echo "=== Scale down StatefulSet ==="
-          kubectl scale statefulset datastore -n hanzo --replicas=0 2>&1
-          sleep 10
-
-          echo ""
-          echo "=== Expand PVC from 50Gi to 100Gi ==="
-          kubectl patch pvc datastore-data-datastore-0 -n hanzo -p '{"spec":{"resources":{"requests":{"storage":"100Gi"}}}}' 2>&1
-
-          echo ""
-          echo "=== Wait for resize ==="
-          sleep 15
-          kubectl get pvc datastore-data-datastore-0 -n hanzo -o jsonpath='{.status.capacity.storage}' 2>&1
-          echo ""
-          kubectl get pvc datastore-data-datastore-0 -n hanzo -o jsonpath='{.status.conditions}' 2>&1 | python3 -m json.tool 2>/dev/null || true
-          echo ""
-
-          echo ""
-          echo "=== Scale back up ==="
-          kubectl scale statefulset datastore -n hanzo --replicas=1 2>&1
-
-          echo ""
-          echo "=== Wait for pod to come up (up to 180s) ==="
-          for i in $(seq 1 36); do
-            sleep 5
-            STATUS=$(kubectl get pod datastore-0 -n hanzo -o jsonpath='{.status.phase}' 2>/dev/null)
-            READY=$(kubectl get pod datastore-0 -n hanzo -o jsonpath='{.status.containerStatuses[0].ready}' 2>/dev/null)
-            RESTARTS=$(kubectl get pod datastore-0 -n hanzo -o jsonpath='{.status.containerStatuses[0].restartCount}' 2>/dev/null)
-            echo "  [${i}] Phase=$STATUS Ready=$READY Restarts=$RESTARTS"
-            if [ "$READY" = "true" ]; then
-              echo "Datastore is READY!"
-              break
-            fi
-            if [ "$RESTARTS" -gt 2 ] 2>/dev/null; then
-              echo "Still crashing after PVC expansion."
-              kubectl logs datastore-0 -n hanzo --previous --tail=20 2>&1
-              break
-            fi
-          done
-
-          echo ""
-          echo "=== Final status ==="
+          echo "=== Datastore status ==="
           kubectl get pod datastore-0 -n hanzo -o wide 2>&1
 
           echo ""
-          echo "=== Test connectivity ==="
-          kubectl exec -n hanzo deploy/console -- wget -q -O - --timeout=5 "http://datastore:8123/?query=SELECT+1" 2>&1 || echo "Datastore still unreachable"
+          echo "=== Test Datastore connectivity ==="
+          kubectl exec -n hanzo deploy/console -- wget -q -O - --timeout=5 "http://datastore:8123/?query=SELECT+1" 2>&1 || echo "FAILED"
 
           echo ""
-          echo "=== Disk usage after expansion ==="
-          kubectl exec -n hanzo datastore-0 -- df -h /var/lib/hanzo-datastore 2>&1 || echo "Can't check disk"
+          echo "=== Restart console deployment ==="
+          kubectl rollout restart deploy/console -n hanzo 2>&1
+          kubectl rollout restart deploy/console-worker -n hanzo 2>&1 || true
+
+          echo ""
+          echo "=== Wait for rollout ==="
+          kubectl rollout status deploy/console -n hanzo --timeout=120s 2>&1
+
+          echo ""
+          echo "=== Test again after restart ==="
+          sleep 5
+          kubectl exec -n hanzo deploy/console -- wget -q -O - --timeout=5 "http://datastore:8123/?query=SELECT+1" 2>&1 || echo "STILL FAILED"
+
+          echo ""
+          echo "=== Console pod logs (last 10 lines) ==="
+          kubectl logs -n hanzo deploy/console --tail=10 2>&1
