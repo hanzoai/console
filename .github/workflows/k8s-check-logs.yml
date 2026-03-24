@@ -8,7 +8,7 @@ env:
 jobs:
   check-logs:
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    timeout-minutes: 5
     steps:
       - name: Install doctl
         uses: digitalocean/action-doctl@v2
@@ -16,35 +16,25 @@ jobs:
           token: ${{ secrets.DO_API_TOKEN }}
       - name: Configure kubectl
         run: doctl kubernetes cluster kubeconfig save "${{ env.HANZO_CLUSTER_ID }}"
-      - name: Debug nginx ingress for bot
+      - name: Deploy latest image with all fixes
         run: |
-          echo "=== Nginx ingress controller pods ==="
-          kubectl get pods --all-namespaces | grep -i "nginx\|ingress" | grep -v "cm-acme"
-
-          echo ""
-          echo "=== Nginx ingress controller service ==="
-          kubectl get svc --all-namespaces | grep -i "nginx\|ingress" | grep -v "cm-acme"
-
-          echo ""
-          echo "=== Check if nginx ingress LB has IP 24.199.71.111 ==="
-          kubectl get svc --all-namespaces -o json | python3 -c "
-import json,sys
-data=json.load(sys.stdin)
-for svc in data['items']:
-  lb = svc.get('status',{}).get('loadBalancer',{}).get('ingress',[])
-  for l in lb:
-    if l.get('ip') == '24.199.71.111':
-      print(f\"FOUND: {svc['metadata']['namespace']}/{svc['metadata']['name']} -> 24.199.71.111\")
-" 2>&1 || echo "Not found via API"
-
-          echo ""
-          echo "=== hanzo-playground service exists? ==="
-          kubectl get svc hanzo-playground -n hanzo 2>&1 || echo "NO hanzo-playground service"
-
-          echo ""
-          echo "=== Check cert status for gw.hanzo.bot ==="
-          kubectl get certificate -n hanzo 2>/dev/null | grep -i "gw\|bot" || echo "No certs found"
+          CONTAINER=$(kubectl get deploy console -n hanzo -o jsonpath='{.spec.template.spec.containers[0].name}')
+          
+          echo "=== Set latest amd64 image ==="
+          kubectl set image "deploy/console" -n hanzo "${CONTAINER}=ghcr.io/hanzoai/console:main-amd64"
+          
+          echo "=== Scale 0 then 2 ==="
+          kubectl scale deploy/console -n hanzo --replicas=0
+          sleep 5
+          kubectl scale deploy/console -n hanzo --replicas=2
+          kubectl rollout status deploy/console -n hanzo --timeout=180s || echo "Timed out"
           
           echo ""
-          echo "=== Check cert-manager challenges ==="
-          kubectl get challenges --all-namespaces 2>/dev/null | head -5 || echo "No challenges"
+          echo "=== Verify ==="
+          kubectl get pods -n hanzo -l app=console -o custom-columns='IMAGE:.spec.containers[0].image,READY:.status.containerStatuses[0].ready' | head -3
+          
+          echo ""
+          echo "=== Test KMS ==="
+          sleep 5
+          POD=$(kubectl get pods -n hanzo -l app=console -o name | head -1)
+          kubectl exec -n hanzo "$POD" -- env | grep KMS_API_URL
