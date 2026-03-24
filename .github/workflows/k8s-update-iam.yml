@@ -8,7 +8,7 @@ permissions:
 
 env:
   HANZO_CLUSTER_ID: 1a153000-90a6-48ad-9375-7ef901a9bf7f
-  IAM_DB_URL: "postgresql://iam:iam@iam-db:5432/iam?sslmode=disable"
+  # IAM_DB_URL discovered at runtime from IAM deployment env
 
 jobs:
   update-console-iam:
@@ -28,17 +28,43 @@ jobs:
           CLIENT_SECRET=$(openssl rand -hex 24)
           echo "::add-mask::${CLIENT_SECRET}"
 
+          # Discover IAM DB connection from the IAM deployment
+          echo "=== Discovering IAM DB connection ==="
+          IAM_DB_URL=$(kubectl exec -n hanzo deploy/iam -- printenv dataSourceName 2>/dev/null || true)
+          if [ -z "$IAM_DB_URL" ]; then
+            # Try other env var names
+            IAM_DB_URL=$(kubectl exec -n hanzo deploy/iam -- sh -c 'echo $dataSourceName $DATABASE_URL $DB_URL $DATASOURCE_NAME' 2>/dev/null | tr ' ' '\n' | grep -v '^$' | head -1 || true)
+          fi
+          if [ -z "$IAM_DB_URL" ]; then
+            # Dump all env vars and look for postgres connection info
+            echo "Checking all IAM env vars..."
+            kubectl exec -n hanzo deploy/iam -- env 2>/dev/null | grep -iE 'data.*source|database|postgres|db_' | head -10
+            # Try the Go xorm format: user=X password=X host=X port=X dbname=X
+            DS=$(kubectl exec -n hanzo deploy/iam -- env 2>/dev/null | grep -i datasource | head -1 | cut -d= -f2-)
+            if [ -n "$DS" ]; then
+              # Convert "user=X password=X host=X port=X dbname=X" to postgres URL
+              USER=$(echo "$DS" | grep -oP 'user=\K\S+')
+              PASS=$(echo "$DS" | grep -oP 'password=\K\S+')
+              HOST=$(echo "$DS" | grep -oP 'host=\K\S+')
+              PORT=$(echo "$DS" | grep -oP 'port=\K\S+')
+              DBNAME=$(echo "$DS" | grep -oP 'dbname=\K\S+')
+              IAM_DB_URL="postgresql://${USER}:${PASS}@${HOST}:${PORT}/${DBNAME}?sslmode=disable"
+            fi
+          fi
+          echo "IAM DB URL host: $(echo "$IAM_DB_URL" | grep -oP '@\K[^:/?]+')"
+          echo "::add-mask::${IAM_DB_URL}"
+
           # Helper function to run psql via temp pod
           run_psql() {
             local name="psql-$(date +%s)-$RANDOM"
             kubectl run --rm -i --restart=Never --image=postgres:16-alpine "$name" -n hanzo -- \
-              psql "${{ env.IAM_DB_URL }}" -c "$1" 2>&1
+              psql "${IAM_DB_URL}" -c "$1" 2>&1
           }
 
           run_psql_val() {
             local name="psql-$(date +%s)-$RANDOM"
             kubectl run --rm -i --restart=Never --image=postgres:16-alpine "$name" -n hanzo -- \
-              psql "${{ env.IAM_DB_URL }}" -t -c "$1" 2>&1 | grep -v "^pod\|^If you" | tr -d ' '
+              psql "${IAM_DB_URL}" -t -c "$1" 2>&1 | grep -v "^pod\|^If you" | tr -d ' '
           }
 
           echo "=== Check if hanzo-console exists ==="
@@ -81,9 +107,21 @@ jobs:
 
       - name: Update console deployment
         run: |
+          # Discover DB URL again
+          IAM_DB_URL=$(kubectl exec -n hanzo deploy/iam -- env 2>/dev/null | grep -i datasource | head -1 | cut -d= -f2-)
+          if echo "$IAM_DB_URL" | grep -q "user="; then
+            USER=$(echo "$IAM_DB_URL" | grep -oP 'user=\K\S+')
+            PASS=$(echo "$IAM_DB_URL" | grep -oP 'password=\K\S+')
+            HOST=$(echo "$IAM_DB_URL" | grep -oP 'host=\K\S+')
+            PORT=$(echo "$IAM_DB_URL" | grep -oP 'port=\K\S+')
+            DBNAME=$(echo "$IAM_DB_URL" | grep -oP 'dbname=\K\S+')
+            IAM_DB_URL="postgresql://${USER}:${PASS}@${HOST}:${PORT}/${DBNAME}?sslmode=disable"
+          fi
+          echo "::add-mask::${IAM_DB_URL}"
+
           # Get client_secret from DB
           CLIENT_SECRET=$(kubectl run --rm -i --restart=Never --image=postgres:16-alpine psql-getsecret -n hanzo -- \
-            psql "${{ env.IAM_DB_URL }}" -t -c \
+            psql "${IAM_DB_URL}" -t -c \
             "SELECT client_secret FROM application WHERE name='hanzo-console' AND owner='admin';" 2>&1 | grep -v "^pod\|^If you" | tr -d ' ')
           echo "::add-mask::${CLIENT_SECRET}"
 
