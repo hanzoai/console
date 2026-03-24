@@ -341,6 +341,17 @@ export async function queryDatastore<T>(opts: {
     span.setAttribute("db.query.text", opts.query);
     span.setAttribute("db.operation.name", "SELECT");
 
+    // ClickHouse 26.x DateTime64(3) params reject trailing 'Z' in ISO timestamps.
+    // Strip 'Z' from all ISO timestamp strings globally to prevent BAD_QUERY_PARAMETER errors.
+    const sanitizedParams = opts.params
+      ? Object.fromEntries(
+          Object.entries(opts.params).map(([k, v]) => [
+            k,
+            typeof v === "string" && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/.test(v) ? v.slice(0, -1) : v,
+          ]),
+        )
+      : undefined;
+
     // Retry logic for socket hang up and other network errors
     return await backOff(
       async () => {
@@ -351,7 +362,7 @@ export async function queryDatastore<T>(opts: {
         const res = await datastoreClient(opts.datastoreConfig, opts.preferredService).query({
           query: opts.query,
           format: "JSONEachRow",
-          query_params: opts.params,
+          query_params: sanitizedParams,
           datastore_settings: {
             asterisk_include_alias_columns: 1,
             asterisk_include_materialized_columns: 1,
