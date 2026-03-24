@@ -22,42 +22,41 @@ jobs:
       - name: Configure kubectl
         run: doctl kubernetes cluster kubeconfig save "${{ env.HANZO_CLUSTER_ID }}"
 
-      - name: Delete and restart Datastore pod
+      - name: Get crash details from terminated container
         run: |
-          echo "=== Current status ==="
-          kubectl get pod datastore-0 -n hanzo -o wide 2>&1
+          echo "=== Container last state ==="
+          kubectl get pod datastore-0 -n hanzo -o jsonpath='{.status.containerStatuses[0].lastState}' 2>&1 | python3 -m json.tool 2>/dev/null || \
+          kubectl get pod datastore-0 -n hanzo -o jsonpath='{.status.containerStatuses[0].lastState}' 2>&1
 
           echo ""
-          echo "=== Deleting crashed pod ==="
-          kubectl delete pod datastore-0 -n hanzo --grace-period=0 --force 2>&1
-          echo "Pod deleted, waiting for StatefulSet to recreate..."
+          echo "=== Container state ==="
+          kubectl get pod datastore-0 -n hanzo -o jsonpath='{.status.containerStatuses[0].state}' 2>&1 | python3 -m json.tool 2>/dev/null || \
+          kubectl get pod datastore-0 -n hanzo -o jsonpath='{.status.containerStatuses[0].state}' 2>&1
 
           echo ""
-          echo "=== Waiting for new pod to start (up to 120s) ==="
-          for i in $(seq 1 24); do
-            sleep 5
-            STATUS=$(kubectl get pod datastore-0 -n hanzo -o jsonpath='{.status.phase}' 2>/dev/null)
-            READY=$(kubectl get pod datastore-0 -n hanzo -o jsonpath='{.status.containerStatuses[0].ready}' 2>/dev/null)
-            RESTARTS=$(kubectl get pod datastore-0 -n hanzo -o jsonpath='{.status.containerStatuses[0].restartCount}' 2>/dev/null)
-            echo "  [${i}] Phase=$STATUS Ready=$READY Restarts=$RESTARTS"
-            if [ "$READY" = "true" ]; then
-              echo "Datastore is READY!"
-              break
-            fi
-            if [ "$RESTARTS" -gt 1 ] 2>/dev/null; then
-              echo "Pod is crash-looping again. Getting logs..."
-              kubectl logs datastore-0 -n hanzo --previous --tail=30 2>&1
-              echo ""
-              echo "=== Error log from inside pod ==="
-              kubectl exec -n hanzo datastore-0 -- cat /var/log/hanzo-datastore-server/hanzo-datastore-server.err.log 2>&1 | tail -30 || echo "Can't exec into pod"
-              break
-            fi
-          done
+          echo "=== Resource requests/limits ==="
+          kubectl get pod datastore-0 -n hanzo -o jsonpath='{.spec.containers[0].resources}' 2>&1 | python3 -m json.tool 2>/dev/null || echo "No resources set"
 
           echo ""
-          echo "=== Final status ==="
-          kubectl get pod datastore-0 -n hanzo -o wide 2>&1
+          echo "=== Image used ==="
+          kubectl get pod datastore-0 -n hanzo -o jsonpath='{.spec.containers[0].image}' 2>&1
 
           echo ""
-          echo "=== Test connectivity ==="
-          kubectl exec -n hanzo deploy/console -- wget -q -O - --timeout=5 "http://datastore:8123/?query=SELECT+1" 2>&1 || echo "Datastore still unreachable"
+          echo "=== Previous logs (full) ==="
+          kubectl logs datastore-0 -n hanzo --previous 2>&1
+
+          echo ""
+          echo "=== StatefulSet spec ==="
+          kubectl get statefulset datastore -n hanzo -o yaml 2>&1 | head -80
+
+          echo ""
+          echo "=== PVC status ==="
+          kubectl get pvc -n hanzo | grep datastore
+
+          echo ""
+          echo "=== ConfigMap content ==="
+          kubectl get configmap datastore-config -n hanzo -o yaml 2>&1 | head -60
+
+          echo ""
+          echo "=== Node memory pressure ==="
+          kubectl describe node runner-pool-32g-hwvq3 2>/dev/null | grep -E "MemoryPressure|memory|Allocatable" | head -5
