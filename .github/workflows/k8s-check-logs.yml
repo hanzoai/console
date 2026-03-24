@@ -8,7 +8,7 @@ env:
 jobs:
   check-logs:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 3
     steps:
       - name: Install doctl
         uses: digitalocean/action-doctl@v2
@@ -16,25 +16,22 @@ jobs:
           token: ${{ secrets.DO_API_TOKEN }}
       - name: Configure kubectl
         run: doctl kubernetes cluster kubeconfig save "${{ env.HANZO_CLUSTER_ID }}"
-      - name: Deploy latest image with all fixes
+      - name: Check bot services
         run: |
-          CONTAINER=$(kubectl get deploy console -n hanzo -o jsonpath='{.spec.template.spec.containers[0].name}')
-          
-          echo "=== Set latest amd64 image ==="
-          kubectl set image "deploy/console" -n hanzo "${CONTAINER}=ghcr.io/hanzoai/console:main-amd64"
-          
-          echo "=== Scale 0 then 2 ==="
-          kubectl scale deploy/console -n hanzo --replicas=0
-          sleep 5
-          kubectl scale deploy/console -n hanzo --replicas=2
-          kubectl rollout status deploy/console -n hanzo --timeout=180s || echo "Timed out"
-          
+          echo "=== Bot-related pods ==="
+          kubectl get pods -n hanzo | grep -i "bot\|gateway\|hub"
           echo ""
-          echo "=== Verify ==="
-          kubectl get pods -n hanzo -l app=console -o custom-columns='IMAGE:.spec.containers[0].image,READY:.status.containerStatuses[0].ready' | head -3
-          
+          echo "=== Bot-related services ==="
+          kubectl get svc -n hanzo | grep -i "bot\|gateway\|hub"
           echo ""
-          echo "=== Test KMS ==="
-          sleep 5
-          POD=$(kubectl get pods -n hanzo -l app=console -o name | head -1)
-          kubectl exec -n hanzo "$POD" -- env | grep KMS_API_URL
+          echo "=== Bot-related ingress ==="
+          kubectl get ingress -n hanzo | grep -i "bot\|hub\|app.hanzo"
+          echo ""
+          echo "=== Bot-hub deployment ==="
+          kubectl get deploy bot-hub -n hanzo -o jsonpath='{.spec.template.spec.containers[0].image}' 2>/dev/null
+          echo ""
+          echo "=== Bot-gateway deployment ==="
+          kubectl get deploy bot-gateway -n hanzo -o jsonpath='{.spec.template.spec.containers[0].image}' 2>/dev/null || echo "No bot-gateway deploy"
+          echo ""
+          echo "=== Bot-hub pod logs ==="
+          kubectl logs -n hanzo -l app=bot-hub --tail=10 2>/dev/null | head -10 || echo "No bot-hub logs"
