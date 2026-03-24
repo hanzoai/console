@@ -22,21 +22,31 @@ jobs:
       - name: Configure kubectl
         run: doctl kubernetes cluster kubeconfig save "${{ env.HANZO_CLUSTER_ID }}"
 
-      - name: Get environmentFilterOptions error from logs
+      - name: Check hanzo-datastore and fix console config
         run: |
-          echo "=== Console pod logs with environmentFilterOptions errors ==="
-          for POD in $(kubectl get pods -n hanzo -l app=console -o name); do
-            echo "--- $POD ---"
-            kubectl logs "$POD" -n hanzo --tail=200 2>&1 | grep -i -A5 "environmentFilter\|INTERNAL_SERVER_ERROR\|trpc.*error\|ClickHouse\|Code: \|DB::Exception" | head -30
-            echo ""
-          done
+          echo "=== ClickHouse services in hanzo namespace ==="
+          kubectl get svc -n hanzo | grep datastore
 
           echo ""
-          echo "=== Test the ClickHouse query directly ==="
-          kubectl exec -n hanzo datastore-0 -- clickhouse-client --query "SELECT name FROM system.tables WHERE database='insights' AND name LIKE '%environment%'" 2>&1 || \
-          kubectl exec -n hanzo datastore-0 -- hanzo-datastore client --query "SELECT name FROM system.tables WHERE database='insights' AND name LIKE '%environment%'" 2>&1 || \
-          echo "Can't query ClickHouse directly"
+          echo "=== hanzo-datastore pods ==="
+          kubectl get pods -n hanzo | grep hanzo-datastore
 
           echo ""
-          echo "=== List all tables in insights DB ==="
-          kubectl exec -n hanzo datastore-0 -- wget -q -O - "http://localhost:8123/?query=SHOW+TABLES+FROM+insights" 2>&1 | head -30
+          echo "=== Check hanzo-datastore for events_core table ==="
+          kubectl exec -n hanzo deploy/console -- wget -q -O - --timeout=5 "http://hanzo-datastore:8123/?query=SHOW+TABLES" 2>&1 | head -30 || echo "hanzo-datastore not reachable on 8123"
+
+          echo ""
+          echo "=== Check hanzo-datastore for events_core specifically ==="
+          kubectl exec -n hanzo deploy/console -- wget -q -O - --timeout=5 "http://hanzo-datastore:8123/?query=SELECT+name+FROM+system.tables+WHERE+name+LIKE+'%25events_core%25'+OR+name+LIKE+'%25traces%25'+OR+name+LIKE+'%25observations%25'" 2>&1 || echo "Query failed"
+
+          echo ""
+          echo "=== Current console CLICKHOUSE_URL env ==="
+          kubectl exec -n hanzo deploy/console -- env 2>&1 | grep -i "CLICKHOUSE\|DATASTORE\|DATABASE_URL" | head -10
+
+          echo ""
+          echo "=== Check if hanzo-datastore has insights DB ==="
+          kubectl exec -n hanzo deploy/console -- wget -q -O - --timeout=5 "http://hanzo-datastore:8123/?query=SHOW+DATABASES" 2>&1 || echo "Failed"
+
+          echo ""
+          echo "=== Also try port 9000 (native) ==="
+          kubectl get endpoints -n hanzo hanzo-datastore 2>&1
