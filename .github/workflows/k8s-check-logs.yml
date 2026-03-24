@@ -22,41 +22,62 @@ jobs:
       - name: Configure kubectl
         run: doctl kubernetes cluster kubeconfig save "${{ env.HANZO_CLUSTER_ID }}"
 
-      - name: Get crash details from terminated container
+      - name: Read error log from debug container
         run: |
-          echo "=== Container last state ==="
-          kubectl get pod datastore-0 -n hanzo -o jsonpath='{.status.containerStatuses[0].lastState}' 2>&1 | python3 -m json.tool 2>/dev/null || \
-          kubectl get pod datastore-0 -n hanzo -o jsonpath='{.status.containerStatuses[0].lastState}' 2>&1
+          echo "=== Scale down StatefulSet ==="
+          kubectl scale statefulset datastore -n hanzo --replicas=0 2>&1
+          sleep 10
 
           echo ""
-          echo "=== Container state ==="
-          kubectl get pod datastore-0 -n hanzo -o jsonpath='{.status.containerStatuses[0].state}' 2>&1 | python3 -m json.tool 2>/dev/null || \
-          kubectl get pod datastore-0 -n hanzo -o jsonpath='{.status.containerStatuses[0].state}' 2>&1
+          echo "=== Run debug pod with same PVC ==="
+          cat <<'MANIFEST' | kubectl apply -n hanzo -f -
+          apiVersion: v1
+          kind: Pod
+          metadata:
+            name: datastore-debug
+          spec:
+            tolerations:
+            - key: dedicated
+              operator: Equal
+              value: ci-runner
+              effect: NoSchedule
+            containers:
+            - name: debug
+              image: alpine:3.19
+              command: ["sleep", "300"]
+              volumeMounts:
+              - name: data
+                mountPath: /data
+            volumes:
+            - name: data
+              persistentVolumeClaim:
+                claimName: datastore-data-datastore-0
+            imagePullSecrets:
+            - name: ghcr-secret
+          MANIFEST
+
+          echo "Waiting for debug pod..."
+          kubectl wait --for=condition=Ready pod/datastore-debug -n hanzo --timeout=60s 2>&1
 
           echo ""
-          echo "=== Resource requests/limits ==="
-          kubectl get pod datastore-0 -n hanzo -o jsonpath='{.spec.containers[0].resources}' 2>&1 | python3 -m json.tool 2>/dev/null || echo "No resources set"
+          echo "=== Error log file ==="
+          kubectl exec -n hanzo datastore-debug -- cat /data/log/hanzo-datastore-server/hanzo-datastore-server.err.log 2>&1 | tail -50 || \
+          kubectl exec -n hanzo datastore-debug -- find /data -name "*.err.log" -o -name "*.log" 2>&1 | head -20
 
           echo ""
-          echo "=== Image used ==="
-          kubectl get pod datastore-0 -n hanzo -o jsonpath='{.spec.containers[0].image}' 2>&1
+          echo "=== Check disk usage ==="
+          kubectl exec -n hanzo datastore-debug -- df -h /data 2>&1
 
           echo ""
-          echo "=== Previous logs (full) ==="
-          kubectl logs datastore-0 -n hanzo --previous 2>&1
+          echo "=== Data directory listing ==="
+          kubectl exec -n hanzo datastore-debug -- ls -la /data/ 2>&1
 
           echo ""
-          echo "=== StatefulSet spec ==="
-          kubectl get statefulset datastore -n hanzo -o yaml 2>&1 | head -80
+          echo "=== Status file ==="
+          kubectl exec -n hanzo datastore-debug -- cat /data/status 2>&1 || echo "No status file"
 
           echo ""
-          echo "=== PVC status ==="
-          kubectl get pvc -n hanzo | grep datastore
-
-          echo ""
-          echo "=== ConfigMap content ==="
-          kubectl get configmap datastore-config -n hanzo -o yaml 2>&1 | head -60
-
-          echo ""
-          echo "=== Node memory pressure ==="
-          kubectl describe node runner-pool-32g-hwvq3 2>/dev/null | grep -E "MemoryPressure|memory|Allocatable" | head -5
+          echo "=== Cleanup: delete debug pod, scale back up ==="
+          kubectl delete pod datastore-debug -n hanzo --grace-period=0 --force 2>&1
+          kubectl scale statefulset datastore -n hanzo --replicas=1 2>&1
+          echo "Done. Datastore will restart."
