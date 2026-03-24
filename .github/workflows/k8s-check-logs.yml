@@ -18,11 +18,25 @@ jobs:
         run: doctl kubernetes cluster kubeconfig save "${{ env.HANZO_CLUSTER_ID }}"
       - name: Deploy amd64 image with fix
         run: |
+          echo "=== Get container names ==="
+          kubectl get deploy console -n hanzo -o jsonpath='{.spec.template.spec.containers[*].name}'
+          echo ""
+
+          echo "=== Current image ==="
+          kubectl get deploy console -n hanzo -o jsonpath='{.spec.template.spec.containers[0].image}'
+          echo ""
+
           echo "=== Deploy ghcr.io/hanzoai/console:main-amd64 ==="
-          kubectl set image deploy/console -n hanzo \
-            hanzo-web=ghcr.io/hanzoai/console:main-amd64
-          kubectl set image deploy/console-worker -n hanzo \
-            hanzo-worker=ghcr.io/hanzoai/console-worker:main-amd64 2>/dev/null || true
+          CONTAINER=$(kubectl get deploy console -n hanzo -o jsonpath='{.spec.template.spec.containers[0].name}')
+          kubectl set image "deploy/console" -n hanzo \
+            "${CONTAINER}=ghcr.io/hanzoai/console:main-amd64"
+
+          # Also update worker
+          W_CONTAINER=$(kubectl get deploy console-worker -n hanzo -o jsonpath='{.spec.template.spec.containers[0].name}' 2>/dev/null) || true
+          if [ -n "$W_CONTAINER" ]; then
+            kubectl set image "deploy/console-worker" -n hanzo \
+              "${W_CONTAINER}=ghcr.io/hanzoai/console-worker:main-amd64" 2>/dev/null || true
+          fi
 
           echo "=== Wait for rollout ==="
           kubectl rollout status deploy/console -n hanzo --timeout=180s || echo "Timed out"
@@ -34,6 +48,6 @@ jobs:
 
           echo ""
           echo "=== Check for errors ==="
-          sleep 10
+          sleep 15
           POD=$(kubectl get pods -n hanzo -l app=console --sort-by=.metadata.creationTimestamp -o name | tail -1)
-          kubectl logs "$POD" -n hanzo --tail=20 2>&1 | grep -i "error\|exception\|failed" || echo "No errors found"
+          kubectl logs "$POD" -n hanzo --tail=20 2>&1 | grep -i "error\|DB::Exception" || echo "No errors found"
