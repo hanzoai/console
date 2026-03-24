@@ -16,17 +16,15 @@ jobs:
           token: ${{ secrets.DO_API_TOKEN }}
       - name: Configure kubectl
         run: doctl kubernetes cluster kubeconfig save "${{ env.HANZO_CLUSTER_ID }}"
-      - name: Get exact error
+      - name: Trigger and capture error
         run: |
-          echo "=== Latest environmentFilterOptions errors ==="
           POD=$(kubectl get pods -n hanzo -l app=console -o name | head -1)
-          kubectl logs "$POD" -n hanzo --tail=200 2>&1 | grep -B1 -A3 "environmentFilter\|INTERNAL_SERVER_ERROR\|DB::Exception\|BAD_QUERY" | head -30
-          
+
+          echo "=== Trigger the query ==="
+          kubectl exec -n hanzo "$POD" -- wget -q -O - --timeout=10 \
+            "http://localhost:3000/api/trpc/projects.environmentFilterOptions?input=%7B%22json%22%3A%7B%22projectId%22%3A%22d444910c-426e-4a0b-9041-a6eefd6fd53d%22%2C%22fromTimestamp%22%3A%222026-03-23T14%3A11%3A52.989Z%22%7D%2C%22meta%22%3A%7B%22values%22%3A%7B%22fromTimestamp%22%3A%5B%22Date%22%5D%7D%2C%22v%22%3A1%7D%7D" 2>&1 | head -5
+
           echo ""
-          echo "=== Check build ID ==="
-          kubectl exec -n hanzo "$POD" -- env 2>&1 | grep "BUILD_ID\|NEXT_PUBLIC_BUILD" || echo "No build ID"
-          
-          echo ""
-          echo "=== Image digest ==="
-          kubectl get "$POD" -n hanzo -o jsonpath='{.status.containerStatuses[0].imageID}'
-          echo ""
+          echo "=== Capture error from logs ==="
+          sleep 3
+          kubectl logs "$POD" -n hanzo --tail=30 2>&1 | grep -i "error\|exception\|DB::\|environmentFilter\|BAD_QUERY\|cannot be parsed\|project_environments" | head -10
