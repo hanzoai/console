@@ -22,57 +22,33 @@ jobs:
       - name: Configure kubectl
         run: doctl kubernetes cluster kubeconfig save "${{ env.HANZO_CLUSTER_ID }}"
 
-      - name: Switch console to hanzo-datastore
+      - name: Create events_core and events_full views
         run: |
-          echo "=== Current DATASTORE/CLICKHOUSE env vars ==="
-          kubectl exec -n hanzo deploy/console -- env 2>&1 | grep -E "^DATASTORE_URL=|^CLICKHOUSE_URL=|^DATASTORE_MIGRATION_URL=|^DATASTORE_DB=" | sort
+          echo "=== Create events_core view ==="
+          kubectl exec -n hanzo deploy/console -- wget -q -O - --timeout=10 \
+            --post-data="CREATE VIEW IF NOT EXISTS console.events_core AS SELECT * FROM console.observations" \
+            "http://hanzo-datastore:8123/" 2>&1
+          echo "Result: $?"
 
           echo ""
-          echo "=== Check hanzo-datastore connectivity ==="
-          kubectl exec -n hanzo deploy/console -- wget -q -O - --timeout=5 "http://hanzo-datastore:8123/?query=SELECT+1" 2>&1 || echo "hanzo-datastore NOT reachable"
+          echo "=== Create events_full view ==="
+          kubectl exec -n hanzo deploy/console -- wget -q -O - --timeout=10 \
+            --post-data="CREATE VIEW IF NOT EXISTS console.events_full AS SELECT * FROM console.observations" \
+            "http://hanzo-datastore:8123/" 2>&1
+          echo "Result: $?"
 
           echo ""
-          echo "=== Check hanzo-datastore databases ==="
-          kubectl exec -n hanzo deploy/console -- wget -q -O - --timeout=5 "http://hanzo-datastore:8123/?query=SHOW+DATABASES" 2>&1
+          echo "=== Verify tables exist ==="
+          kubectl exec -n hanzo deploy/console -- wget -q -O - --timeout=5 \
+            "http://hanzo-datastore:8123/?database=console&query=SHOW+TABLES" 2>&1
 
           echo ""
-          echo "=== Check hanzo-datastore console DB tables ==="
-          kubectl exec -n hanzo deploy/console -- wget -q -O - --timeout=5 "http://hanzo-datastore:8123/?database=console&query=SHOW+TABLES" 2>&1
+          echo "=== Test events_core query ==="
+          kubectl exec -n hanzo deploy/console -- wget -q -O - --timeout=5 \
+            "http://hanzo-datastore:8123/?database=console&query=SELECT+count(*)+FROM+events_core+WHERE+project_id='d444910c-426e-4a0b-9041-a6eefd6fd53d'" 2>&1
 
           echo ""
-          echo "=== Check for events_core in hanzo-datastore ==="
-          kubectl exec -n hanzo deploy/console -- wget -q -O - --timeout=5 "http://hanzo-datastore:8123/?query=SELECT+database,name+FROM+system.tables+WHERE+name+LIKE+'%25events_core%25'+FORMAT+TabSeparated" 2>&1 || echo "Not found"
-
-          echo ""
-          echo "=== Switch console to hanzo-datastore ==="
-          kubectl set env deploy/console -n hanzo \
-            "DATASTORE_URL=http://hanzo-datastore:8123" \
-            "CLICKHOUSE_URL=http://hanzo-datastore:8123" \
-            "DATASTORE_MIGRATION_URL=clickhouse://hanzo-datastore:9000" \
-            "DATASTORE_AUTO_MIGRATION_DISABLED=false" 2>&1
-
-          kubectl set env deploy/console-worker -n hanzo \
-            "DATASTORE_URL=http://hanzo-datastore:8123" \
-            "CLICKHOUSE_URL=http://hanzo-datastore:8123" \
-            "DATASTORE_MIGRATION_URL=clickhouse://hanzo-datastore:9000" \
-            "DATASTORE_AUTO_MIGRATION_DISABLED=false" 2>&1 || true
-
-          echo ""
-          echo "=== Wait for rollout ==="
-          kubectl rollout status deploy/console -n hanzo --timeout=180s 2>&1 || echo "Timed out"
-
-          echo ""
-          echo "=== Verify new env ==="
-          kubectl exec -n hanzo deploy/console -- env 2>&1 | grep -E "^DATASTORE_URL=|^CLICKHOUSE_URL=" | sort
-
-          echo ""
-          echo "=== Test connectivity from new pods ==="
-          kubectl exec -n hanzo deploy/console -- wget -q -O - --timeout=5 "http://hanzo-datastore:8123/?database=console&query=SHOW+TABLES" 2>&1
-
-          echo ""
-          echo "=== Check worker migration logs ==="
-          sleep 10
-          WORKER=$(kubectl get pods -n hanzo -l app=console-worker -o name 2>/dev/null | head -1)
-          if [ -n "$WORKER" ]; then
-            kubectl logs "$WORKER" -n hanzo --tail=30 2>&1 | grep -i "migration\|events_core\|table\|create" | head -15
-          fi
+          echo "=== Restart console pods ==="
+          kubectl rollout restart deploy/console -n hanzo 2>&1
+          kubectl rollout restart deploy/console-worker -n hanzo 2>&1 || true
+          kubectl rollout status deploy/console -n hanzo --timeout=180s 2>&1 || echo "Timed out (continuing)"
