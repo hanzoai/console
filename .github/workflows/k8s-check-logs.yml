@@ -16,38 +16,30 @@ jobs:
           token: ${{ secrets.DO_API_TOKEN }}
       - name: Configure kubectl
         run: doctl kubernetes cluster kubeconfig save "${{ env.HANZO_CLUSTER_ID }}"
-      - name: Deploy amd64 image with fix
+      - name: Force deploy new image
         run: |
-          echo "=== Get container names ==="
-          kubectl get deploy console -n hanzo -o jsonpath='{.spec.template.spec.containers[*].name}'
-          echo ""
+          echo "=== Current pods and images ==="
+          kubectl get pods -n hanzo -l app=console -o custom-columns='NAME:.metadata.name,IMAGE:.spec.containers[0].image,AGE:.metadata.creationTimestamp'
 
-          echo "=== Current image ==="
+          echo ""
+          echo "=== Scale to 0 then back up with new image ==="
+          kubectl scale deploy/console -n hanzo --replicas=0
+          sleep 10
+
+          echo "=== Verify image is set ==="
           kubectl get deploy console -n hanzo -o jsonpath='{.spec.template.spec.containers[0].image}'
           echo ""
 
-          echo "=== Deploy ghcr.io/hanzoai/console:main-amd64 ==="
-          CONTAINER=$(kubectl get deploy console -n hanzo -o jsonpath='{.spec.template.spec.containers[0].name}')
-          kubectl set image "deploy/console" -n hanzo \
-            "${CONTAINER}=ghcr.io/hanzoai/console:main-amd64"
-
-          # Also update worker
-          W_CONTAINER=$(kubectl get deploy console-worker -n hanzo -o jsonpath='{.spec.template.spec.containers[0].name}' 2>/dev/null) || true
-          if [ -n "$W_CONTAINER" ]; then
-            kubectl set image "deploy/console-worker" -n hanzo \
-              "${W_CONTAINER}=ghcr.io/hanzoai/console-worker:main-amd64" 2>/dev/null || true
-          fi
-
-          echo "=== Wait for rollout ==="
+          echo "=== Scale back up ==="
+          kubectl scale deploy/console -n hanzo --replicas=2
           kubectl rollout status deploy/console -n hanzo --timeout=180s || echo "Timed out"
 
           echo ""
-          echo "=== Verify new image ==="
-          kubectl get pods -n hanzo -l app=console -o jsonpath='{.items[0].spec.containers[0].image}'
-          echo ""
+          echo "=== New pods ==="
+          kubectl get pods -n hanzo -l app=console -o custom-columns='NAME:.metadata.name,IMAGE:.spec.containers[0].image,READY:.status.containerStatuses[0].ready'
 
           echo ""
-          echo "=== Check for errors ==="
-          sleep 15
-          POD=$(kubectl get pods -n hanzo -l app=console --sort-by=.metadata.creationTimestamp -o name | tail -1)
-          kubectl logs "$POD" -n hanzo --tail=20 2>&1 | grep -i "error\|DB::Exception" || echo "No errors found"
+          echo "=== Test environmentFilterOptions from new pod ==="
+          sleep 10
+          POD=$(kubectl get pods -n hanzo -l app=console -o name | head -1)
+          kubectl logs "$POD" -n hanzo --tail=10 2>&1 | grep -i "error\|environmentFilter" || echo "No errors"
