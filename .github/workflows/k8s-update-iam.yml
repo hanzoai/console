@@ -22,27 +22,88 @@ jobs:
       - name: Configure kubectl
         run: doctl kubernetes cluster kubeconfig save "${{ env.HANZO_CLUSTER_ID }}"
 
-      - name: Fix NEXTAUTH_SECRET with hex-safe value
+      - name: Create hanzo-console app via IAM database
         run: |
-          # Use hex-only secret (no +/= chars that might break env var)
-          SECRET=$(openssl rand -hex 32)
-          echo "::add-mask::${SECRET}"
+          CLIENT_SECRET=$(openssl rand -hex 24)
+          echo "::add-mask::${CLIENT_SECRET}"
 
-          echo "=== Setting clean NEXTAUTH_SECRET ==="
+          echo "=== Finding IAM DB pod ==="
+          DB_POD=$(kubectl get pods -n hanzo | grep iam-db | grep Running | head -1 | awk '{print $1}')
+          echo "DB Pod: $DB_POD"
+
+          if [ -z "$DB_POD" ]; then
+            echo "ERROR: No iam-db pod found"
+            kubectl get pods -n hanzo | grep -i iam
+            exit 1
+          fi
+
+          echo "=== Check if hanzo-console app exists ==="
+          EXISTS=$(kubectl exec -n hanzo "$DB_POD" -- psql -U iam -d iam -t -c \
+            "SELECT count(*) FROM application WHERE name='hanzo-console' AND owner='admin';")
+          EXISTS=$(echo "$EXISTS" | tr -d ' ')
+          echo "Count: $EXISTS"
+
+          if [ "$EXISTS" = "0" ]; then
+            echo "=== Creating hanzo-console by copying from hanzo-app ==="
+            kubectl exec -n hanzo "$DB_POD" -- psql -U iam -d iam -c "
+              INSERT INTO application (
+                owner, name, created_time, display_name, logo, homepage_url,
+                organization, cert, client_id, client_secret, redirect_uris,
+                token_format, expire_in_hours, enable_password, enable_sign_up,
+                enable_code_signin, enable_auto_signin, enable_saml_compress,
+                signin_methods, signup_items, providers, grant_types, tags,
+                signin_items, scopes, token_fields, form_offset,
+                cookie_expire_in_hours, category, type
+              )
+              SELECT
+                'admin', 'hanzo-console', now(), 'Hanzo Console',
+                '/img/hanzo-logo.svg', 'https://console.hanzo.ai',
+                'hanzo', cert, 'hanzo-console', '${CLIENT_SECRET}',
+                '[\"https://console.hanzo.ai/api/auth/callback/iam\",\"http://localhost:3000/api/auth/callback/iam\",\"http://localhost:3001/api/auth/callback/iam\"]'::jsonb,
+                token_format, expire_in_hours, enable_password, enable_sign_up,
+                enable_code_signin, enable_auto_signin, enable_saml_compress,
+                signin_methods, signup_items, providers, grant_types, tags,
+                signin_items, scopes, token_fields, form_offset,
+                cookie_expire_in_hours, category, type
+              FROM application
+              WHERE name='hanzo-app' AND owner='admin'
+              LIMIT 1;
+            "
+          else
+            echo "hanzo-console already exists, fetching client_secret..."
+            CLIENT_SECRET=$(kubectl exec -n hanzo "$DB_POD" -- psql -U iam -d iam -t -c \
+              "SELECT client_secret FROM application WHERE name='hanzo-console' AND owner='admin';" | tr -d ' ')
+            echo "::add-mask::${CLIENT_SECRET}"
+          fi
+
+          echo ""
+          echo "=== Verify hanzo-console in DB ==="
+          kubectl exec -n hanzo "$DB_POD" -- psql -U iam -d iam -c \
+            "SELECT name, client_id, display_name, redirect_uris FROM application WHERE name='hanzo-console';"
+
+          echo ""
+          echo "=== Update console k8s deployment ==="
+          NEXTAUTH_SECRET=$(openssl rand -hex 32)
+          echo "::add-mask::${NEXTAUTH_SECRET}"
+
           kubectl set env deploy/console -n hanzo \
-            "NEXTAUTH_SECRET=${SECRET}" \
-            "SALT=${SECRET}" \
-            "NEXTAUTH_DEBUG=true" \
-            "IAM_CLIENT_ID=hanzo-cloud" \
-            "IAM_CLIENT_SECRET=62484ae37fb49bc602f204c035b001c5fe8a2034dc7d54f0"
+            "IAM_CLIENT_ID=hanzo-console" \
+            "IAM_CLIENT_SECRET=${CLIENT_SECRET}" \
+            "NEXTAUTH_SECRET=${NEXTAUTH_SECRET}" \
+            "SALT=${NEXTAUTH_SECRET}" \
+            "NEXTAUTH_DEBUG=true"
 
-          # Also set on worker
           kubectl set env deploy/console-worker -n hanzo \
-            "NEXTAUTH_SECRET=${SECRET}" \
-            "SALT=${SECRET}" 2>/dev/null || true
+            "NEXTAUTH_SECRET=${NEXTAUTH_SECRET}" \
+            "SALT=${NEXTAUTH_SECRET}" 2>/dev/null || true
 
-          echo "=== Waiting for rollout ==="
+          echo "=== Restart IAM to clear app cache ==="
+          kubectl rollout restart deploy/iam -n hanzo
+          kubectl rollout status deploy/iam -n hanzo --timeout=120s
+
+          echo "=== Wait for console rollout ==="
           kubectl rollout status deploy/console -n hanzo --timeout=180s
 
-          echo "=== Verify env vars ==="
-          kubectl exec -n hanzo deploy/console -- env | grep -iE 'NEXTAUTH_SECRET|IAM_CLIENT|SALT' | sed 's/=.*/=***/'
+          echo ""
+          echo "=== Final verification ==="
+          kubectl exec -n hanzo deploy/console -- printenv IAM_CLIENT_ID
