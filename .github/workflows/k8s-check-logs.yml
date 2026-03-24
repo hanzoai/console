@@ -16,42 +16,33 @@ jobs:
           token: ${{ secrets.DO_API_TOKEN }}
       - name: Configure kubectl
         run: doctl kubernetes cluster kubeconfig save "${{ env.HANZO_CLUSTER_ID }}"
-      - name: Check KMS and fix static DNS
+      - name: Fix KMS and static
         run: |
-          echo "=== KMS pods/services ==="
-          kubectl get svc,deploy,pods -n hanzo 2>/dev/null | grep -i kms || echo "No KMS in hanzo namespace"
+          echo "=== Fix KMS: use internal URL ==="
+          kubectl set env deploy/console -n hanzo "KMS_API_URL=http://kms.hanzo.svc:80"
+          kubectl set env deploy/console-worker -n hanzo "KMS_API_URL=http://kms.hanzo.svc:80" 2>/dev/null || true
           
           echo ""
-          echo "=== Check other namespaces for KMS ==="
-          kubectl get pods --all-namespaces 2>/dev/null | grep -i kms || echo "No KMS pods anywhere"
+          echo "=== Test KMS internally ==="
+          kubectl exec -n hanzo deploy/console -- wget -q -O - --timeout=5 "http://kms.hanzo.svc:80/api/status" 2>&1 | head -3 || echo "KMS internal test failed"
           
           echo ""
-          echo "=== KMS ingress ==="
-          kubectl get ingress --all-namespaces 2>/dev/null | grep -i kms || echo "No KMS ingress"
-
-          echo ""
-          echo "=== Agents pod status ==="
-          kubectl get pods -n hanzo | grep -E "cloud-agent|neon-compute"
-
-          echo ""
-          echo "=== Test agents from console ==="
-          kubectl exec -n hanzo deploy/console -- wget -q -O - --timeout=5 "http://agents:8080/" 2>&1 | head -3 || echo "Agents root returned error"
-          
-          echo ""
-          echo "=== Fix static.hanzo.ai via Cloudflare ==="
+          echo "=== Fix static.hanzo.ai: check wildcard ==="
           CF_ZONE="bac51c3900e73fd28aa75a59898bcee0"
           CF_EMAIL=$(kubectl get secret cloudflare-api-credentials -n hanzo -o jsonpath='{.data.email}' | base64 -d)
           CF_KEY=$(kubectl get secret cloudflare-api-credentials -n hanzo -o jsonpath='{.data.api-key}' | base64 -d)
           
-          RESULT=$(curl -s -H "X-Auth-Email: $CF_EMAIL" -H "X-Auth-Key: $CF_KEY" \
-            "https://api.cloudflare.com/client/v4/zones/$CF_ZONE/dns_records?name=static.hanzo.ai&type=A")
-          RECORD_ID=$(echo "$RESULT" | grep -o '"id":"[^"]*"' | head -1 | cut -d'"' -f4)
-          echo "Record ID: $RECORD_ID"
+          # List all records matching static
+          curl -s -H "X-Auth-Email: $CF_EMAIL" -H "X-Auth-Key: $CF_KEY" \
+            "https://api.cloudflare.com/client/v4/zones/$CF_ZONE/dns_records?name=static.hanzo.ai" | \
+            grep -o '"id":"[^"]*"\|"type":"[^"]*"\|"content":"[^"]*"\|"proxied":[^,]*' | head -8
           
-          if [ -n "$RECORD_ID" ]; then
-            UPDATE=$(curl -s -X PATCH -H "X-Auth-Email: $CF_EMAIL" -H "X-Auth-Key: $CF_KEY" \
-              -H "Content-Type: application/json" \
-              --data '{"proxied":true}' \
-              "https://api.cloudflare.com/client/v4/zones/$CF_ZONE/dns_records/$RECORD_ID")
-            echo "$UPDATE" | grep -o '"success":[^,]*'
-          fi
+          echo ""
+          echo "--- Wildcard record ---"
+          curl -s -H "X-Auth-Email: $CF_EMAIL" -H "X-Auth-Key: $CF_KEY" \
+            "https://api.cloudflare.com/client/v4/zones/$CF_ZONE/dns_records?type=A&name=*.hanzo.ai" | \
+            grep -o '"id":"[^"]*"\|"name":"[^"]*"\|"content":"[^"]*"\|"proxied":[^,]*' | head -8
+
+          echo ""
+          echo "=== Restart console to pick up new KMS URL ==="
+          kubectl rollout restart deploy/console -n hanzo
