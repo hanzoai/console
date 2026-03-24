@@ -12,7 +12,7 @@ env:
 jobs:
   check-logs:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 3
     steps:
       - name: Install doctl
         uses: digitalocean/action-doctl@v2
@@ -22,33 +22,12 @@ jobs:
       - name: Configure kubectl
         run: doctl kubernetes cluster kubeconfig save "${{ env.HANZO_CLUSTER_ID }}"
 
-      - name: Create events_core and events_full views
+      - name: Check current errors
         run: |
-          echo "=== Create events_core view ==="
-          kubectl exec -n hanzo deploy/console -- wget -q -O - --timeout=10 \
-            --post-data="CREATE VIEW IF NOT EXISTS console.events_core AS SELECT * FROM console.observations" \
-            "http://hanzo-datastore:8123/" 2>&1
-          echo "Result: $?"
+          echo "=== Latest console errors ==="
+          POD=$(kubectl get pods -n hanzo -l app=console --sort-by=.metadata.creationTimestamp -o name | tail -1)
+          kubectl logs "$POD" -n hanzo --tail=50 2>&1 | grep -i "error\|DB::Exception\|Code:" | head -20
 
           echo ""
-          echo "=== Create events_full view ==="
-          kubectl exec -n hanzo deploy/console -- wget -q -O - --timeout=10 \
-            --post-data="CREATE VIEW IF NOT EXISTS console.events_full AS SELECT * FROM console.observations" \
-            "http://hanzo-datastore:8123/" 2>&1
-          echo "Result: $?"
-
-          echo ""
-          echo "=== Verify tables exist ==="
-          kubectl exec -n hanzo deploy/console -- wget -q -O - --timeout=5 \
-            "http://hanzo-datastore:8123/?database=console&query=SHOW+TABLES" 2>&1
-
-          echo ""
-          echo "=== Test events_core query ==="
-          kubectl exec -n hanzo deploy/console -- wget -q -O - --timeout=5 \
-            "http://hanzo-datastore:8123/?database=console&query=SELECT+count(*)+FROM+events_core+WHERE+project_id='d444910c-426e-4a0b-9041-a6eefd6fd53d'" 2>&1
-
-          echo ""
-          echo "=== Restart console pods ==="
-          kubectl rollout restart deploy/console -n hanzo 2>&1
-          kubectl rollout restart deploy/console-worker -n hanzo 2>&1 || true
-          kubectl rollout status deploy/console -n hanzo --timeout=180s 2>&1 || echo "Timed out (continuing)"
+          echo "=== Current DATASTORE env ==="
+          kubectl exec "$POD" -n hanzo -- env 2>&1 | grep -E "^DATASTORE_URL=|^CLICKHOUSE_URL=" | sort
