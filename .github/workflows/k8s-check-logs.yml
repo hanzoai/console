@@ -16,22 +16,27 @@ jobs:
           token: ${{ secrets.DO_API_TOKEN }}
       - name: Configure kubectl
         run: doctl kubernetes cluster kubeconfig save "${{ env.HANZO_CLUSTER_ID }}"
-      - name: Check bot services
+      - name: Debug bot ingress
         run: |
-          echo "=== Bot-related pods ==="
-          kubectl get pods -n hanzo | grep -i "bot\|gateway\|hub"
+          echo "=== bot-gateway-ws ingress details ==="
+          kubectl get ingress bot-gateway-ws -n hanzo -o yaml | grep -A 20 "spec:" | head -25
+          
           echo ""
-          echo "=== Bot-related services ==="
-          kubectl get svc -n hanzo | grep -i "bot\|gateway\|hub"
+          echo "=== hanzo-playground ingress details ==="
+          kubectl get ingress hanzo-playground -n hanzo -o yaml | grep -A 20 "spec:" | head -25
+          
           echo ""
-          echo "=== Bot-related ingress ==="
-          kubectl get ingress -n hanzo | grep -i "bot\|hub\|app.hanzo"
+          echo "=== TLS certs for bot ingresses ==="
+          kubectl get ingress -n hanzo -o custom-columns='NAME:.metadata.name,HOSTS:.spec.rules[*].host,TLS:.spec.tls[*].hosts' | grep -i bot
+          
           echo ""
-          echo "=== Bot-hub deployment ==="
-          kubectl get deploy bot-hub -n hanzo -o jsonpath='{.spec.template.spec.containers[0].image}' 2>/dev/null
+          echo "=== Ingress controllers ==="
+          kubectl get ingress bot-gateway-ws -n hanzo -o jsonpath='{.metadata.annotations}' | tr ',' '\n'
+          
           echo ""
-          echo "=== Bot-gateway deployment ==="
-          kubectl get deploy bot-gateway -n hanzo -o jsonpath='{.spec.template.spec.containers[0].image}' 2>/dev/null || echo "No bot-gateway deploy"
+          echo "=== All LB services ==="
+          kubectl get svc -n hanzo --field-selector spec.type=LoadBalancer -o custom-columns='NAME:.metadata.name,IP:.status.loadBalancer.ingress[0].ip'
+          
           echo ""
-          echo "=== Bot-hub pod logs ==="
-          kubectl logs -n hanzo -l app=bot-hub --tail=10 2>/dev/null | head -10 || echo "No bot-hub logs"
+          echo "=== bot-gateway pod logs ==="
+          kubectl logs -n hanzo -l app=bot-gateway --tail=5 2>/dev/null | head -10
