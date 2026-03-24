@@ -1,0 +1,34 @@
+name: Check Console Logs
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  HANZO_CLUSTER_ID: 1a153000-90a6-48ad-9375-7ef901a9bf7f
+
+jobs:
+  check-logs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DO_API_TOKEN }}
+
+      - name: Configure kubectl
+        run: doctl kubernetes cluster kubeconfig save "${{ env.HANZO_CLUSTER_ID }}"
+
+      - name: Get recent console logs
+        run: |
+          echo "=== Pod 1 logs (last 5 min) ==="
+          POD1=$(kubectl get pods -n hanzo -l app=console -o name | head -1)
+          kubectl logs "$POD1" -n hanzo --since=5m 2>&1 | tail -100
+
+          echo ""
+          echo "=== Pod 2 logs (last 5 min) ==="
+          POD2=$(kubectl get pods -n hanzo -l app=console -o name | tail -1)
+          kubectl logs "$POD2" -n hanzo --since=5m 2>&1 | tail -100
