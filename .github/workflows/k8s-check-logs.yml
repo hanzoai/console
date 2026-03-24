@@ -16,10 +16,36 @@ jobs:
           token: ${{ secrets.DO_API_TOKEN }}
       - name: Configure kubectl
         run: doctl kubernetes cluster kubeconfig save "${{ env.HANZO_CLUSTER_ID }}"
-      - name: Get fresh errors
+      - name: Fix events views with correct columns
         run: |
-          echo "=== ALL pod errors (last 100 lines each) ==="
-          for POD in $(kubectl get pods -n hanzo -l app=console -o name); do
-            echo "--- $POD ---"
-            kubectl logs "$POD" -n hanzo --tail=100 2>&1 | grep -i "DB::Exception\|Code:\|UNKNOWN_IDENTIFIER\|Missing column\|error.*Datastore\|non-retryable" | head -5
-          done
+          echo "=== Drop old views ==="
+          kubectl exec -n hanzo deploy/console -- wget -q -O - --timeout=10 \
+            --post-data="DROP VIEW IF EXISTS console.events_core" \
+            "http://hanzo-datastore:8123/" 2>&1
+          kubectl exec -n hanzo deploy/console -- wget -q -O - --timeout=10 \
+            --post-data="DROP VIEW IF EXISTS console.events_full" \
+            "http://hanzo-datastore:8123/" 2>&1
+
+          echo ""
+          echo "=== Create events_core with correct column aliases ==="
+          kubectl exec -n hanzo deploy/console -- wget -q -O - --timeout=10 \
+            --post-data="CREATE VIEW console.events_core AS SELECT *, id AS span_id, parent_observation_id AS parent_span_id, '' AS user_id, '' AS session_id, '' AS trace_name, '' AS release, '' AS environment, [] AS tags FROM console.observations" \
+            "http://hanzo-datastore:8123/" 2>&1
+          echo "events_core: $?"
+
+          echo ""
+          echo "=== Create events_full with correct column aliases ==="
+          kubectl exec -n hanzo deploy/console -- wget -q -O - --timeout=10 \
+            --post-data="CREATE VIEW console.events_full AS SELECT *, id AS span_id, parent_observation_id AS parent_span_id, '' AS user_id, '' AS session_id, '' AS trace_name, '' AS release, '' AS environment, [] AS tags FROM console.observations" \
+            "http://hanzo-datastore:8123/" 2>&1
+          echo "events_full: $?"
+
+          echo ""
+          echo "=== Verify columns ==="
+          kubectl exec -n hanzo deploy/console -- wget -q -O - --timeout=5 \
+            "http://hanzo-datastore:8123/?database=console&query=SELECT+name+FROM+system.columns+WHERE+table='events_core'+AND+database='console'+ORDER+BY+name" 2>&1
+
+          echo ""
+          echo "=== Test query with user_id ==="
+          kubectl exec -n hanzo deploy/console -- wget -q -O - --timeout=5 \
+            "http://hanzo-datastore:8123/?database=console&query=SELECT+user_id,+trace_name,+span_id,+parent_span_id+FROM+events_core+LIMIT+1" 2>&1 || echo "FAILED"
