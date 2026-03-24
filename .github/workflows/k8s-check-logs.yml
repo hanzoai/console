@@ -8,7 +8,7 @@ env:
 jobs:
   check-logs:
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    timeout-minutes: 5
     steps:
       - name: Install doctl
         uses: digitalocean/action-doctl@v2
@@ -16,27 +16,24 @@ jobs:
           token: ${{ secrets.DO_API_TOKEN }}
       - name: Configure kubectl
         run: doctl kubernetes cluster kubeconfig save "${{ env.HANZO_CLUSTER_ID }}"
-      - name: Recreate views with all missing columns
+      - name: Deploy amd64 image with fix
         run: |
-          echo "=== Drop and recreate events_core ==="
-          kubectl exec -n hanzo deploy/console -- wget -q -O - --timeout=10 \
-            --post-data="DROP VIEW IF EXISTS console.events_core" \
-            "http://hanzo-datastore:8123/" 2>&1
-          kubectl exec -n hanzo deploy/console -- wget -q -O - --timeout=10 \
-            --post-data="DROP VIEW IF EXISTS console.events_full" \
-            "http://hanzo-datastore:8123/" 2>&1
-          
-          kubectl exec -n hanzo deploy/console -- wget -q -O - --timeout=10 \
-            --post-data="CREATE VIEW console.events_core AS SELECT *, id AS span_id, parent_observation_id AS parent_span_id, '' AS user_id, '' AS session_id, '' AS trace_name, '' AS release, CAST([] AS Array(String)) AS tags, '' AS experiment_id, '' AS experiment_dataset_id, '' AS model_id, mapKeys(metadata) AS metadata_names, mapValues(metadata) AS metadata_values FROM console.observations" \
-            "http://hanzo-datastore:8123/" 2>&1
-          echo "events_core: $?"
+          echo "=== Deploy ghcr.io/hanzoai/console:main-amd64 ==="
+          kubectl set image deploy/console -n hanzo \
+            hanzo-web=ghcr.io/hanzoai/console:main-amd64
+          kubectl set image deploy/console-worker -n hanzo \
+            hanzo-worker=ghcr.io/hanzoai/console-worker:main-amd64 2>/dev/null || true
 
-          kubectl exec -n hanzo deploy/console -- wget -q -O - --timeout=10 \
-            --post-data="CREATE VIEW console.events_full AS SELECT *, id AS span_id, parent_observation_id AS parent_span_id, '' AS user_id, '' AS session_id, '' AS trace_name, '' AS release, CAST([] AS Array(String)) AS tags, '' AS experiment_id, '' AS experiment_dataset_id, '' AS model_id, mapKeys(metadata) AS metadata_names, mapValues(metadata) AS metadata_values FROM console.observations" \
-            "http://hanzo-datastore:8123/" 2>&1
-          echo "events_full: $?"
+          echo "=== Wait for rollout ==="
+          kubectl rollout status deploy/console -n hanzo --timeout=180s || echo "Timed out"
 
           echo ""
-          echo "=== Test ==="
-          kubectl exec -n hanzo deploy/console -- wget -q -O - --timeout=5 \
-            "http://hanzo-datastore:8123/?database=console&query=SELECT+experiment_id,model_id,span_id,user_id+FROM+events_core+LIMIT+1" 2>&1 || echo "FAILED"
+          echo "=== Verify new image ==="
+          kubectl get pods -n hanzo -l app=console -o jsonpath='{.items[0].spec.containers[0].image}'
+          echo ""
+
+          echo ""
+          echo "=== Check for errors ==="
+          sleep 10
+          POD=$(kubectl get pods -n hanzo -l app=console --sort-by=.metadata.creationTimestamp -o name | tail -1)
+          kubectl logs "$POD" -n hanzo --tail=20 2>&1 | grep -i "error\|exception\|failed" || echo "No errors found"
