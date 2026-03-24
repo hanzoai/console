@@ -22,47 +22,57 @@ jobs:
       - name: Configure kubectl
         run: doctl kubernetes cluster kubeconfig save "${{ env.HANZO_CLUSTER_ID }}"
 
-      - name: Check deployed vs latest image
+      - name: Switch console to hanzo-datastore
         run: |
-          echo "=== Currently deployed console image ==="
-          kubectl get deploy console -n hanzo -o jsonpath='{.spec.template.spec.containers[0].image}' 2>&1
-          echo ""
+          echo "=== Current DATASTORE/CLICKHOUSE env vars ==="
+          kubectl exec -n hanzo deploy/console -- env 2>&1 | grep -E "^DATASTORE_URL=|^CLICKHOUSE_URL=|^DATASTORE_MIGRATION_URL=|^DATASTORE_DB=" | sort
 
           echo ""
-          echo "=== Currently deployed console-worker image ==="
-          kubectl get deploy console-worker -n hanzo -o jsonpath='{.spec.template.spec.containers[0].image}' 2>&1
-          echo ""
+          echo "=== Check hanzo-datastore connectivity ==="
+          kubectl exec -n hanzo deploy/console -- wget -q -O - --timeout=5 "http://hanzo-datastore:8123/?query=SELECT+1" 2>&1 || echo "hanzo-datastore NOT reachable"
 
           echo ""
-          echo "=== Latest image tags on ghcr.io ==="
-          # Check what the latest tags are
-          CONSOLE_IMG=$(kubectl get deploy console -n hanzo -o jsonpath='{.spec.template.spec.containers[0].image}')
-          echo "Deployed: $CONSOLE_IMG"
+          echo "=== Check hanzo-datastore databases ==="
+          kubectl exec -n hanzo deploy/console -- wget -q -O - --timeout=5 "http://hanzo-datastore:8123/?query=SHOW+DATABASES" 2>&1
 
           echo ""
-          echo "=== Check ghcr for latest console tags ==="
-          # Try to list recent versions
-          TOKEN=$(echo '{}' | base64)
-          curl -s "https://ghcr.io/v2/hanzoai/cloud-web/tags/list" 2>&1 | head -5 || echo "Can't list tags without auth"
+          echo "=== Check hanzo-datastore console DB tables ==="
+          kubectl exec -n hanzo deploy/console -- wget -q -O - --timeout=5 "http://hanzo-datastore:8123/?database=console&query=SHOW+TABLES" 2>&1
 
           echo ""
-          echo "=== Console deployment details ==="
-          kubectl get deploy console -n hanzo -o jsonpath='{.metadata.annotations}' 2>&1 | python3 -m json.tool 2>/dev/null | grep -i "image\|version\|revision" || true
+          echo "=== Check for events_core in hanzo-datastore ==="
+          kubectl exec -n hanzo deploy/console -- wget -q -O - --timeout=5 "http://hanzo-datastore:8123/?query=SELECT+database,name+FROM+system.tables+WHERE+name+LIKE+'%25events_core%25'+FORMAT+TabSeparated" 2>&1 || echo "Not found"
 
           echo ""
-          echo "=== Pod image IDs (shows actual pulled digest) ==="
-          kubectl get pods -n hanzo -l app=console -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.status.containerStatuses[0].imageID}{"\n"}{end}' 2>&1
+          echo "=== Switch console to hanzo-datastore ==="
+          kubectl set env deploy/console -n hanzo \
+            "DATASTORE_URL=http://hanzo-datastore:8123" \
+            "CLICKHOUSE_URL=http://hanzo-datastore:8123" \
+            "DATASTORE_MIGRATION_URL=clickhouse://hanzo-datastore:9000" \
+            "DATASTORE_AUTO_MIGRATION_DISABLED=false" 2>&1
+
+          kubectl set env deploy/console-worker -n hanzo \
+            "DATASTORE_URL=http://hanzo-datastore:8123" \
+            "CLICKHOUSE_URL=http://hanzo-datastore:8123" \
+            "DATASTORE_MIGRATION_URL=clickhouse://hanzo-datastore:9000" \
+            "DATASTORE_AUTO_MIGRATION_DISABLED=false" 2>&1 || true
 
           echo ""
-          echo "=== When was the deployment last updated? ==="
-          kubectl get deploy console -n hanzo -o jsonpath='{.metadata.creationTimestamp}' 2>&1
-          echo ""
-          kubectl rollout history deploy/console -n hanzo 2>&1 | tail -5
+          echo "=== Wait for rollout ==="
+          kubectl rollout status deploy/console -n hanzo --timeout=180s 2>&1 || echo "Timed out"
 
           echo ""
-          echo "=== Latest ghcr tags via gh CLI ==="
-          gh api "orgs/hanzoai/packages/container/cloud-web/versions" --jq '.[0:5] | .[] | "\(.created_at) \(.metadata.container.tags)"' 2>&1 || echo "No access or package not found"
+          echo "=== Verify new env ==="
+          kubectl exec -n hanzo deploy/console -- env 2>&1 | grep -E "^DATASTORE_URL=|^CLICKHOUSE_URL=" | sort
 
           echo ""
-          echo "=== Also check hanzo-cloud-web ==="
-          gh api "orgs/hanzoai/packages/container/hanzo-cloud-web/versions" --jq '.[0:5] | .[] | "\(.created_at) \(.metadata.container.tags)"' 2>&1 || echo "Not found"
+          echo "=== Test connectivity from new pods ==="
+          kubectl exec -n hanzo deploy/console -- wget -q -O - --timeout=5 "http://hanzo-datastore:8123/?database=console&query=SHOW+TABLES" 2>&1
+
+          echo ""
+          echo "=== Check worker migration logs ==="
+          sleep 10
+          WORKER=$(kubectl get pods -n hanzo -l app=console-worker -o name 2>/dev/null | head -1)
+          if [ -n "$WORKER" ]; then
+            kubectl logs "$WORKER" -n hanzo --tail=30 2>&1 | grep -i "migration\|events_core\|table\|create" | head -15
+          fi
