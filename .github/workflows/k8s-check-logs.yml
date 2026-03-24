@@ -1,56 +1,25 @@
 name: Check Console Logs
-
 on:
   workflow_dispatch:
-
 permissions:
   contents: read
-
 env:
   HANZO_CLUSTER_ID: 1a153000-90a6-48ad-9375-7ef901a9bf7f
-
 jobs:
   check-logs:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 3
     steps:
       - name: Install doctl
         uses: digitalocean/action-doctl@v2
         with:
           token: ${{ secrets.DO_API_TOKEN }}
-
       - name: Configure kubectl
         run: doctl kubernetes cluster kubeconfig save "${{ env.HANZO_CLUSTER_ID }}"
-
-      - name: Force complete rollout
+      - name: Get fresh errors
         run: |
-          echo "=== Current pods ==="
-          kubectl get pods -n hanzo -l app=console -o wide 2>&1
-
-          echo ""
-          echo "=== Scale down to 1, then back to 2 to force clean slate ==="
-          kubectl scale deploy console -n hanzo --replicas=1 2>&1
-          sleep 15
-          kubectl scale deploy console -n hanzo --replicas=2 2>&1
-
-          echo ""
-          echo "=== Wait for rollout ==="
-          kubectl rollout status deploy/console -n hanzo --timeout=180s 2>&1 || echo "Timed out"
-
-          echo ""
-          echo "=== Final pods ==="
-          kubectl get pods -n hanzo -l app=console -o wide 2>&1
-
-          echo ""
-          echo "=== All pods env check ==="
+          echo "=== ALL pod errors (last 100 lines each) ==="
           for POD in $(kubectl get pods -n hanzo -l app=console -o name); do
-            ENV=$(kubectl exec "$POD" -n hanzo -- printenv CLICKHOUSE_URL 2>/dev/null)
-            echo "$POD: CLICKHOUSE_URL=$ENV"
-          done
-
-          echo ""
-          echo "=== Test from each pod ==="
-          for POD in $(kubectl get pods -n hanzo -l app=console -o name); do
-            RESULT=$(kubectl exec "$POD" -n hanzo -- wget -q -O - --timeout=5 "http://hanzo-datastore:8123/?database=console&query=SELECT+count(*)+FROM+events_core" 2>&1)
-            echo "$POD: events_core count=$RESULT"
+            echo "--- $POD ---"
+            kubectl logs "$POD" -n hanzo --tail=100 2>&1 | grep -i "DB::Exception\|Code:\|UNKNOWN_IDENTIFIER\|Missing column\|error.*Datastore\|non-retryable" | head -5
           done
