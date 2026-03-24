@@ -22,33 +22,27 @@ jobs:
       - name: Configure kubectl
         run: doctl kubernetes cluster kubeconfig save "${{ env.HANZO_CLUSTER_ID }}"
 
-      - name: Check Datastore pods and services
+      - name: Get Datastore crash reason
         run: |
-          echo "=== Datastore pods ==="
-          kubectl get pods -n hanzo | grep -i datastore || echo "No datastore pods found"
+          echo "=== Previous crash logs ==="
+          kubectl logs datastore-0 -n hanzo --previous --tail=50 2>&1 || echo "No previous logs"
 
           echo ""
-          echo "=== Datastore service ==="
-          kubectl get svc -n hanzo | grep -i datastore || echo "No datastore service found"
+          echo "=== Pod describe (events) ==="
+          kubectl describe pod datastore-0 -n hanzo | tail -30
 
           echo ""
-          echo "=== Datastore pod status ==="
-          kubectl get pods -n hanzo -l app=datastore -o wide 2>/dev/null || \
-          kubectl get pods -n hanzo | grep datastore
+          echo "=== StatefulSet describe ==="
+          kubectl get statefulset -n hanzo | grep datastore
 
           echo ""
-          echo "=== Datastore pod logs ==="
-          DS_POD=$(kubectl get pods -n hanzo | grep datastore | head -1 | awk '{print $1}')
-          if [ -n "$DS_POD" ]; then
-            kubectl logs "$DS_POD" -n hanzo --tail=20 2>&1
-          else
-            echo "No datastore pod to check logs"
-          fi
+          echo "=== Pod resource usage ==="
+          kubectl top pod datastore-0 -n hanzo 2>/dev/null || echo "Metrics not available"
 
           echo ""
-          echo "=== Test direct IP connectivity ==="
-          kubectl exec -n hanzo deploy/console -- wget -q -O - --timeout=3 "http://10.124.34.223:8123/?query=SELECT+1" 2>&1 || echo "Direct IP also failed"
+          echo "=== Try reading error log from inside pod ==="
+          kubectl exec -n hanzo datastore-0 -- cat /var/log/hanzo-datastore-server/hanzo-datastore-server.err.log 2>&1 | tail -30 || echo "Pod not running, can't exec"
 
           echo ""
-          echo "=== Datastore endpoints ==="
-          kubectl get endpoints -n hanzo datastore 2>/dev/null || echo "No datastore endpoints"
+          echo "=== Node resources ==="
+          kubectl describe node runner-pool-32g-hwvq3 2>/dev/null | grep -A5 "Allocated resources" || echo "Node info not available"
