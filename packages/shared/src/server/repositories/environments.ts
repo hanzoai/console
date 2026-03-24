@@ -35,7 +35,7 @@ export const getEnvironmentsForProject = async (props: EnvironmentFilterProps): 
     query,
     params: {
       projectId,
-      fromTimestamp,
+      fromTimestamp: fromTimestamp ? fromTimestamp.toISOString() : undefined,
       dataTypes: AGGREGATABLE_SCORE_TYPES,
     },
     tags: {
