@@ -1,0 +1,48 @@
+name: Update Console IAM Config
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  HANZO_CLUSTER_ID: 1a153000-90a6-48ad-9375-7ef901a9bf7f
+
+jobs:
+  update-console-iam:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Configure kubectl
+        run: doctl kubernetes cluster kubeconfig save "${{ env.HANZO_CLUSTER_ID }}"
+
+      - name: Fix NEXTAUTH_SECRET with hex-safe value
+        run: |
+          # Use hex-only secret (no +/= chars that might break env var)
+          SECRET=$(openssl rand -hex 32)
+          echo "::add-mask::${SECRET}"
+
+          echo "=== Setting clean NEXTAUTH_SECRET ==="
+          kubectl set env deploy/console -n hanzo \
+            "NEXTAUTH_SECRET=${SECRET}" \
+            "SALT=${SECRET}" \
+            "NEXTAUTH_DEBUG=true" \
+            "IAM_CLIENT_ID=hanzo-cloud" \
+            "IAM_CLIENT_SECRET=62484ae37fb49bc602f204c035b001c5fe8a2034dc7d54f0"
+
+          # Also set on worker
+          kubectl set env deploy/console-worker -n hanzo \
+            "NEXTAUTH_SECRET=${SECRET}" \
+            "SALT=${SECRET}" 2>/dev/null || true
+
+          echo "=== Waiting for rollout ==="
+          kubectl rollout status deploy/console -n hanzo --timeout=180s
+
+          echo "=== Verify env vars ==="
+          kubectl exec -n hanzo deploy/console -- env | grep -iE 'NEXTAUTH_SECRET|IAM_CLIENT|SALT' | sed 's/=.*/=***/'
