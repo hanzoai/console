@@ -120,9 +120,11 @@ jobs:
           echo "::add-mask::${NEXTAUTH_SECRET}"
 
           echo "=== Setting console env vars ==="
+          # Fix issuer mismatch: JWT iss=https://iam.hanzo.ai but IAM_SERVER_URL was https://hanzo.id
           kubectl set env deploy/console -n hanzo \
             "IAM_CLIENT_ID=hanzo-console" \
             "IAM_CLIENT_SECRET=${CLIENT_SECRET}" \
+            "IAM_SERVER_URL=https://iam.hanzo.ai" \
             "NEXTAUTH_SECRET=${NEXTAUTH_SECRET}" \
             "SALT=${NEXTAUTH_SECRET}" \
             "NEXTAUTH_DEBUG=true"
