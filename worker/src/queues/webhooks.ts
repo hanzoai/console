@@ -363,7 +363,7 @@ async function executeWebhookAction({
   try {
     const decryptedSecret = decrypt(webhookConfig.secretKey);
     const signature = createSignatureHeader(webhookPayload, decryptedSecret);
-    requestHeaders["x-hanzo-signature"] = signature;
+    requestHeaders["x-webhook-signature"] = signature;
   } catch (error) {
     logger.error("Failed to decrypt webhook secret or generate signature", error);
     throw new InternalServerError("Failed to generate webhook signature");
@@ -458,7 +458,7 @@ async function executeGitHubDispatchAction({
 
     // Add signature for optional verification (using GitHub token as secret)
     const signature = createSignatureHeader(githubPayload, decryptedToken);
-    requestHeaders["x-hanzo-signature"] = signature;
+    requestHeaders["x-webhook-signature"] = signature;
   } catch (error) {
     logger.error("Failed to decrypt GitHub token or generate signature", error);
     throw new InternalServerError("Failed to generate GitHub authentication");

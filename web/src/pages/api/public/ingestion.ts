@@ -43,7 +43,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // add context of api call to the span
     const currentSpan = getCurrentSpan();
 
-    // get x-hanzo-xxx headers and add them to the span
+    // get x-iam-xxx headers and add them to the span
     Object.keys(req.headers).forEach((header) => {
       if (header.toLowerCase().startsWith("x-hanzo") || header.toLowerCase().startsWith("x_hanzo")) {
         currentSpan?.setAttributes({

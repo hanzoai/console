@@ -37,7 +37,7 @@ describe("withMiddlewares error handling", () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: "POST",
         headers: {
-          "x-hanzo-public-key": "test-key",
+          "x-iam-public-key": "test-key",
         },
       });
 
@@ -63,7 +63,7 @@ describe("withMiddlewares error handling", () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: "GET",
         headers: {
-          "x-hanzo-public-key": "test-key",
+          "x-iam-public-key": "test-key",
         },
       });
 
@@ -93,7 +93,7 @@ describe("withMiddlewares error handling", () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: "GET",
         headers: {
-          "x-hanzo-public-key": "test-key",
+          "x-iam-public-key": "test-key",
         },
       });
 
@@ -124,7 +124,7 @@ describe("withMiddlewares error handling", () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: "POST",
         headers: {
-          "x-hanzo-public-key": "test-key",
+          "x-iam-public-key": "test-key",
         },
       });
 
@@ -152,7 +152,7 @@ describe("withMiddlewares error handling", () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: "POST",
         headers: {
-          "x-hanzo-public-key": "test-key",
+          "x-iam-public-key": "test-key",
         },
       });
 
@@ -181,7 +181,7 @@ describe("withMiddlewares error handling", () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: "POST",
         headers: {
-          "x-hanzo-public-key": "test-key",
+          "x-iam-public-key": "test-key",
         },
       });
 
@@ -212,7 +212,7 @@ describe("withMiddlewares error handling", () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: "POST",
         headers: {
-          "x-hanzo-public-key": "test-key",
+          "x-iam-public-key": "test-key",
         },
       });
 
@@ -246,7 +246,7 @@ describe("withMiddlewares error handling", () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: "POST",
         headers: {
-          "x-hanzo-public-key": "test-key",
+          "x-iam-public-key": "test-key",
         },
       });
 
@@ -279,7 +279,7 @@ describe("withMiddlewares error handling", () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: "POST",
         headers: {
-          "x-hanzo-public-key": "test-key",
+          "x-iam-public-key": "test-key",
         },
       });
 
@@ -309,7 +309,7 @@ describe("withMiddlewares error handling", () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: "DELETE",
         headers: {
-          "x-hanzo-public-key": "test-key",
+          "x-iam-public-key": "test-key",
         },
       });
 
@@ -335,7 +335,7 @@ describe("withMiddlewares error handling", () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: "PATCH",
         headers: {
-          "x-hanzo-public-key": "test-key",
+          "x-iam-public-key": "test-key",
         },
       });
 
@@ -359,7 +359,7 @@ describe("withMiddlewares error handling", () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: "PUT",
         headers: {
-          "x-hanzo-public-key": "test-key",
+          "x-iam-public-key": "test-key",
         },
       });
 

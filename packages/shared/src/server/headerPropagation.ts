@@ -27,7 +27,7 @@ export const contextWithHanzoProps = (props: HanzoContextProps): opentelemetry.C
       });
     });
 
-    // get x-hanzo-xxx headers and add them to the span
+    // get x-iam-xxx headers and add them to the span
     Object.keys(props.headers).forEach((name) => {
       if (name.toLowerCase().startsWith("x-hanzo") || name.toLowerCase().startsWith("x_hanzo")) {
         const value = props.headers![name];

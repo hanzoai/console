@@ -495,8 +495,8 @@ async function verifyBasicAuth(authHeader: string | undefined) {
 async function verifyAdminApiKeyAuth(req: NextApiRequest) {
   // Requires:
   // 1. Authorization: Bearer <ADMIN_API_KEY>
-  // 2. x-hanzo-admin-api-key: <ADMIN_API_KEY>
-  // 3. x-hanzo-project-id: <project-id>
+  // 2. x-iam-admin-api-key: <ADMIN_API_KEY>
+  // 3. x-iam-project-id: <project-id>
 
   if (env.NEXT_PUBLIC_HANZO_CLOUD_REGION) {
     throw { status: 403, message: "Admin API key auth not available on Hanzo Cloud" };
@@ -504,7 +504,7 @@ async function verifyAdminApiKeyAuth(req: NextApiRequest) {
 
   const adminApiKey = env.ADMIN_API_KEY;
   const bearerToken = req.headers.authorization?.replace("Bearer ", "");
-  const adminApiKeyHeader = req.headers["x-hanzo-admin-api-key"];
+  const adminApiKeyHeader = req.headers["x-iam-admin-api-key"];
 
   // Timing-safe comparison
   const isValid =
@@ -513,7 +513,7 @@ async function verifyAdminApiKeyAuth(req: NextApiRequest) {
 
   if (!isValid) throw { status: 401, message: "Invalid admin API key" };
 
-  const projectId = req.headers["x-hanzo-project-id"];
+  const projectId = req.headers["x-iam-project-id"];
   const project = await prisma.project.findUnique({ where: { id: projectId } });
 
   if (!project) throw { status: 404, message: "Project not found" };

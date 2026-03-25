@@ -151,7 +151,7 @@ export const WebhookActionForm: React.FC<WebhookActionFormProps> = ({ form, disa
           <FormDescription className="mb-2">Default headers (automatically added by Hanzo):</FormDescription>
           {Object.entries({
             ...WebhookDefaultHeaders,
-            "x-hanzo-signature": `t=<timestamp>,v1=<signature>`,
+            "x-webhook-signature": `t=<timestamp>,v1=<signature>`,
           }).map(([key, value]) => (
             <div key={key} className="mb-2 grid grid-cols-[1fr,1fr,auto,auto] gap-2">
               <FormItem>
@@ -246,7 +246,7 @@ export const WebhookActionForm: React.FC<WebhookActionFormProps> = ({ form, disa
         <FormLabel>Webhook Secret</FormLabel>
         <FormDescription className="mb-2">
           Use this secret to verify webhook signatures for security. The secret is automatically included in the
-          x-hanzo-signature header.
+          x-webhook-signature header.
         </FormDescription>
 
         {action?.id ? (

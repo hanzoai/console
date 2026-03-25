@@ -24,6 +24,6 @@ errors:
   - commons.MethodNotAllowedError
   - commons.NotFoundError
 headers:
-  X-Hanzo-Sdk-Name: optional<string>
-  X-Hanzo-Sdk-Version: optional<string>
-  X-Hanzo-Public-Key: optional<string>
+  X-SDK-Name: optional<string>
+  X-SDK-Version: optional<string>
+  X-IAM-Public-Key: optional<string>

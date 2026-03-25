@@ -102,8 +102,8 @@ describe("Admin API Key Authentication", () => {
       const mockReq = {
         headers: {
           authorization: `Bearer ${ADMIN_API_KEY}`,
-          "x-hanzo-admin-api-key": ADMIN_API_KEY,
-          "x-hanzo-project-id": projectId,
+          "x-iam-admin-api-key": ADMIN_API_KEY,
+          "x-iam-project-id": projectId,
         },
       } as unknown as NextApiRequest;
 
@@ -131,7 +131,7 @@ describe("Admin API Key Authentication", () => {
       expect(result.scope.apiKeyId).not.toBe("ADMIN_API_KEY");
     });
 
-    it("should fall back to basic auth when no x-hanzo-admin-api-key header", async () => {
+    it("should fall back to basic auth when no x-iam-admin-api-key header", async () => {
       const mockReq = {
         headers: {
           authorization: auth,
@@ -150,8 +150,8 @@ describe("Admin API Key Authentication", () => {
       const mockReq = {
         headers: {
           authorization: `Bearer ${ADMIN_API_KEY}`,
-          "x-hanzo-admin-api-key": ADMIN_API_KEY,
-          "x-hanzo-project-id": projectId,
+          "x-iam-admin-api-key": ADMIN_API_KEY,
+          "x-iam-project-id": projectId,
         },
       } as unknown as NextApiRequest;
 
@@ -169,8 +169,8 @@ describe("Admin API Key Authentication", () => {
       const mockReq = {
         headers: {
           authorization: "Bearer some-key",
-          "x-hanzo-admin-api-key": "some-key",
-          "x-hanzo-project-id": projectId,
+          "x-iam-admin-api-key": "some-key",
+          "x-iam-project-id": projectId,
         },
       } as unknown as NextApiRequest;
 
@@ -186,8 +186,8 @@ describe("Admin API Key Authentication", () => {
       const mockReq = {
         headers: {
           authorization: "Bearer wrong-key",
-          "x-hanzo-admin-api-key": ADMIN_API_KEY,
-          "x-hanzo-project-id": projectId,
+          "x-iam-admin-api-key": ADMIN_API_KEY,
+          "x-iam-project-id": projectId,
         },
       } as unknown as NextApiRequest;
 
@@ -197,12 +197,12 @@ describe("Admin API Key Authentication", () => {
       });
     });
 
-    it("should fail with invalid x-hanzo-admin-api-key header", async () => {
+    it("should fail with invalid x-iam-admin-api-key header", async () => {
       const mockReq = {
         headers: {
           authorization: `Bearer ${ADMIN_API_KEY}`,
-          "x-hanzo-admin-api-key": "wrong-key",
-          "x-hanzo-project-id": projectId,
+          "x-iam-admin-api-key": "wrong-key",
+          "x-iam-project-id": projectId,
         },
       } as unknown as NextApiRequest;
 
@@ -216,8 +216,8 @@ describe("Admin API Key Authentication", () => {
       const mockReq = {
         headers: {
           authorization: "Bearer different-key-1",
-          "x-hanzo-admin-api-key": "different-key-2",
-          "x-hanzo-project-id": projectId,
+          "x-iam-admin-api-key": "different-key-2",
+          "x-iam-project-id": projectId,
         },
       } as unknown as NextApiRequest;
 
@@ -227,17 +227,17 @@ describe("Admin API Key Authentication", () => {
       });
     });
 
-    it("should fail without x-hanzo-project-id header", async () => {
+    it("should fail without x-iam-project-id header", async () => {
       const mockReq = {
         headers: {
           authorization: `Bearer ${ADMIN_API_KEY}`,
-          "x-hanzo-admin-api-key": ADMIN_API_KEY,
+          "x-iam-admin-api-key": ADMIN_API_KEY,
         },
       } as unknown as NextApiRequest;
 
       await expect(verifyAuth(mockReq, true)).rejects.toEqual({
         status: 400,
-        message: "x-hanzo-project-id header is required for admin API key authentication",
+        message: "x-iam-project-id header is required for admin API key authentication",
       });
     });
 
@@ -245,8 +245,8 @@ describe("Admin API Key Authentication", () => {
       const mockReq = {
         headers: {
           authorization: `Bearer ${ADMIN_API_KEY}`,
-          "x-hanzo-admin-api-key": ADMIN_API_KEY,
-          "x-hanzo-project-id": "non-existent-project",
+          "x-iam-admin-api-key": ADMIN_API_KEY,
+          "x-iam-project-id": "non-existent-project",
         },
       } as unknown as NextApiRequest;
 
@@ -260,7 +260,7 @@ describe("Admin API Key Authentication", () => {
       const mockReq = {
         headers: {
           authorization: auth,
-          "x-hanzo-project-id": projectId,
+          "x-iam-project-id": projectId,
         },
       } as unknown as NextApiRequest;
 
