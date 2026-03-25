@@ -992,6 +992,7 @@ export type DB = {
   dns_records: DnsRecord;
   dns_zones: DnsZone;
   eval_templates: EvalTemplate;
+  insights_integrations: InsightsIntegration;
   job_configurations: JobConfiguration;
   job_executions: JobExecution;
   llm_api_keys: LlmApiKeys;
@@ -1007,7 +1008,6 @@ export type DB = {
   organization_memberships: OrganizationMembership;
   organizations: Organization;
   pending_deletions: PendingDeletion;
-  insights_integrations: InsightsIntegration;
   prices: Price;
   pricing_tiers: PricingTier;
   project_memberships: ProjectMembership;
