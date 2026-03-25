@@ -15,7 +15,7 @@ on:
 env: {}
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.head_ref || github.sha }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
@@ -54,7 +54,7 @@ jobs:
     needs:
       - pre-job
     if: needs.pre-job.outputs.should_skip != 'true'
-    timeout-minutes: 12
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v3
@@ -145,7 +145,7 @@ jobs:
   # Test jobs — all download shared build artifact
   # ──────────────────────────────────────────────────────────────────────
   test-docker-build:
-    timeout-minutes: 12
+    timeout-minutes: 20
     runs-on: hanzo-build-linux-amd64
     continue-on-error: true # not in CI gate — stabilizing Docker build
     needs:
@@ -464,7 +464,7 @@ jobs:
         run: npx cross-env NODE_OPTIONS='--no-experimental-require-module' npx dotenv -e ../.env.test -e ../.env -- npx jest --verbose --runInBand --detectOpenHandles --forceExit --selectProjects async-server --shard=${{ matrix.shard }}/3
 
   tests-worker:
-    timeout-minutes: 12
+    timeout-minutes: 20
     runs-on: hanzo-build-linux-amd64
     needs:
       - pre-job
@@ -854,6 +854,12 @@ jobs:
     outputs:
       success: ${{ steps.set-success-output.outputs.success }}
     steps:
+      - name: Log job results
+        run: |
+          echo "build: ${{ needs.build.result }}"
+          echo "lint: ${{ needs.lint.result }}"
+          echo "tests-web-sync: ${{ needs.tests-web-sync.result }}"
+          echo "tests-web-async: ${{ needs.tests-web-async.result }}"
       - name: Set check result as an output
         id: set-success-output
         run: |
