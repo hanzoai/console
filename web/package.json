@@ -147,7 +147,7 @@
     "@posthog/core": "npm:@hanzo/insights-core@1.23.2",
     "prexit": "^2.2.0",
     "prism-react-renderer": "^2.4.1",
-    "prisma": "^6.17.1",
+    "prisma": "^7.5.0",
     "protobufjs": "^7.4.0",
     "rate-limiter-flexible": "^9.0.1",
     "react": "19.2.3",
