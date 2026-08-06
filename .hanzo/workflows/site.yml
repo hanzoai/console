@@ -1,0 +1,77 @@
+# The console ships as a SITE RELEASE, and identity is IAM only.
+#
+# This is deliberately NOT the hanzoai/ci `site:` lane. That lane uploads with
+# `mc mirror` and refuses to publish without S3_ADMIN_ACCESS_KEY/SECRET_KEY —
+# shared static object-store keys, not IAM — so it cannot express an IAM-only
+# publish. It is not bent into one either: the upload here is cloud's OWN zip
+# route, authorized by the SAME bearer as the publish that follows it. One
+# issuer, one token, no S3 credential anywhere in the path.
+#
+# WHERE THE BEARER COMES FROM. GitHub holds only KMS_CLIENT_ID/KMS_CLIENT_SECRET,
+# as everywhere else. cloud's /v1/kms/auth/login is not a second identity: it is a
+# broker that performs the IAM client_credentials exchange and returns IAM's own
+# JWT verbatim. Measured — the token it hands back is RS256 with
+# `iss: https://hanzo.id`, `owner: hanzo`, `tokenType: access-token`, which is the
+# same token minting it directly at hanzo.id/v1/iam/oauth/token produces. So this
+# IS the IAM bearer, there is no second credential path, and nothing has to be
+# sealed in KMS for it to work.
+#
+# Publishing is `push: main` only, so a pull request can never ship a release.
+name: Site
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+jobs:
+  publish:
+    runs-on: hanzo-build-linux-amd64
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: corepack enable && pnpm install --frozen-lockfile
+      # The heap bump is load-bearing, not defensive: the full @hanzo/gui export
+      # OOMs into a stub shell without it. The analytics id is the public per-site
+      # id Dockerfile.embed baked, so the release tracks exactly as the embed did.
+      - run: pnpm build:embed
+        env:
+          NODE_OPTIONS: --max-old-space-size=8192
+          NEXT_PUBLIC_ANALYTICS_WEBSITE_ID: 7dce54ee-41f6-4751-96bf-fe005067c7c7
+      - name: Deploy + publish
+        env:
+          KMS_CLIENT_ID: ${{ secrets.KMS_CLIENT_ID }}
+          KMS_CLIENT_SECRET: ${{ secrets.KMS_CLIENT_SECRET }}
+        run: |
+          set -euo pipefail
+          # node, not jq: this job already pins Node 22 above, so parsing with it
+          # assumes nothing about what the runner image ships.
+          jv () { node -p "JSON.parse(require('fs').readFileSync('$1','utf8'))['$2'] ?? ''"; }
+          post () { # url content-type curl-data-flag value
+            local code
+            code=$(curl -sS -o /tmp/resp.json -w '%{http_code}' -X POST "$1" \
+              -H "Authorization: Bearer $TOKEN" -H 'X-Org-Id: hanzo' \
+              -H "Content-Type: $2" "$3" "$4")
+            # Each non-2xx here is a different fix (402 hosting, 403 wrong org, 404
+            # no such site, 409 source moved, 413 too large), so print the body.
+            case "$code" in 2??) ;;
+              *) echo "::error::POST $1 -> HTTP $code"; cat /tmp/resp.json; exit 1 ;;
+            esac
+          }
+          node -e 'require("fs").writeFileSync("/tmp/login.json",JSON.stringify({clientId:process.env.KMS_CLIENT_ID,clientSecret:process.env.KMS_CLIENT_SECRET}))'
+          code=$(curl -sS -o /tmp/tok.json -w '%{http_code}' -X POST https://api.hanzo.ai/v1/kms/auth/login \
+            -H 'Content-Type: application/json' --data-binary @/tmp/login.json)
+          # Checked before parsing: the gateway answers a down KMS with a 503 whose
+          # body is `no available server`, and feeding that to a JSON parser turns an
+          # outage into a stack trace instead of the one line that names it.
+          case "$code" in 2??) ;;
+            *) echo "::error::KMS login -> HTTP $code"; cat /tmp/tok.json; echo; exit 1 ;;
+          esac
+          TOKEN=$(jv /tmp/tok.json accessToken)
+          [ -n "$TOKEN" ] || { echo "::error::KMS login returned no IAM bearer"; exit 1; }
+          echo "::add-mask::$TOKEN"
+          # index.html must be at the ZIP ROOT — cloud refuses a source without one.
+          ( cd out && zip -qr ../site.zip . )
+          post https://api.hanzo.ai/v1/projects/hanzo-console/deploy application/zip --data-binary @site.zip
+          post https://api.hanzo.ai/v1/sites/hanzo-console/publish application/json -d '{"source":"hanzo-console"}'
+          echo "published $(jv /tmp/resp.json releaseId) ($(jv /tmp/resp.json objects) objects)"
