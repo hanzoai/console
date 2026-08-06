@@ -1,7 +1,10 @@
 import { describe, it, expect, afterEach, vi } from 'vitest'
 import { AuditApi, normalizeEvent } from './audit'
 
+// Two hosts, and the split is the point: ORIGIN is where the PAGE is served, API
+// (`CANONICAL_API_URL`) is where every `/v1` call goes. They no longer coincide.
 const ORIGIN = 'https://console.hanzo.ai'
+const API = 'https://api.hanzo.ai'
 
 function stubJson(body: unknown, status = 200): { url: string } {
   const captured = { url: '' }
@@ -81,6 +84,6 @@ describe('AuditApi.list — org-scoped, filtered, paginated', () => {
   it('page 1 and unfiltered omit the p/ filter params (clean URL)', async () => {
     const cap = stubJson({ status: 'ok', data: [], data2: 0 })
     await AuditApi.list({ page: 1 })
-    expect(cap.url).toBe(`${ORIGIN}/v1/audit`)
+    expect(cap.url).toBe(`${API}/v1/audit`)
   })
 })

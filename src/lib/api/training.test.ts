@@ -12,7 +12,10 @@ import {
   normSampleResult,
 } from './training'
 
+/** The origin the SPA is served from — deliberately NOT where the API lives. */
 const ORIGIN = 'https://console.hanzo.ai'
+/** The one API host every `/v1` call resolves against (config's CANONICAL_API_URL). */
+const API = 'https://api.hanzo.ai'
 
 type Call = { url: string; method: string; body: unknown }
 
@@ -108,14 +111,14 @@ describe('training normalizers', () => {
   })
 })
 
-// ── Wire contract (URL + method + body) through the /ai bearer proxy ──────────────────
+// ── Wire contract (URL + method + body) on the canonical API host ─────────────────────
 
 describe('TrainingApi wire contract', () => {
-  it('list() GETs /ai/v1/training/clients and normalizes {clients}', async () => {
+  it('list() GETs /v1/training/clients and normalizes {clients}', async () => {
     const calls = stubFetch(() => ({ body: { clients: [{ id: 'c1', status: 'ready' }, { id: 'c2', status: 'loading' }] } }))
     const out = await TrainingApi.list()
     expect(calls[0].method).toBe('GET')
-    expect(calls[0].url).toBe(ORIGIN + '/v1/training/clients')
+    expect(calls[0].url).toBe(API + '/v1/training/clients')
     expect(out.map((c) => c.id)).toEqual(['c1', 'c2'])
   })
 
@@ -123,7 +126,7 @@ describe('TrainingApi wire contract', () => {
     const calls = stubFetch(() => ({ body: { id: 'c3', base_model: 'HuggingFaceTB/SmolLM2-135M', status: 'loading' } }))
     const out = await TrainingApi.create({ base_model: 'HuggingFaceTB/SmolLM2-135M' })
     expect(calls[0].method).toBe('POST')
-    expect(calls[0].url).toBe(ORIGIN + '/v1/training/clients')
+    expect(calls[0].url).toBe(API + '/v1/training/clients')
     expect(calls[0].body).toEqual({
       base_model: 'HuggingFaceTB/SmolLM2-135M',
       lora_config: { rank: DEFAULT_LORA.rank, alpha: DEFAULT_LORA.alpha, target_modules: [...LLAMA_TARGET_MODULES] },
@@ -142,7 +145,7 @@ describe('TrainingApi wire contract', () => {
     const calls = stubFetch(() => ({ body: { id: 'c1', status: 'ready', loss_history: [2, 1] } }))
     const out = await TrainingApi.get('c1')
     expect(calls[0].method).toBe('GET')
-    expect(calls[0].url).toBe(ORIGIN + '/v1/training/clients/c1')
+    expect(calls[0].url).toBe(API + '/v1/training/clients/c1')
     expect(out.loss_history).toEqual([2, 1])
   })
 
@@ -150,14 +153,14 @@ describe('TrainingApi wire contract', () => {
     const calls = stubFetch(() => ({ body: { id: 'c1', deleted: true } }))
     await TrainingApi.remove('c1')
     expect(calls[0].method).toBe('DELETE')
-    expect(calls[0].url).toBe(ORIGIN + '/v1/training/clients/c1')
+    expect(calls[0].url).toBe(API + '/v1/training/clients/c1')
   })
 
   it('forwardBackward() POSTs {data} and normalizes the result', async () => {
     const calls = stubFetch(() => ({ body: { loss: 1.42, num_tokens: 12, metrics: { grad_norm: 0.5 } } }))
     const out = await TrainingApi.forwardBackward('c1', [{ prompt: 'a', completion: 'b' }])
     expect(calls[0].method).toBe('POST')
-    expect(calls[0].url).toBe(ORIGIN + '/v1/training/clients/c1/forward_backward')
+    expect(calls[0].url).toBe(API + '/v1/training/clients/c1/forward_backward')
     expect(calls[0].body).toEqual({ data: [{ prompt: 'a', completion: 'b' }] })
     expect(out.loss).toBeCloseTo(1.42)
     expect(out.num_tokens).toBe(12)
@@ -166,7 +169,7 @@ describe('TrainingApi wire contract', () => {
   it('optimStep() POSTs {adam_params} and returns the step count', async () => {
     const calls = stubFetch(() => ({ body: { optim_steps: 5 } }))
     const out = await TrainingApi.optimStep('c1', { lr: 1e-4 })
-    expect(calls[0].url).toBe(ORIGIN + '/v1/training/clients/c1/optim_step')
+    expect(calls[0].url).toBe(API + '/v1/training/clients/c1/optim_step')
     expect(calls[0].body).toEqual({ adam_params: { lr: 1e-4 } })
     expect(out.optim_steps).toBe(5)
   })
@@ -174,7 +177,7 @@ describe('TrainingApi wire contract', () => {
   it('sample() POSTs prompt + sampling_params and reads sequences', async () => {
     const calls = stubFetch(() => ({ body: { sequences: [{ tokens: [1], text: ' Paris' }] } }))
     const out = await TrainingApi.sample('c1', { prompt: 'The capital of France is', sampling_params: { max_tokens: 8, temperature: 0.7 }, num_samples: 1 })
-    expect(calls[0].url).toBe(ORIGIN + '/v1/training/clients/c1/sample')
+    expect(calls[0].url).toBe(API + '/v1/training/clients/c1/sample')
     expect(calls[0].body).toEqual({ prompt: 'The capital of France is', sampling_params: { max_tokens: 8, temperature: 0.7 }, num_samples: 1 })
     expect(out.sequences[0].text).toBe(' Paris')
   })
@@ -182,7 +185,7 @@ describe('TrainingApi wire contract', () => {
   it('saveWeights() POSTs {name} and returns {path, format}', async () => {
     const calls = stubFetch(() => ({ body: { path: '/adapters/a1', format: 'peft' } }))
     const out = await TrainingApi.saveWeights('c1', 'a1')
-    expect(calls[0].url).toBe(ORIGIN + '/v1/training/clients/c1/save_weights')
+    expect(calls[0].url).toBe(API + '/v1/training/clients/c1/save_weights')
     expect(calls[0].body).toEqual({ name: 'a1' })
     expect(out).toEqual({ path: '/adapters/a1', format: 'peft' })
   })

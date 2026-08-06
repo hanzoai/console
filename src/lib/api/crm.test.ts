@@ -14,14 +14,16 @@ import {
 
 /**
  * CRM API + pure normalizers. The module calls the DOCUMENTED cloud `/v1/crm`
- * contract same-origin, keyless and prefix-free (`originV1Url` → `<origin>/v1/crm`);
- * `next.config.mjs` rewrites that head to the user-bearer `/v1` proxy. These
- * tests pin (1) that each call hits the EXACT same-origin `/v1/crm` path (the
- * canonical Agents/Evals form — never a direct cloud-origin call, which 403s),
- * (2) that the real store JSON shape (store.go tags) normalizes, (3) list reads any
- * envelope key, and (4) a garbage/absent field degrades to a safe default — never throws.
+ * contract keyless and prefix-free on the canonical API host (`originV1Url` →
+ * `api.hanzo.ai/v1/crm`). These tests pin (1) that each call hits the EXACT `/v1/crm`
+ * path there (the canonical Agents/Evals form), (2) that the real store JSON shape
+ * (store.go tags) normalizes, (3) list reads any envelope key, and (4) a garbage/absent
+ * field degrades to a safe default — never throws.
  */
+/** The PAGE origin — where the console is served from. */
 const ORIGIN = 'https://console.hanzo.ai'
+/** The API host — where it calls, whatever origin it was served from. */
+const API = 'https://api.hanzo.ai'
 
 describe('CRM normalizers — real store.go JSON shape, defensive', () => {
   it('normalizes a company with all fields', () => {
@@ -65,7 +67,7 @@ describe('CRM normalizers — real store.go JSON shape, defensive', () => {
   })
 })
 
-describe('CrmApi — hits the same-origin /v1/crm contract (rewritten to the /v1 bearer proxy)', () => {
+describe('CrmApi — hits the /v1/crm contract on the canonical API host', () => {
   const fetched: { url: string; method: string }[] = []
 
   beforeEach(() => {
@@ -87,27 +89,27 @@ describe('CrmApi — hits the same-origin /v1/crm contract (rewritten to the /v1
     delete (globalThis as { window?: unknown }).window
   })
 
-  it('lists companies via the same-origin /v1/crm path (not a direct cloud-origin call)', async () => {
+  it('lists companies via the prefix-free /v1/crm path', async () => {
     const out = await CrmApi.companies.list()
-    expect(fetched[0]).toEqual({ url: `${ORIGIN}/v1/crm/companies`, method: 'GET' })
+    expect(fetched[0]).toEqual({ url: `${API}/v1/crm/companies`, method: 'GET' })
     expect(out.map((c) => c.name)).toEqual(['Acme'])
   })
 
   it('creates a company with POST through the proxy', async () => {
     await CrmApi.companies.create({ name: 'Acme' })
-    expect(fetched[0]).toEqual({ url: `${ORIGIN}/v1/crm/companies`, method: 'POST' })
+    expect(fetched[0]).toEqual({ url: `${API}/v1/crm/companies`, method: 'POST' })
   })
 
   it('reads the per-org summary', async () => {
     const s = await CrmApi.summary()
-    expect(fetched[0].url).toBe(`${ORIGIN}/v1/crm/summary`)
+    expect(fetched[0].url).toBe(`${API}/v1/crm/summary`)
     expect(s.companies).toBe(1)
   })
 
   it('filters contacts by companyId and lists opportunities by stage', async () => {
     await CrmApi.contacts.list('comp_1')
     await CrmApi.opportunities.list('NEW')
-    expect(fetched[0].url).toBe(`${ORIGIN}/v1/crm/contacts?companyId=comp_1`)
-    expect(fetched[1].url).toBe(`${ORIGIN}/v1/crm/opportunities?stage=NEW`)
+    expect(fetched[0].url).toBe(`${API}/v1/crm/contacts?companyId=comp_1`)
+    expect(fetched[1].url).toBe(`${API}/v1/crm/opportunities?stage=NEW`)
   })
 })

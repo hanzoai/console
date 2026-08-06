@@ -17,15 +17,26 @@
  * degrades a cell, never the page. Nothing is fabricated: an unreachable/empty
  * endpoint yields an honest empty/backend-state, never demo rows.
  */
-import { restGet, restPost } from './client'
-
-const trainingBase = (): string =>
-  typeof window !== 'undefined' ? `${window.location.origin}/training` : '/training'
+import { restGet, restPost, originV1Url } from './client'
 
 type Query = Record<string, string | number | boolean | undefined | null>
 
 const trainUrl = (path: string, query?: Query): string => {
-  const base = `${trainingBase()}/${path.replace(/^\/+/, '')}`
+  // `/v1/<path>` on the canonical API — the same `/v1/ml/*` + `/v1/finetune/*`
+  // surface the retired `app/training/[...path]` proxy forwarded to (it mapped
+  // `/training/<rel>` → `/v1/<rel>` verbatim), now addressed directly.
+  //
+  // That proxy is a `route.ts`, and `scripts/build-embed.mjs` stashes EVERY route
+  // handler out of the static export the cloud binary serves — so on
+  // console.hanzo.ai `/training/*` matched no handler and fell through to the SPA
+  // catch-all, which answered 200 text/html. `restGet` then threw on parsing HTML
+  // as JSON, and the caller's catch reported a backend error for a request that had
+  // in fact reached no backend at all. Measured before this change:
+  //   GET https://console.hanzo.ai/training/x -> 200 369706B text/html
+  // and after, against the real surface:
+  //   GET https://api.hanzo.ai/v1/ml/models   -> 403 (gated, reached)
+  //   GET https://api.hanzo.ai/v1/finetune/jobs -> 401 (gated, reached)
+  const base = originV1Url(path)
   if (!query) return base
   const qs = new URLSearchParams()
   for (const [k, v] of Object.entries(query)) if (v !== undefined && v !== null && v !== '') qs.set(k, String(v))

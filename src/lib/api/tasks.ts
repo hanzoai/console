@@ -14,7 +14,7 @@
  * public `tasks.hanzo.ai` TLS is not live yet — the real path is the in-cluster
  * service the proxy targets (TASKS_URL); elsewhere the honest BackendStateCard shows.
  */
-import { restGet } from './client'
+import { restGet, originV1Url } from './client'
 
 /** Cluster liveness — `{ status: "ok" | "down" }`. */
 export type ClusterHealth = { status: string }
@@ -112,11 +112,21 @@ export type ActivityInfo = {
   taskQueue?: string
 }
 
-/** Same-origin `/tasksd` proxy base (server route mints the Bearer + forwards).
- *  NB: the proxy lives at `/tasksd`, NOT `/tasks` — the `tasks` product page owns
- *  the `/tasks/*` SPA routes, so a proxy there would shadow `/tasks/queues` etc. */
-const tasksBase = (): string => (typeof window !== 'undefined' ? `${window.location.origin}/tasksd` : '/tasksd')
-const u = (path: string): string => `${tasksBase()}/${path.replace(/^\/+/, '')}`
+/** `/v1/tasks/<path>` on the canonical API — the surface the retired `/tasksd`
+ *  proxy forwarded to (`TASKS_URL` + `/v1/tasks/*`), now addressed directly.
+ *
+ *  The `/tasksd` spelling existed only to keep a SAME-ORIGIN proxy from shadowing
+ *  the `/tasks/*` SPA routes the tasks product page owns. Addressing api.hanzo.ai
+ *  absolutely removes that collision entirely — a path on the API host cannot
+ *  shadow a client-side route — so the surface gets its real name back.
+ *
+ *  That proxy was a `route.ts`, and `scripts/build-embed.mjs` stashes EVERY route
+ *  handler out of the static export the cloud binary serves, so on console.hanzo.ai
+ *  `/tasksd/*` fell through to the SPA catch-all. Measured before this change:
+ *    GET https://console.hanzo.ai/tasksd/health -> 200 369706B text/html
+ *  and after, against the real surface:
+ *    GET https://api.hanzo.ai/v1/tasks/health   -> 200 33B application/json */
+const u = (path: string): string => originV1Url(`tasks/${path.replace(/^\/+/, '')}`)
 const enc = encodeURIComponent
 
 export const TasksApi = {

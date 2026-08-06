@@ -10,13 +10,17 @@ import {
 
 /**
  * GuideBlueprintApi + pure normalizers + `strategyQuery` shaping. The SuperAdmin client
- * calls the cloud `/v1/guide/*` blueprint contract through the console's `/v1` user-bearer
- * proxy (`cloudProxyV1Url` → `<origin>/v1/guide/...` — the live-ingress-safe form for a
- * bearer-scoped head; a bare `/v1/guide` 403s on the gateway). These pin (1) that each call
- * hits the EXACT `/v1/guide/...` path + verb, (2) the real blueprint/profile/suggest JSON
- * normalizes, and (3) a garbage/absent field degrades to a safe default (never throws).
+ * calls the cloud `/v1/guide/*` blueprint contract on the CANONICAL API host
+ * (`cloudProxyV1Url` → `originV1Url` → `config.cloudUrl` = api.hanzo.ai) — the host is
+ * NAMED, not inherited from wherever the admin bundle is served, so the page origin below
+ * is irrelevant to it. These pin (1) that each call hits the EXACT `/v1/guide/...` path +
+ * verb on that host, (2) the real blueprint/profile/suggest JSON normalizes, and (3) a
+ * garbage/absent field degrades to a safe default (never throws).
  */
+/** The origin the admin SPA is served from — deliberately NOT where the API lives. */
 const ORIGIN = 'https://admin.hanzo.ai'
+/** The one API host every `/v1` call resolves against (config's CANONICAL_API_URL). */
+const API = 'https://api.hanzo.ai'
 
 describe('strategyQuery — the corpus filter querystring', () => {
   it('is empty for no filter or an all-empty filter', () => {
@@ -118,7 +122,7 @@ describe('blueprint normalizers — real cloud JSON, defensive', () => {
   })
 })
 
-describe('GuideBlueprintApi — hits the exact /v1/guide/* bearer-proxy paths', () => {
+describe('GuideBlueprintApi — hits the exact /v1/guide/* paths on the canonical API host', () => {
   const fetched: { url: string; method: string }[] = []
 
   beforeEach(() => {
@@ -139,34 +143,34 @@ describe('GuideBlueprintApi — hits the exact /v1/guide/* bearer-proxy paths', 
     delete (globalThis as { window?: unknown }).window
   })
 
-  it('reads the blueprint via the /v1 bearer BFF (prefix-free /v1)', async () => {
+  it('reads the blueprint at /v1/guide/blueprint (prefix-free /v1)', async () => {
     await GuideBlueprintApi.blueprint()
-    expect(fetched[0]).toEqual({ url: `${ORIGIN}/v1/guide/blueprint`, method: 'GET' })
+    expect(fetched[0]).toEqual({ url: `${API}/v1/guide/blueprint`, method: 'GET' })
   })
 
   it('PATCHes one item at /blueprint/:collection/:id (the enable/disable lever)', async () => {
     await GuideBlueprintApi.patchItem('steps', 'connect-analytics', { enabled: false })
-    expect(fetched[0]).toEqual({ url: `${ORIGIN}/v1/guide/blueprint/steps/connect-analytics`, method: 'PATCH' })
+    expect(fetched[0]).toEqual({ url: `${API}/v1/guide/blueprint/steps/connect-analytics`, method: 'PATCH' })
   })
 
   it('PUTs the whole blueprint to publish a version', async () => {
     await GuideBlueprintApi.publish({ version: 'v3' })
-    expect(fetched[0]).toEqual({ url: `${ORIGIN}/v1/guide/blueprint`, method: 'PUT' })
+    expect(fetched[0]).toEqual({ url: `${API}/v1/guide/blueprint`, method: 'PUT' })
   })
 
   it('reads the version history', async () => {
     await GuideBlueprintApi.versions()
-    expect(fetched[0]).toEqual({ url: `${ORIGIN}/v1/guide/blueprint/versions`, method: 'GET' })
+    expect(fetched[0]).toEqual({ url: `${API}/v1/guide/blueprint/versions`, method: 'GET' })
   })
 
   it('filters the corpus with the query facets', async () => {
     await GuideBlueprintApi.strategies({ category: 'acquisition', workload: 'content' })
-    expect(fetched[0]).toEqual({ url: `${ORIGIN}/v1/guide/strategies?category=acquisition&workload=content`, method: 'GET' })
+    expect(fetched[0]).toEqual({ url: `${API}/v1/guide/strategies?category=acquisition&workload=content`, method: 'GET' })
   })
 
   it('reads the live profile and the ranked suggestions', async () => {
     await GuideBlueprintApi.profile()
     await GuideBlueprintApi.suggest()
-    expect(fetched.map((f) => f.url)).toEqual([`${ORIGIN}/v1/guide/profile`, `${ORIGIN}/v1/guide/suggest`])
+    expect(fetched.map((f) => f.url)).toEqual([`${API}/v1/guide/profile`, `${API}/v1/guide/suggest`])
   })
 })

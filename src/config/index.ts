@@ -128,6 +128,20 @@ export type ConsoleConfig = {
   shell: ShellId
 }
 
+/**
+ * THE API host. Every `/v1` call in this app resolves against this one string —
+ * there is no second endpoint and no per-brand API host (a brand differs by its
+ * IAM issuer and its wordmark, never by where its data lives; the cloud backend is
+ * ONE multi-tenant `/v1`, scoped by the brand JWT's org).
+ *
+ * It is absolute, not `window.location.origin`. Same-origin *looked* compliant only
+ * because console.hanzo.ai and api.hanzo.ai are the same binary on the same address
+ * — an accident of topology, not a property of the code. Naming the host makes the
+ * contract true by construction: relocate the SPA to any origin and it still calls
+ * the canonical API.
+ */
+export const CANONICAL_API_URL = 'https://api.hanzo.ai'
+
 /** Fields shared by every brand. Env-overridable per-deploy. */
 const PLATFORM_URL = trimSlash(process.env.NEXT_PUBLIC_PLATFORM_URL ?? 'https://platform.hanzo.ai')
 const SHARED = {
@@ -136,28 +150,41 @@ const SHARED = {
   // PaaS deploy flow's templates surface; repoint NEXT_PUBLIC_TEMPLATES_URL at
   // templates.<brand> once that standalone catalog UI is stood up.
   templatesUrl: trimSlash(process.env.NEXT_PUBLIC_TEMPLATES_URL ?? `${PLATFORM_URL}/templates`),
-  // The OSS App Store catalog CDN — the live 1000+-app one-click catalog. Fetched
-  // cross-origin from the browser (open CORS), so it needs no BFF (works in the embed).
+  // The OSS App Store catalog — the live 1000+-app one-click catalog.
+  //
+  // THE ONE ENDPOINT THIS APP STILL READS THAT IS NOT api.hanzo.ai. It is a live
+  // cross-origin data API (measured: GET templates.hanzo.ai/meta.json -> 200 499520B
+  // application/json) reachable only because it answers `Access-Control-Allow-Origin: *`
+  // — which is precisely why it never announced itself as a problem: no gate, rate
+  // limit or audit on api.hanzo.ai has ever seen this traffic.
+  //
+  // Moving it needs a cloud-side `/v1/oss/*` head first (measured today: 404). It is a
+  // THREE-file surface, not one endpoint (`@hanzo/ui/oss`) — `<base>/meta.json` is the
+  // catalog, `<base>/blueprints/<id>/<logo>` the icons, `<base>/blueprints/<id>/
+  // docker-compose.yml` the deploy blueprint — so the base moves as a unit and cloud
+  // must serve the whole prefix. Repointing this line before that head exists would
+  // simply break the App Store, so the line stays honest until it can move.
+  //
+  // NB: the destination is NOT `/v1/templates`. That head already exists and is a
+  // DIFFERENT catalog — Hanzo project starters (`{data:[{slug:"synapse",…}]}`, 34948B)
+  // versus self-hostable OSS apps (`[{id:"2fauth",…}]`, 499520B). Folding one onto the
+  // other would collide two unrelated catalogs on one name.
   ossCatalogUrl: trimSlash(process.env.NEXT_PUBLIC_OSS_CATALOG_URL ?? 'https://templates.hanzo.ai'),
   appUrl: trimSlash(process.env.NEXT_PUBLIC_APP_URL ?? 'https://hanzo.app'),
   chatUrl: trimSlash(process.env.NEXT_PUBLIC_CHAT_URL ?? 'https://hanzo.chat'),
 }
 
 /**
- * Cloud `/v1` base — SAME-ORIGIN by default so the session cookie is first-party
- * (cloud.hanzo.ai/v1, no SameSite=None/CORS). The console host's edge route sends
- * /v1 THROUGH the gateway (global IAM-JWT + rate-limit) to the cloud package, so
- * "everything goes through the api.hanzo.ai gateway" holds without the SPA ever
- * leaving its origin. Override with NEXT_PUBLIC_CLOUD_URL for split-origin/dev.
+ * Cloud `/v1` base — `CANONICAL_API_URL`, or `NEXT_PUBLIC_CLOUD_URL` when a
+ * deployment must point elsewhere (local dev against `next dev`, where the Node BFF
+ * and the `next.config.mjs` rewrites are the terminus; or a self-hosted cloud).
+ * That override is BUILD-TIME deploy config — never user input. The user-addable
+ * network `apiEndpoint` (localStorage, see lib/network.ts) is a DIFFERENT and
+ * deliberately weaker knob: it retargets chain/data reads only, never `originV1Url`.
  */
 function cloudUrl(): string {
   const env = process.env.NEXT_PUBLIC_CLOUD_URL
-  if (env) return trimSlash(env)
-  if (typeof window !== 'undefined') return trimSlash(window.location.origin)
-  // SSR/build fallback only (real calls are browser same-origin; the gateway
-  // routes the console host's /v1 to the cloud package). The canonical gated API
-  // host is api.hanzo.ai (== api.cloud.hanzo.ai — the same hanzoai/cloud package).
-  return 'https://api.hanzo.ai'
+  return env ? trimSlash(env) : CANONICAL_API_URL
 }
 
 /**

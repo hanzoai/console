@@ -22,14 +22,21 @@
 import { IS_EMBED } from '~/lib/embed'
 
 export const CSRF_HEADER = 'X-CSRF-Token'
+import { config } from '~/config'
+
 const MUTATING = new Set(['POST', 'PUT', 'PATCH', 'DELETE'])
 const DEFAULT_TTL_S = 43_200 // 12h — matches the server csrfTTL; only a fallback if expiresIn is absent
 const REFRESH_SKEW_MS = 60_000 // re-mint a minute before the server would reject it
 
 // Same builder as client.ts `originV1Url` (a pure one-liner) — inlined here to keep
 // this module free of an import cycle with client.ts (which imports `applyCsrfToInit`).
-const csrfEndpoint = (): string =>
-  typeof window !== 'undefined' ? `${window.location.origin}/v1/csrf` : '/v1/csrf'
+// It reads `config` directly, which is cycle-free: src/config/index.ts imports nothing.
+//
+// The host MUST match the host the write goes to. A CSRF token is minted and verified
+// against server state, so minting at the page origin while POSTing to api.hanzo.ai
+// would only work for as long as those two happen to be the same binary — which today
+// they are, and which is exactly the coincidence this change stops relying on.
+const csrfEndpoint = (): string => `${config.cloudUrl}/v1/csrf`
 
 let cached: { token: string; expiresAt: number } | null = null
 let inflight: Promise<string | null> | null = null

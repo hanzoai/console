@@ -265,7 +265,10 @@ describe('formatters', () => {
  * name path (and URL-encode it), so that regression can't return.
  */
 describe('AgentsApi — single-agent routes are name-keyed', () => {
+  // Two hosts, and the split is the point: ORIGIN is where the PAGE is served, API
+  // (`CANONICAL_API_URL`) is where every `/v1` call goes. They no longer coincide.
   const ORIGIN = 'https://console.hanzo.ai'
+  const API = 'https://api.hanzo.ai'
   let calls: { url: string; method: string }[] = []
 
   beforeEach(() => {
@@ -292,7 +295,7 @@ describe('AgentsApi — single-agent routes are name-keyed', () => {
     await AgentsApi.get('des')
     expect(calls).toHaveLength(1)
     expect(calls[0].method).toBe('GET')
-    expect(calls[0].url).toBe(`${ORIGIN}/v1/agents/des`)
+    expect(calls[0].url).toBe(`${API}/v1/agents/des`)
     // The `agent_…` display id must NEVER be the path segment — that is the 404 bug.
     expect(calls[0].url).not.toContain('agent_')
   })
@@ -301,11 +304,11 @@ describe('AgentsApi — single-agent routes are name-keyed', () => {
     await AgentsApi.remove('des')
     expect(calls).toHaveLength(1)
     expect(calls[0].method).toBe('DELETE')
-    expect(calls[0].url).toBe(`${ORIGIN}/v1/agents/des`)
+    expect(calls[0].url).toBe(`${API}/v1/agents/des`)
   })
 
   it('URL-encodes a name with reserved characters', async () => {
     await AgentsApi.get('a b/c')
-    expect(calls[0].url).toBe(`${ORIGIN}/v1/agents/a%20b%2Fc`)
+    expect(calls[0].url).toBe(`${API}/v1/agents/a%20b%2Fc`)
   })
 })

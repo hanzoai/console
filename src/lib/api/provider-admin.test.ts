@@ -5,14 +5,17 @@ import { ProviderAdminApi, deriveHealth, normalizeProvider } from './provider-ad
 /**
  * The provider control board is the platform-wide shared-gateway routing surface
  * (GLOBAL-ADMIN only). Two invariants under test:
- *   1. Its client hits the console's OWN same-origin `/v1/admin/providers` (which
- *      `next.config.mjs` rewrites to the global-admin-gated `/admin/aggregate`
- *      proxy) — NEVER a direct cookie-only call to the cloud host (which would
- *      bypass the console gate), for BOTH the GET list and the POST mutations.
+ *   1. Its client hits the canonical API host's `/v1/admin/providers` — one endpoint,
+ *      zero prefix, for BOTH the GET list and the POST mutations. The host is NAMED
+ *      (`config.cloudUrl`), not inherited from the page: this board is served from
+ *      admin.<brand>, and the API it reads is the same `/v1/admin/*` either way.
  *   2. A provider KEY is never modeled or surfaced — `keyPresent` is a boolean;
  *      even if the backend leaks a raw key field, it never reaches `AdminProvider`.
  */
+/** The PAGE origin — the admin console host this board is served from. */
 const ORIGIN = 'https://admin.hanzo.ai'
+/** The canonical API host every `/v1` call resolves against, whatever origin serves the page. */
+const API = 'https://api.hanzo.ai'
 
 describe('deriveHealth — honest derived verdict (no live probe)', () => {
   it('disabled ⇒ off regardless of key', () => {
@@ -82,7 +85,7 @@ describe('normalizeProvider — optional-safe, key-leak-proof', () => {
   })
 })
 
-describe('ProviderAdminApi — same-origin /v1/admin/providers, never the cloud host', () => {
+describe('ProviderAdminApi — canonical /v1/admin/providers, never a second data origin', () => {
   const calls: { url: string; method: string; body?: string }[] = []
 
   beforeEach(() => {
@@ -105,35 +108,35 @@ describe('ProviderAdminApi — same-origin /v1/admin/providers, never the cloud 
     delete (globalThis as { window?: unknown }).window
   })
 
-  it('list() GETs the same-origin <origin>/v1/admin/providers (no /cloud, no /ai prefix)', async () => {
+  it('list() GETs the canonical <api>/v1/admin/providers (no /cloud, no /ai prefix)', async () => {
     const rows = await ProviderAdminApi.list()
     expect(calls).toHaveLength(1)
-    expect(calls[0].url).toBe(`${ORIGIN}/v1/admin/providers`)
+    expect(calls[0].url).toBe(`${API}/v1/admin/providers`)
     expect(calls[0].method).toBe('GET')
     expect(rows.map((r) => r.name)).toEqual(['do-ai'])
   })
 
-  it('never calls the cloud API host directly (would bypass the console admin gate)', async () => {
+  it('never reaches a second data origin or a prefixed head', async () => {
     await ProviderAdminApi.list()
-    expect(calls[0].url.startsWith(ORIGIN)).toBe(true)
+    expect(calls[0].url.startsWith(API)).toBe(true)
     expect(calls[0].url).not.toContain('cloud.hanzo.ai')
     expect(calls[0].url).not.toContain('/cloud/')
     expect(calls[0].url).not.toContain('/ai/')
   })
 
-  it('toggle() POSTs the {name,enabled} body to same-origin /v1/admin/providers/toggle', async () => {
+  it('toggle() POSTs the {name,enabled} body to the canonical /v1/admin/providers/toggle', async () => {
     const updated = await ProviderAdminApi.toggle('openrouter', false)
     expect(calls).toHaveLength(1)
-    expect(calls[0].url).toBe(`${ORIGIN}/v1/admin/providers/toggle`)
+    expect(calls[0].url).toBe(`${API}/v1/admin/providers/toggle`)
     expect(calls[0].method).toBe('POST')
     expect(JSON.parse(calls[0].body ?? '{}')).toEqual({ name: 'openrouter', enabled: false })
     expect(updated.name).toBe('do-ai')
   })
 
-  it('setPrimary() POSTs {name} to same-origin /v1/admin/providers/primary and returns the list', async () => {
+  it('setPrimary() POSTs {name} to the canonical /v1/admin/providers/primary and returns the list', async () => {
     const rows = await ProviderAdminApi.setPrimary('fireworks')
     expect(calls).toHaveLength(1)
-    expect(calls[0].url).toBe(`${ORIGIN}/v1/admin/providers/primary`)
+    expect(calls[0].url).toBe(`${API}/v1/admin/providers/primary`)
     expect(calls[0].method).toBe('POST')
     expect(JSON.parse(calls[0].body ?? '{}')).toEqual({ name: 'fireworks' })
     expect(rows.map((r) => r.name)).toEqual(['do-ai'])

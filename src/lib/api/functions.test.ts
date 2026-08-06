@@ -25,13 +25,17 @@ import {
 } from './functions'
 
 /**
- * Functions API + pure logic. The page is wired to the DOCUMENTED same-origin
- * contract (`GET /v1/functions`); these tests pin (1) that the inventory call hits
- * that exact path (not a fabricated endpoint), (2) that both the enriched gateway
- * shape and the raw Fission CRD shape normalize, and (3) that every Overview metric
- * is DERIVED from real rows and degrades to `null` (never invented) when absent.
+ * Functions API + pure logic. The page is wired to the DOCUMENTED contract
+ * (`GET /v1/functions` on the canonical API host); these tests pin (1) that the
+ * inventory call hits that exact path (not a fabricated endpoint), (2) that both the
+ * enriched gateway shape and the raw Fission CRD shape normalize, and (3) that every
+ * Overview metric is DERIVED from real rows and degrades to `null` (never invented)
+ * when absent.
  */
+/** The PAGE origin — where the console is served from. */
 const ORIGIN = 'https://console.hanzo.ai'
+/** The API host — where it calls, whatever origin it was served from. */
+const API = 'https://api.hanzo.ai'
 
 const fn = (over: Partial<ServerlessFunction> = {}): ServerlessFunction => ({
   name: 'fn',
@@ -247,11 +251,11 @@ describe('FunctionsApi.list — hits the documented /v1/functions contract', () 
   it('fetches the inventory at /v1/functions and normalizes it', async () => {
     // The functions surface authorizes on the Bearer owner claim and 403s a cookie-only
     // call ("X-Org-Id required"). So the client calls the canonical, prefix-free
-    // same-origin /v1/functions, which the console's app/v1 bearer BFF serves by minting
-    // a short-lived user token server-side (org resolved from the owner). Same contract as
-    // framework/s3/machines — every cloud path is /v1-rooted, ZERO /cloud prefix.
+    // /v1/functions on the API host, carrying the session's bearer (org resolved from the
+    // owner). Same contract as framework/s3/machines — every cloud path is /v1-rooted,
+    // ZERO /cloud prefix.
     const out = await FunctionsApi.list()
-    expect(fetched).toContain(`${ORIGIN}/v1/functions`)
+    expect(fetched).toContain(`${API}/v1/functions`)
     expect(out.map((f) => f.name)).toEqual(['resize'])
   })
 })

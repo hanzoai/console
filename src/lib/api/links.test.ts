@@ -1,7 +1,10 @@
 import { describe, it, expect, afterEach, vi } from 'vitest'
 import { LinksApi, normalizeLink } from './links'
 
+/** The PAGE origin — where the SPA is served from. */
 const ORIGIN = 'https://console.hanzo.ai'
+/** The canonical API host every `/v1` call resolves against, whatever origin serves the page. */
+const API = 'https://api.hanzo.ai'
 let lastUrl = ''
 let lastInit: RequestInit | undefined
 
@@ -64,7 +67,7 @@ describe('LinksApi transport contract', () => {
       devices: [{ machine: 'm1', host: 'box', accounts: [{ id: 'l1', provider: 'claude' }], activeSessions: 2 }],
     })
     const out = await LinksApi.list()
-    expect(lastUrl).toBe(`${ORIGIN}/v1/links`)
+    expect(lastUrl).toBe(`${API}/v1/links`)
     expect(lastInit?.method ?? 'GET').toBe('GET')
     expect(out.links).toHaveLength(1)
     expect(out.devices[0]?.activeSessions).toBe(2)
@@ -80,7 +83,7 @@ describe('LinksApi transport contract', () => {
       primary: { provider: 'claude', kind: 'subscription', billing: 'plan', available: true, headroomPct: 90, linkId: 'a' },
     })
     const plan = await LinksApi.route()
-    expect(lastUrl).toBe(`${ORIGIN}/v1/links/route`)
+    expect(lastUrl).toBe(`${API}/v1/links/route`)
     expect(plan.candidates).toHaveLength(2)
     expect(plan.primary?.linkId).toBe('a')
     expect(plan.candidates[1]?.billing).toBe('commerce')
@@ -89,14 +92,14 @@ describe('LinksApi transport contract', () => {
   it('revoke(id) DELETEs /v1/links/:id (url-escaped)', async () => {
     stub({ revoked: 1, sessionsStopped: 1 })
     await LinksApi.revoke('link_1')
-    expect(lastUrl).toBe(`${ORIGIN}/v1/links/link_1`)
+    expect(lastUrl).toBe(`${API}/v1/links/link_1`)
     expect(lastInit?.method).toBe('DELETE')
   })
 
   it('revokeDevice(machine) POSTs /v1/links/devices/:machine/revoke and returns the counts', async () => {
     stub({ revoked: 2, sessionsStopped: 3 })
     const r = await LinksApi.revokeDevice('m1')
-    expect(lastUrl).toBe(`${ORIGIN}/v1/links/devices/m1/revoke`)
+    expect(lastUrl).toBe(`${API}/v1/links/devices/m1/revoke`)
     expect(lastInit?.method).toBe('POST')
     expect(r).toEqual({ revoked: 2, sessionsStopped: 3 })
   })

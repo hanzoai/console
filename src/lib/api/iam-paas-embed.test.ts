@@ -16,11 +16,19 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
  * 404 and the fleet board lives at `/v1/platform/fleet`. That is what this pins now —
  * same guard, current address.
  *
+ * The guarded property is the PATH SHAPE — `/v1/`-rooted, never the pruned
+ * `/admin/iam/*` or bare `/paas/*` prefix. The HOST is now named explicitly
+ * (`config.cloudUrl` → api.hanzo.ai) rather than inherited from the page, which is
+ * what made the old outage possible to write in the first place.
+ *
  * IS_EMBED is captured at module load, so it is mocked BEFORE importing the clients.
  */
 vi.mock('~/lib/embed', () => ({ IS_EMBED: true }))
 
+/** The PAGE origin — where the embedded SPA is served from. */
 const ORIGIN = 'https://console.hanzo.ai'
+/** The canonical API host every `/v1` call resolves against, whatever origin serves the page. */
+const API = 'https://api.hanzo.ai'
 
 describe('go:embed IAM-admin + PaaS address cloud-native /v1/* (not the pruned BFF prefixes)', () => {
   const fetched: { url: string; method: string }[] = []
@@ -47,33 +55,38 @@ describe('go:embed IAM-admin + PaaS address cloud-native /v1/* (not the pruned B
     delete (globalThis as { window?: unknown }).window
   })
 
-  it('OrgSwitcher org list → GET <origin>/v1/iam/get-organizations (was /admin/iam → SPA 200)', async () => {
+  it('OrgSwitcher org list → GET <api>/v1/iam/get-organizations (was /admin/iam → SPA 200)', async () => {
     const { IamAdminApi } = await import('./admin')
     await IamAdminApi.organizations()
     expect(fetched).toHaveLength(1)
     expect(fetched[0].method).toBe('GET')
-    expect(fetched[0].url.startsWith(`${ORIGIN}/v1/iam/get-organizations`)).toBe(true)
+    expect(fetched[0].url.startsWith(`${API}/v1/iam/get-organizations`)).toBe(true)
     // The cross-tenant list stays scoped to the reserved admin org (super-admin gate upstream).
     expect(fetched[0].url).toContain('owner=admin')
     // NEVER the pruned BFF prefix that fell through to the SPA index in the embed.
     expect(fetched[0].url).not.toContain('/admin/iam/')
   })
 
-  it('Observe→Status apps inventory → GET <origin>/v1/platform/fleet (was /v1/paas/apps → 404)', async () => {
+  it('Observe→Status apps inventory → GET <api>/v1/platform/fleet (was <origin>/v1/paas/apps: wrong host AND retired path)', async () => {
     const { PlatformApi } = await import('./platform')
     await PlatformApi.apps()
     expect(fetched).toHaveLength(1)
     expect(fetched[0].method).toBe('GET')
-    expect(fetched[0].url).toBe(`${ORIGIN}/v1/platform/fleet`)
-    // The retired head must not come back: `/v1/paas/*` answers 404, not an inventory.
+    expect(fetched[0].url).toBe(`${API}/v1/platform/fleet`)
+    // Both halves matter and each came from a different branch. The HOST is
+    // absolute (api.hanzo.ai, never window.location.origin) so a forked console
+    // on a customer domain reaches the real API. The PATH is the live one —
+    // paas folded into platform, so `/v1/paas/*` answers 404, not an inventory.
+    // Taking either branch alone ships one of those two bugs.
     expect(fetched[0].url).not.toContain('/paas')
+    expect(fetched[0].url).not.toContain(ORIGIN)
   })
 
   it('an IAM-admin mutation also rides the cloud-native /v1/iam surface', async () => {
     const { IamAdminApi } = await import('./admin')
     await IamAdminApi.approveUser('hanzo/u-1')
     expect(fetched[0].method).toBe('POST')
-    expect(fetched[0].url.startsWith(`${ORIGIN}/v1/iam/approve-user`)).toBe(true)
+    expect(fetched[0].url.startsWith(`${API}/v1/iam/approve-user`)).toBe(true)
     expect(fetched[0].url).not.toContain('/admin/iam/')
   })
 })

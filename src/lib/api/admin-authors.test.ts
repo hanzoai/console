@@ -3,12 +3,15 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { AdminAuthorsApi, normalizeAdminAuthor, normalizeAdminAuthors } from './admin-authors'
 
 /**
- * Admin authors API + normalizers. The client hits the console's OWN origin
- * (`<origin>/v1/admin/authors…`), which `next.config.mjs` rewrites to the
- * global-admin-gated `app/admin/aggregate` proxy. These tests pin the exact
- * same-origin paths (read + the mutations) and the optional-safe normalizers.
+ * Admin authors API + normalizers. The client hits the canonical API host
+ * (`api.hanzo.ai/v1/admin/authors…`, `originV1Url` → `config.cloudUrl`) — named, not
+ * inherited from whatever origin serves the page. These tests pin the exact
+ * `/v1/admin/authors` paths (read + the mutations) and the optional-safe normalizers.
  */
+// Two hosts, and the split is the point: ORIGIN is where the PAGE is served, API
+// (`CANONICAL_API_URL`) is where every `/v1` call goes. They no longer coincide.
 const ORIGIN = 'https://admin.hanzo.ai'
+const API = 'https://api.hanzo.ai'
 
 describe('Admin authors normalizers — envelope-safe', () => {
   it('normalizes the directory + summary', () => {
@@ -36,7 +39,7 @@ describe('Admin authors normalizers — envelope-safe', () => {
   })
 })
 
-describe('AdminAuthorsApi — hits the same-origin admin aggregate paths', () => {
+describe('AdminAuthorsApi — hits the canonical-API admin aggregate paths', () => {
   const fetched: { url: string; method: string; body: string }[] = []
 
   beforeEach(() => {
@@ -65,15 +68,15 @@ describe('AdminAuthorsApi — hits the same-origin admin aggregate paths', () =>
     delete (globalThis as { window?: unknown }).window
   })
 
-  it('lists via the same-origin admin path (→ app/admin/aggregate rewrite)', async () => {
+  it('lists via the canonical-API admin path', async () => {
     await AdminAuthorsApi.list()
-    expect(fetched[0].url).toBe(`${ORIGIN}/v1/admin/authors`)
+    expect(fetched[0].url).toBe(`${API}/v1/admin/authors`)
     expect(fetched[0].method).toBe('GET')
   })
 
   it('approves with an optional share override (POST, shareBps)', async () => {
     const a = await AdminAuthorsApi.approve('auth_1', 500)
-    expect(fetched[0].url).toBe(`${ORIGIN}/v1/admin/authors/auth_1/approve`)
+    expect(fetched[0].url).toBe(`${API}/v1/admin/authors/auth_1/approve`)
     expect(fetched[0].method).toBe('POST')
     expect(fetched[0].body).toContain('shareBps')
     expect(fetched[0].body).toContain('500')
@@ -82,20 +85,20 @@ describe('AdminAuthorsApi — hits the same-origin admin aggregate paths', () =>
 
   it('approves with the default share when shareBps is omitted (empty body)', async () => {
     await AdminAuthorsApi.approve('auth_1')
-    expect(fetched[0].url).toBe(`${ORIGIN}/v1/admin/authors/auth_1/approve`)
+    expect(fetched[0].url).toBe(`${API}/v1/admin/authors/auth_1/approve`)
     expect(fetched[0].method).toBe('POST')
     expect(fetched[0].body).not.toContain('shareBps')
   })
 
   it('suspends (POST)', async () => {
     await AdminAuthorsApi.suspend('auth_1')
-    expect(fetched[0].url).toBe(`${ORIGIN}/v1/admin/authors/auth_1/suspend`)
+    expect(fetched[0].url).toBe(`${API}/v1/admin/authors/auth_1/suspend`)
     expect(fetched[0].method).toBe('POST')
   })
 
   it('records a payout (POST, amount+method+reference)', async () => {
     await AdminAuthorsApi.payout('auth_1', { amountCents: 1200, method: 'credits', reference: 'ledger-1' })
-    expect(fetched[0].url).toBe(`${ORIGIN}/v1/admin/authors/auth_1/payout`)
+    expect(fetched[0].url).toBe(`${API}/v1/admin/authors/auth_1/payout`)
     expect(fetched[0].method).toBe('POST')
     expect(fetched[0].body).toContain('1200')
     expect(fetched[0].body).toContain('credits')
@@ -103,7 +106,7 @@ describe('AdminAuthorsApi — hits the same-origin admin aggregate paths', () =>
 
   it('runs the accrual sweep (POST)', async () => {
     const r = await AdminAuthorsApi.sweep()
-    expect(fetched[0].url).toBe(`${ORIGIN}/v1/admin/authors/sweep`)
+    expect(fetched[0].url).toBe(`${API}/v1/admin/authors/sweep`)
     expect(fetched[0].method).toBe('POST')
     expect(r).toEqual({ swept: 3, accrued: 1 })
   })

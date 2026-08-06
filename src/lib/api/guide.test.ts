@@ -4,13 +4,16 @@ import { GuideApi, normalizeOverview } from './guide'
 
 /**
  * Guide API + pure normalizers. The module calls the DOCUMENTED cloud `/v1/guide`
- * contract same-origin, keyless and prefix-free (`originV1Url` → `<origin>/v1/guide`);
- * the standalone console rewrites that head to the user-bearer `/v1` proxy, the
- * go:embed console calls cloud directly. These tests pin (1) each call hits the
- * EXACT same-origin `/v1/guide/...` path, (2) the real overview JSON shape (guide.go
- * stepView tags) normalizes, and (3) a garbage/absent field degrades safely.
+ * contract keyless and prefix-free (`originV1Url` → `<api>/v1/guide`), resolved
+ * against the CANONICAL API host — not whatever origin happens to serve the page.
+ * These tests pin (1) each call hits the EXACT `/v1/guide/...` path on that host,
+ * (2) the real overview JSON shape (guide.go stepView tags) normalizes, and (3) a
+ * garbage/absent field degrades safely.
  */
+/** The PAGE origin — where the SPA is served from. */
 const ORIGIN = 'https://console.hanzo.ai'
+/** The canonical API host every `/v1` call resolves against, whatever origin serves the page. */
+const API = 'https://api.hanzo.ai'
 
 describe('Guide normalizers — real guide.go JSON shape, defensive', () => {
   it('normalizes a full overview', () => {
@@ -53,7 +56,7 @@ describe('Guide normalizers — real guide.go JSON shape, defensive', () => {
   })
 })
 
-describe('GuideApi — hits the same-origin /v1/guide contract', () => {
+describe('GuideApi — hits the canonical-API /v1/guide contract', () => {
   const fetched: { url: string; method: string }[] = []
 
   beforeEach(() => {
@@ -78,7 +81,7 @@ describe('GuideApi — hits the same-origin /v1/guide contract', () => {
 
   it('loads the overview from /v1/guide', async () => {
     const o = await GuideApi.overview()
-    expect(fetched[0]).toEqual({ url: `${ORIGIN}/v1/guide`, method: 'GET' })
+    expect(fetched[0]).toEqual({ url: `${API}/v1/guide`, method: 'GET' })
     expect(o.progress.next).toBe('positioning')
   })
 
@@ -88,27 +91,27 @@ describe('GuideApi — hits the same-origin /v1/guide contract', () => {
     await GuideApi.start('email')
     await GuideApi.reset('referral')
     expect(fetched.map((f) => `${f.method} ${f.url}`)).toEqual([
-      `POST ${ORIGIN}/v1/guide/steps/landing/done`,
-      `POST ${ORIGIN}/v1/guide/steps/waitlist/skip`,
-      `POST ${ORIGIN}/v1/guide/steps/email/start`,
-      `POST ${ORIGIN}/v1/guide/steps/referral/reset`,
+      `POST ${API}/v1/guide/steps/landing/done`,
+      `POST ${API}/v1/guide/steps/waitlist/skip`,
+      `POST ${API}/v1/guide/steps/email/start`,
+      `POST ${API}/v1/guide/steps/referral/reset`,
     ])
   })
 
   it('runs "do it for me" (non-streaming) via POST /v1/guide/steps/:id/do', async () => {
     await GuideApi.do('positioning')
-    expect(fetched[0]).toEqual({ url: `${ORIGIN}/v1/guide/steps/positioning/do`, method: 'POST' })
+    expect(fetched[0]).toEqual({ url: `${API}/v1/guide/steps/positioning/do`, method: 'POST' })
   })
 
   it('reads the action ledger from /v1/guide/actions', async () => {
     const acts = await GuideApi.actions()
-    expect(fetched[0].url).toBe(`${ORIGIN}/v1/guide/actions`)
+    expect(fetched[0].url).toBe(`${API}/v1/guide/actions`)
     expect(acts).toHaveLength(1)
     expect(acts[0]).toMatchObject({ id: 'act_1', tool: 'content_generate', ok: true })
   })
 
   it('encodes a step id with special characters', async () => {
     await GuideApi.markDone('a/b')
-    expect(fetched[0].url).toBe(`${ORIGIN}/v1/guide/steps/a%2Fb/done`)
+    expect(fetched[0].url).toBe(`${API}/v1/guide/steps/a%2Fb/done`)
   })
 })

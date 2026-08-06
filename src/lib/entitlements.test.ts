@@ -90,12 +90,17 @@ describe('nextEnabled — pure add/remove', () => {
   })
 })
 
+/** The origin the SPA is served from — deliberately NOT where the API lives. */
+const ORIGIN = 'https://console.hanzo.ai'
+/** The one API host every `/v1` call resolves against (config's CANONICAL_API_URL). */
+const API = 'https://api.hanzo.ai'
+
 describe('EntitlementsApi — /v1 client contract (mock until the endpoint lands)', () => {
   const origWindow = (globalThis as { window?: unknown }).window
   let fetchMock: ReturnType<typeof vi.fn>
 
   beforeEach(() => {
-    ;(globalThis as { window?: unknown }).window = { location: { origin: 'https://console.hanzo.ai' } }
+    ;(globalThis as { window?: unknown }).window = { location: { origin: ORIGIN } }
     fetchMock = vi.fn()
     vi.stubGlobal('fetch', fetchMock)
   })
@@ -108,13 +113,13 @@ describe('EntitlementsApi — /v1 client contract (mock until the endpoint lands
   const ok = (body: unknown) =>
     Promise.resolve(new Response(JSON.stringify(body), { status: 200, headers: { 'content-type': 'application/json' } }))
 
-  it('GET hits the /v1 user-bearer proxy at orgs/{org}/entitlements', async () => {
+  it('GET hits /v1/orgs/{org}/entitlements on the canonical API host', async () => {
     fetchMock.mockReturnValue(ok({ enabled: ['agents', 'vector'] }))
     const { EntitlementsApi } = await import('./entitlements')
     const res = await EntitlementsApi.get('maxpower')
     expect(res.enabled).toEqual(['agents', 'vector'])
     const calledUrl = String(fetchMock.mock.calls[0][0])
-    expect(calledUrl).toBe('https://console.hanzo.ai/v1/orgs/maxpower/entitlements')
+    expect(calledUrl).toBe(`${API}/v1/orgs/maxpower/entitlements`)
   })
 
   it('normalizes a garbage payload to an honest empty enabled list', async () => {
@@ -129,7 +134,7 @@ describe('EntitlementsApi — /v1 client contract (mock until the endpoint lands
     const res = await EntitlementsApi.update('maxpower', { add: ['agents'] })
     expect(res.enabled).toEqual(['agents'])
     const [calledUrl, init] = fetchMock.mock.calls[0]
-    expect(String(calledUrl)).toBe('https://console.hanzo.ai/v1/orgs/maxpower/entitlements')
+    expect(String(calledUrl)).toBe(`${API}/v1/orgs/maxpower/entitlements`)
     expect((init as RequestInit).method).toBe('POST')
     expect(JSON.parse(String((init as RequestInit).body))).toEqual({ add: ['agents'] })
   })

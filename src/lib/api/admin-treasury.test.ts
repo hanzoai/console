@@ -3,14 +3,17 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { AdminTreasuryApi, normalizeTreasury } from './admin-treasury'
 
 /**
- * Admin treasury API + normalizers. The client hits the console's OWN origin
- * (`<origin>/v1/admin/treasury…`), which `next.config.mjs` rewrites to the
- * global-admin-gated `app/admin/aggregate` proxy. These tests pin the exact
- * same-origin paths (read + the four mutations) and the OPTIONAL-SAFE normalizer:
+ * Admin treasury API + normalizers. The client hits the canonical API host
+ * (`api.hanzo.ai/v1/admin/treasury…`, `originV1Url` → `config.cloudUrl`) — named, not
+ * inherited from whatever origin serves the page. These tests pin the exact
+ * `/v1/admin/treasury` paths (read + the four mutations) and the OPTIONAL-SAFE normalizer:
  * garbage/empty degrades to honest zeros/[]/false (never a fabricated ledger or a
  * faked "anchored" state), and a full valid payload parses correctly.
  */
+// Two hosts, and the split is the point: ORIGIN is where the PAGE is served, API
+// (`CANONICAL_API_URL`) is where every `/v1` call goes. They no longer coincide.
 const ORIGIN = 'https://admin.hanzo.ai'
+const API = 'https://api.hanzo.ai'
 
 describe('normalizeTreasury — optional-safe (honest empties, never fabricated)', () => {
   it('degrades null/garbage to real zeros/[]/false (never throws)', () => {
@@ -131,7 +134,7 @@ describe('normalizeTreasury — optional-safe (honest empties, never fabricated)
   })
 })
 
-describe('AdminTreasuryApi — hits the same-origin admin aggregate paths', () => {
+describe('AdminTreasuryApi — hits the canonical-API admin aggregate paths', () => {
   const fetched: { url: string; method: string; body: string }[] = []
 
   beforeEach(() => {
@@ -161,15 +164,15 @@ describe('AdminTreasuryApi — hits the same-origin admin aggregate paths', () =
     delete (globalThis as { window?: unknown }).window
   })
 
-  it('reads via the same-origin admin path (→ app/admin/aggregate rewrite)', async () => {
+  it('reads via the canonical-API admin path', async () => {
     await AdminTreasuryApi.get()
-    expect(fetched[0].url).toBe(`${ORIGIN}/v1/admin/treasury`)
+    expect(fetched[0].url).toBe(`${API}/v1/admin/treasury`)
     expect(fetched[0].method).toBe('GET')
   })
 
   it('sets the revenue-share policy (POST, revenueShareBps)', async () => {
     const p = await AdminTreasuryApi.setPolicy(750)
-    expect(fetched[0].url).toBe(`${ORIGIN}/v1/admin/treasury/policy`)
+    expect(fetched[0].url).toBe(`${API}/v1/admin/treasury/policy`)
     expect(fetched[0].method).toBe('POST')
     expect(fetched[0].body).toContain('revenueShareBps')
     expect(fetched[0].body).toContain('750')
@@ -178,7 +181,7 @@ describe('AdminTreasuryApi — hits the same-origin admin aggregate paths', () =
 
   it('sweeps revenue-share with an optional period (POST)', async () => {
     const r = await AdminTreasuryApi.sweep(100000, '2026-07')
-    expect(fetched[0].url).toBe(`${ORIGIN}/v1/admin/treasury/sweep`)
+    expect(fetched[0].url).toBe(`${API}/v1/admin/treasury/sweep`)
     expect(fetched[0].method).toBe('POST')
     expect(fetched[0].body).toContain('100000')
     expect(fetched[0].body).toContain('2026-07')
@@ -187,13 +190,13 @@ describe('AdminTreasuryApi — hits the same-origin admin aggregate paths', () =
 
   it('sweeps without a period when none is given (no period key)', async () => {
     await AdminTreasuryApi.sweep(100000)
-    expect(fetched[0].url).toBe(`${ORIGIN}/v1/admin/treasury/sweep`)
+    expect(fetched[0].url).toBe(`${API}/v1/admin/treasury/sweep`)
     expect(fetched[0].body).not.toContain('period')
   })
 
   it('seeds the reserve (POST, amount+memo)', async () => {
     const r = await AdminTreasuryApi.seed(10000, 'Q3 capitalization')
-    expect(fetched[0].url).toBe(`${ORIGIN}/v1/admin/treasury/seed`)
+    expect(fetched[0].url).toBe(`${API}/v1/admin/treasury/seed`)
     expect(fetched[0].method).toBe('POST')
     expect(fetched[0].body).toContain('10000')
     expect(fetched[0].body).toContain('Q3 capitalization')
@@ -203,7 +206,7 @@ describe('AdminTreasuryApi — hits the same-origin admin aggregate paths', () =
 
   it('anchors the current journal root on the Hanzo L1 (POST)', async () => {
     const a = await AdminTreasuryApi.anchor()
-    expect(fetched[0].url).toBe(`${ORIGIN}/v1/admin/treasury/anchor`)
+    expect(fetched[0].url).toBe(`${API}/v1/admin/treasury/anchor`)
     expect(fetched[0].method).toBe('POST')
     expect(a).toMatchObject({ chainId: 36963, status: 'anchored', synced: true, entryCount: 3 })
   })

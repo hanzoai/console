@@ -2,7 +2,10 @@ import { describe, it, expect, afterEach, vi } from 'vitest'
 
 import { BillingAccountApi, normalizeAccounts, normalizeChain } from './billing-accounts'
 
+/** The PAGE origin — where the console is served from. */
 const ORIGIN = 'https://console.hanzo.ai'
+/** The API host — where it calls, whatever origin it was served from. */
+const API = 'https://api.hanzo.ai'
 
 /** A captured request (url + init) for asserting the exact call the client made. */
 type Captured = { url: string; init: RequestInit }
@@ -148,7 +151,7 @@ describe('bind — the browser names a KIND, never a holder id', () => {
   it('POSTs to the per-tenant billing proxy (the /v1-first filesystem route)', async () => {
     const calls = captureFetch({}, 200)
     await BillingAccountApi.bind({ holderKind: 'org' }, 'acct_x', 0)
-    expect(calls[0].url).toBe(`${ORIGIN}/v1/billing/bindings`)
+    expect(calls[0].url).toBe(`${API}/v1/billing/bindings`)
     expect(calls[0].init.method).toBe('POST')
   })
 
@@ -159,7 +162,7 @@ describe('bind — the browser names a KIND, never a holder id', () => {
     await BillingAccountApi.bind({ holderKind: 'org' }, 'acct_x', 0)
     await BillingAccountApi.bind({ holderKind: 'org' }, 'acct_x', 5)
     expect(calls.map((c) => c.init.method)).toEqual(['POST', 'POST'])
-    expect(calls.map((c) => c.url)).toEqual([`${ORIGIN}/v1/billing/bindings`, `${ORIGIN}/v1/billing/bindings`])
+    expect(calls.map((c) => c.url)).toEqual([`${API}/v1/billing/bindings`, `${API}/v1/billing/bindings`])
     expect(bodyOf(calls[1]).priority).toBe(5)
   })
 })
@@ -169,6 +172,6 @@ describe('unbind', () => {
     const calls = captureFetch(null, 204)
     await BillingAccountApi.unbind('bnd_abc')
     expect(calls[0].init.method).toBe('DELETE')
-    expect(calls[0].url).toBe(`${ORIGIN}/v1/billing/bindings/bnd_abc`)
+    expect(calls[0].url).toBe(`${API}/v1/billing/bindings/bnd_abc`)
   })
 })

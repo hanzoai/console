@@ -11,6 +11,7 @@
  * payload directly or a typed failure — never a half-checked envelope.
  */
 import { activeApiBase } from '~/lib/network'
+import { config } from '~/config'
 import { IS_EMBED } from '~/lib/embed'
 import { currentOrg } from '~/lib/org-scope'
 import { currentActor } from '~/lib/actor-scope'
@@ -377,12 +378,21 @@ export async function postForm<T>(path: string, form: FormData): Promise<T> {
 }
 
 /**
- * Envelope GET pinned to the console's OWN origin (`<origin>/v1/<path>`), so it
- * always hits a same-origin rewrite → hardened server proxy, NEVER the direct-cloud
- * `NEXT_PUBLIC_CLOUD_URL` override. Used by the admin AGGREGATE reads
- * (`/v1/admin/{overview,usage,…}`), which MUST terminate at the global-admin-gated
- * `app/admin/aggregate` proxy — a split-origin cloud URL would bypass that console
- * gate. Same casibase envelope unwrap + `ApiError` as `get`.
+ * Envelope GET on the canonical `/v1/<path>` (`originV1Url`), used by the admin
+ * AGGREGATE reads (`/v1/admin/{overview,usage,…}`).
+ *
+ * These once pinned the page origin so the `next.config.mjs` rewrite would land them
+ * on the global-admin-gated `app/admin/aggregate` proxy. That hop is not in the
+ * production path and has not been for some time: `/v1` is edge-routed to cloud on
+ * every host. Measured — `/v1/gpu-sizes`, `/v1/regions` and `/v1/sizes` exist ONLY as
+ * those rewrites, and all three 404 on admin.hanzo.ai byte-identically to
+ * api.hanzo.ai, which they could not do if Next were serving `/v1` there.
+ *
+ * The gate is therefore cloud's, not the console's, and it holds: `/v1/admin/overview`
+ * answers 403 unauthenticated, and signed-in it returned the SAME 200/539B whether
+ * called same-origin or cross-origin. `originV1Url` still resolves through
+ * `config.cloudUrl` rather than the network-selector base, so a USER-ADDABLE network
+ * still cannot retarget an admin call. Same envelope unwrap + `ApiError` as `get`.
  */
 export async function originGet<T>(path: string, query?: Query): Promise<T> {
   const r = await request<T>('GET', path, { query, absoluteUrl: originV1Url(path) })
@@ -390,14 +400,11 @@ export async function originGet<T>(path: string, query?: Query): Promise<T> {
 }
 
 /**
- * Envelope POST pinned to the console's OWN origin (`<origin>/v1/<path>`) — the
- * mutating twin of `originGet`. The admin AGGREGATE mutations (`/v1/admin/providers/
- * {toggle,primary}`) MUST terminate at the global-admin-gated `app/admin/aggregate`
- * proxy, which applies the same-origin CSRF check, so pinning the ORIGIN (not
- * `config.cloudUrl`) is load-bearing: a split-origin `NEXT_PUBLIC_CLOUD_URL` could
- * otherwise route the write around the console gate. Same casibase envelope unwrap +
- * `ApiError` as `post`; the browser sends its session cookie only — no credential.
- * Optional `headers` ride through for a per-call header (e.g. `Idempotency-Key`).
+ * Envelope POST on the canonical `/v1/<path>` — the mutating twin of `originGet`,
+ * used by the admin AGGREGATE mutations (`/v1/admin/providers/{toggle,primary}`).
+ * See `originGet` for why the old origin pin is not the gate it claimed to be.
+ * Same envelope unwrap + `ApiError` as `post`. Optional `headers` ride through for a
+ * per-call header (e.g. `Idempotency-Key`).
  */
 export async function originPost<T>(path: string, body?: unknown, query?: Query, headers?: Record<string, string>): Promise<T> {
   const r = await request<T>('POST', path, { query, body, absoluteUrl: originV1Url(path), headers })
@@ -405,14 +412,11 @@ export async function originPost<T>(path: string, body?: unknown, query?: Query,
 }
 
 /**
- * Envelope PUT / PATCH / DELETE pinned to the console's OWN origin (`<origin>/v1/<path>`)
- * — the idempotent-upsert / partial-edit / remove twins of `originPost`. Used by the
- * admin AGGREGATE mutations that need a verb beyond POST (`PUT /v1/admin/promos` upserts
- * the single platform promo; `PATCH`/`DELETE /v1/admin/caps/:id` edit/remove a cap).
- * They terminate at the global-admin-gated `app/admin/aggregate` proxy — which applies the
- * same-origin CSRF check on every mutating method (PUT/PATCH/DELETE included) — so pinning
- * the ORIGIN (not `config.cloudUrl`) keeps a split-origin `NEXT_PUBLIC_CLOUD_URL` from
- * routing the write around the console gate. Same casibase envelope unwrap + `ApiError`.
+ * Envelope PUT / PATCH / DELETE on the canonical `/v1/<path>` — the idempotent-upsert /
+ * partial-edit / remove twins of `originPost`. Used by the admin AGGREGATE mutations that
+ * need a verb beyond POST (`PUT /v1/admin/promos` upserts the single platform promo;
+ * `PATCH`/`DELETE /v1/admin/caps/:id` edit/remove a cap). See `originGet` for why the old
+ * origin pin is not the gate it claimed to be. Same envelope unwrap + `ApiError`.
  */
 export async function originPut<T>(path: string, body?: unknown, query?: Query): Promise<T> {
   const r = await request<T>('PUT', path, { query, body, absoluteUrl: originV1Url(path) })
@@ -541,23 +545,31 @@ export const v1Url = (path: string, base: string = activeApiBase()): string =>
   `${base.replace(/\/+$/, '')}/v1/${path.replace(/^\/+/, '')}`
 
 /**
- * The console's OWN same-origin `/v1/<path>` — the ONE client-visible form for EVERY
- * cloud API call, with NO prefix before `/v1/` (CTO contract: zero prefix). The browser
- * calls `<origin>/v1/prompts`; the console's `app/v1/[...path]` catch-all mints a
- * short-lived user bearer from the session and forwards to cloud-api `/v1/*` (org from
- * the Bearer owner) — so the client stays keyless and prefix-free while the bearer trust
- * boundary is unchanged. The NON-cloud heads (AI gateway, admin-aggregate, visor catalog,
- * billing, commerce) are dispatched to their own hardened proxy by a `next.config.mjs`
- * `beforeFiles` rewrite BEFORE the catch-all — invisibly to the client. On the server
- * (SSR / route handlers) there is no `window`, so this yields a root-relative `/v1/<path>`.
+ * The canonical `/v1/<path>` — the ONE client-visible form for EVERY cloud API call,
+ * with NO prefix before `/v1/` (CTO contract: zero prefix). It resolves ABSOLUTE
+ * against `config.cloudUrl` (`api.hanzo.ai`, or `NEXT_PUBLIC_CLOUD_URL` for local dev),
+ * so the host is named rather than inherited from wherever the bundle happens to be
+ * served. Previously this read `window.location.origin` and only *looked* compliant
+ * because console.hanzo.ai and api.hanzo.ai are the same binary — measured identical
+ * (`x-api-version: v1.801.480`, byte-identical bodies) on console/api/admin alike.
+ *
+ * Cross-origin is safe here and was already provisioned for: the credential is the
+ * PKCE bearer from `@hanzo/iam` (a header, origin-independent), every call already
+ * sets `credentials: 'include'`, and api.hanzo.ai answers preflight with
+ * `Access-Control-Allow-Credentials: true` + a reflected `Access-Control-Allow-Origin`
+ * and `Vary: Origin`.
+ *
+ * It reads `config.cloudUrl` and NOT `activeApiBase()` on purpose. `activeApiBase()`
+ * honors the active network's `apiEndpoint`, and a network is USER-ADDABLE and
+ * persisted in localStorage — letting that steer these paths would let a user-added
+ * network redirect the admin-gated surface. Deploy config may move this host; a user
+ * may not. (`v1Url` keeps the network-aware base for chain/data reads.)
  */
-export const originV1Url = (path: string): string => {
-  const clean = path.replace(/^\/+/, '')
-  return typeof window !== 'undefined' ? `${window.location.origin}/v1/${clean}` : `/v1/${clean}`
-}
+export const originV1Url = (path: string): string =>
+  `${config.cloudUrl}/v1/${path.replace(/^\/+/, '')}`
 
 /**
- * Build the console's OWN same-origin `/v1/<path>` for a cloud-api head that must go
+ * Build the canonical `/v1/<path>` for a cloud-api head that must go
  * through the user-bearer BFF. Now IDENTICAL to `originV1Url` — every cloud path is
  * `/v1/`-rooted with ZERO prefix (CTO contract), and the `app/v1/[...path]` catch-all
  * mints a short-lived user bearer from the session and forwards to cloud-api `/v1/*`
@@ -568,7 +580,7 @@ export const originV1Url = (path: string): string => {
 export const cloudProxyV1Url = originV1Url
 
 /**
- * Build the console's OWN same-origin per-tenant billing path — the canonical
+ * Build the per-tenant billing path — the canonical
  * `/v1/billing/<path>` (the /v1-first law: ZERO prefix before `/v1/`). ONE form for
  * BOTH deployments:
  *  - go:embed console (`IS_EMBED`, console.hanzo.ai): same-origin with the cloud
@@ -576,26 +588,32 @@ export const cloudProxyV1Url = originV1Url
  *    (clients/account/billing.go — forwards to commerce with the admin service token
  *    SCOPED to the validated caller's own subject); the caller is resolved from the
  *    first-party IAM session cookie (cloud middleware_identity.go).
- *  - Standalone (console2/admin): `/v1/billing/*` resolves to the console's OWN
- *    `app/v1/billing/[...path]` service-token route handler — MORE SPECIFIC than the
- *    `app/v1/[...path]` cloud BFF catch-all, so it wins — which injects the commerce
- *    SERVICE token and pins the caller's OWN billing subject server-side. Tenant
- *    isolation is unchanged; only the PATH is /v1-first (previously namespaced before `/v1/`).
- * On the server (SSR) there is no `window`, so this yields a root-relative `/v1/billing/<path>`.
+ *  - Standalone (console2/admin): the SAME cloud bridge. The `app/v1/billing/[...path]`
+ *    service-token handler is not in the production path — `/v1` is edge-routed to
+ *    cloud on every host, so a filesystem route never gets the chance to be "more
+ *    specific" than anything. Measured: `/v1/billing/subscription` answers 404/19B
+ *    identically on console.hanzo.ai, api.hanzo.ai AND admin.hanzo.ai, and
+ *    `/v1/gpu-sizes` · `/v1/regions` · `/v1/sizes` — which exist ONLY as
+ *    `next.config.mjs` rewrites — 404 on admin.hanzo.ai too, which they could not do
+ *    if Next were serving `/v1` there.
+ * Absolute on both the server and the browser — `originV1Url` no longer varies with `window`.
  */
 export const billingProxyV1Url = (path: string): string =>
   originV1Url(`billing/${path.replace(/^\/+/, '')}`)
 
 /**
- * Build the console's OWN same-origin VISOR catalog path — the canonical `/v1/vm/<path>`
+ * Build the VISOR catalog path — the canonical `/v1/vm/<path>`
  * (the /v1-first law). The public compute CATALOG (regions / CPU sizes / GPU accelerators)
- * is served by VISOR (`visor.hanzo.svc`), a DISTINCT backend from cloud-api. `/v1/vm/*`
- * resolves to the console's OWN `app/v1/vm/[...path]` user-bearer route handler (MORE
- * SPECIFIC than the `/v1/[...path]` cloud BFF, so it wins), which mints a short-lived
- * user-bound token from the session and forwards to visor (`allowVisorSurface`). Visor's
- * catalog is un-scoped (any signed-in user), so the minted bearer is accepted and the real
- * DO region/size/GPU catalog loads. On the server (SSR) this yields a root-relative
- * `/v1/vm/<path>`.
+ * is served by VISOR (`visor.hanzo.svc`), a DISTINCT backend from cloud-api.
+ *
+ * The `app/v1/vm/[...path]` user-bearer handler that used to mint a token and forward to
+ * visor is NOT in the production path: `/v1` is edge-routed to cloud on every host, so a
+ * filesystem route never gets the chance to be "more specific" than anything. This surface
+ * is therefore BROKEN in production today and was before this change — measured,
+ * `/v1/vm/regions` and `/v1/vm/gpus` both answer 404/19B identically on console.hanzo.ai,
+ * api.hanzo.ai AND admin.hanzo.ai, as do the `/v1/regions` · `/v1/sizes` · `/v1/gpu-sizes`
+ * rewrites that feed them. Naming the host does not fix that; cloud needs a `/v1/vm/*`
+ * head (or the visor catalog needs another home). Absolute on server and browser.
  *
  * NB: the visor `/v1/vm/gpus` catalog (accelerator models + VRAM + price) is DISTINCT from
  * the cloud-api GPU INVENTORY at `/v1/gpus` (a per-org shape served by the cloud BFF) — the
@@ -605,20 +623,16 @@ export const vmProxyV1Url = (path: string): string =>
   originV1Url(`vm/${path.replace(/^\/+/, '')}`)
 
 /**
- * Build the console's OWN same-origin COMMERCE store path — the canonical
+ * Build the COMMERCE store path — the canonical
  * `/v1/commerce/<path>` (the /v1-first law). The store/merchant admin surface
  * (product/order/user/variant/collection/discount/store…) is served by commerce
- * (`commerce.hanzo.svc`) and REQUIRES a Bearer. ONE form for BOTH deployments:
- *  - go:embed console (`IS_EMBED`): same-origin with the cloud binary, which serves
- *    the per-tenant store bridge at `/v1/commerce/<path>` (clients/account/commerce.go),
- *    scoped to the validated caller's own org (first-party IAM session cookie).
- *  - Standalone (console2/admin): `/v1/commerce/*` resolves to the console's OWN
- *    `app/v1/commerce/[...path]` user-bearer route handler (MORE SPECIFIC than the
- *    `app/v1/[...path]` cloud BFF), which mints a short-lived user-bound IAM token and
- *    forwards to commerce with the org resolved from the token owner
- *    (`allowCommerceSurface`). Tenant isolation is unchanged; only the PATH is /v1-first
- *    (previously namespaced before `/v1/`).
- * On the server (SSR) there is no `window`, so this yields a root-relative `/v1/commerce/<path>`.
+ * (`commerce.hanzo.svc`) and REQUIRES a Bearer. ONE form for BOTH deployments — the cloud binary's per-tenant store bridge at
+ * `/v1/commerce/<path>` (clients/account/commerce.go), scoped to the validated caller's
+ * own org. The `app/v1/commerce/[...path]` user-bearer handler is not in the production
+ * path on either: `/v1` is edge-routed to cloud on every host, so a filesystem route never
+ * gets the chance to be "more specific" than anything. Measured — `/v1/commerce/products`
+ * answers 404/19B identically on console.hanzo.ai, api.hanzo.ai AND admin.hanzo.ai.
+ * Absolute on both the server and the browser — `originV1Url` no longer varies with `window`.
  */
 export const commerceProxyV1Url = (path: string): string =>
   originV1Url(`commerce/${path.replace(/^\/+/, '')}`)

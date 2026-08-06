@@ -17,6 +17,10 @@ import { ApiError, restGet, restPost, cloudProxyV1Url } from './client'
 import { ApmApi, apmWindow } from './apm'
 
 const ORIGIN = 'https://console.hanzo.ai'
+// The console names its API host now; it no longer inherits the page origin.
+// A forked console on a customer domain must still reach api.hanzo.ai, so a
+// request URL built from window.location.origin would be a bug, not a default.
+const API = 'https://api.hanzo.ai'
 
 /** The ApiError a rejected call threw. Fails loudly when the call RESOLVED — a test that
  *  caught nothing must never read as a pass. */
@@ -50,7 +54,8 @@ describe('ApiError.endpoint (the path that actually failed)', () => {
 
   it('a failed o11y logs read names /v1/o11y/query_range — NOT the /v1/o11y/logs label', async () => {
     const e = await thrownBy(() => ApmApi.logs(apmWindow(3600), 50))
-    expect(sent, 'the request must have gone out for its URL to be meaningful').toEqual([`${ORIGIN}/v1/o11y/query_range`])
+    expect(sent, 'the request must have gone out for its URL to be meaningful').toEqual([`${API}/v1/o11y/query_range`])
+    expect(sent[0], 'the page origin must not leak into an API URL').not.toContain(ORIGIN)
     expect(e.endpoint).toBe('/v1/o11y/query_range')
     expect(e.endpoint).not.toBe('/v1/o11y/logs')
     expect(e.status).toBe(500)

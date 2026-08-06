@@ -12,7 +12,10 @@ import {
   uploadTo,
 } from './storage'
 
+/** The origin the SPA is served from — deliberately NOT where the API lives. */
 const ORIGIN = 'https://console.hanzo.ai'
+/** The one API host every `/v1` call resolves against (config's CANONICAL_API_URL). */
+const API = 'https://api.hanzo.ai'
 
 /** Stub window + a single JSON fetch response; capture the URL the client hit. */
 let lastUrl = ''
@@ -118,45 +121,45 @@ describe('storage key helpers', () => {
   })
 })
 
-// ── transport: every call hits the /v1 user-bearer proxy, not the raw cloud ─
+// ── transport: every call hits /v1/s3 on the canonical API host, not the page origin ─
 
-describe('StorageApi transport (same-origin /v1 bearer BFF)', () => {
+describe('StorageApi transport (canonical API host /v1)', () => {
   beforeEach(() => stubJson({ buckets: [] }))
   afterEach(teardown)
 
   it('buckets() GETs /v1/s3/buckets', async () => {
     await StorageApi.buckets()
-    expect(lastUrl).toBe(`${ORIGIN}/v1/s3/buckets`)
+    expect(lastUrl).toBe(`${API}/v1/s3/buckets`)
   })
 
   it('objects() encodes the prefix as a query param', async () => {
     stubJson({ objects: [] })
     await StorageApi.objects('photos', 'a/b/')
-    expect(lastUrl).toBe(`${ORIGIN}/v1/s3/buckets/photos/objects?prefix=a%2Fb%2F`)
+    expect(lastUrl).toBe(`${API}/v1/s3/buckets/photos/objects?prefix=a%2Fb%2F`)
   })
 
   it('objects() with no prefix omits the query', async () => {
     stubJson({ objects: [] })
     await StorageApi.objects('photos')
-    expect(lastUrl).toBe(`${ORIGIN}/v1/s3/buckets/photos/objects`)
+    expect(lastUrl).toBe(`${API}/v1/s3/buckets/photos/objects`)
   })
 
   it('presignDownload() preserves nested key slashes in the path', async () => {
     stubJson({ url: 'https://s3.hanzo.ai/x', method: 'GET' })
     await StorageApi.presignDownload('photos', 'a/b/c.png')
-    expect(lastUrl).toBe(`${ORIGIN}/v1/s3/buckets/photos/objects/a/b/c.png`)
+    expect(lastUrl).toBe(`${API}/v1/s3/buckets/photos/objects/a/b/c.png`)
   })
 
   it('deleteObject() targets the object path (204 resolves)', async () => {
     stubJson(null, 204)
     await StorageApi.deleteObject('photos', 'a/b/c.png')
-    expect(lastUrl).toBe(`${ORIGIN}/v1/s3/buckets/photos/objects/a/b/c.png`)
+    expect(lastUrl).toBe(`${API}/v1/s3/buckets/photos/objects/a/b/c.png`)
   })
 
   it('createBucket() POSTs the name to /v1/s3/buckets', async () => {
     stubJson({ name: 'new-bucket' }, 201)
     const b = await StorageApi.createBucket('new-bucket')
-    expect(lastUrl).toBe(`${ORIGIN}/v1/s3/buckets`)
+    expect(lastUrl).toBe(`${API}/v1/s3/buckets`)
     expect(b?.name).toBe('new-bucket')
   })
 })

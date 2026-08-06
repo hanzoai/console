@@ -1,7 +1,10 @@
 import { describe, it, expect, afterEach, vi } from 'vitest'
 import { UsageSummaryApi, normalizeSummary } from './usage-summary'
 
+/** The origin the SPA is served from — deliberately NOT where the API lives. */
 const ORIGIN = 'https://console.hanzo.ai'
+/** The one API host every `/v1` call resolves against (config's CANONICAL_API_URL). */
+const API = 'https://api.hanzo.ai'
 
 function stubJson(body: unknown, status = 200): { url: string } {
   const captured = { url: '' }
@@ -61,11 +64,11 @@ describe('normalizeSummary — defensive, never throws', () => {
   })
 })
 
-describe('UsageSummaryApi.summary — same-origin /v1/usage/summary', () => {
-  it('GETs the clean origin URL with the range and decodes the payload', async () => {
+describe('UsageSummaryApi.summary — /v1/usage/summary on the canonical API host', () => {
+  it('GETs the clean canonical URL with the range and decodes the payload', async () => {
     const cap = stubJson({ scope: { org: 'maxpower' }, spend: { available: true, totalCents: 42 }, sources: { commerce: true } })
     const s = await UsageSummaryApi.summary('7d')
-    expect(cap.url).toBe(`${ORIGIN}/v1/usage/summary?range=7d`)
+    expect(cap.url).toBe(`${API}/v1/usage/summary?range=7d`)
     expect(s.org).toBe('maxpower')
     expect(s.spend.totalCents).toBe(42)
   })

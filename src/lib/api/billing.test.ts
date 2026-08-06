@@ -2,7 +2,10 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 
 import { BillingApi, type PaymentMethod, type Subscription } from './billing'
 
+/** The PAGE origin — where the console is served from. */
 const ORIGIN = 'https://console.hanzo.ai'
+/** The API host — where it calls, whatever origin it was served from. */
+const API = 'https://api.hanzo.ai'
 
 /** Stub `window` + a single JSON `fetch` response, shared by the read-only suites. */
 function stubJson(body: unknown, status = 200): void {
@@ -286,21 +289,21 @@ describe('read paths address the canonical short route names', () => {
   it('GETs the saved methods from /v1/billing/methods (never payment-methods)', async () => {
     const calls = captureFetch({ paymentMethods: [] })
     await BillingApi.paymentMethods()
-    expect(calls[0].url).toBe(`${ORIGIN}/v1/billing/methods`)
+    expect(calls[0].url).toBe(`${API}/v1/billing/methods`)
     expect(calls[0].init.method ?? 'GET').toBe('GET')
   })
 
   it('GETs the card-processor config from /v1/billing/settings (never payment-config)', async () => {
     const calls = captureFetch({ provider: 'square', applicationId: 'sq-app', locationId: 'sq-loc', environment: 'production', live: true })
     const cfg = await BillingApi.paymentConfig()
-    expect(calls[0].url).toBe(`${ORIGIN}/v1/billing/settings`)
+    expect(calls[0].url).toBe(`${API}/v1/billing/settings`)
     expect(cfg.applicationId).toBe('sq-app')
   })
 
   it('GETs the spend alerts from /v1/billing/alerts (never spend-alerts)', async () => {
     const calls = captureFetch({ alerts: [] })
     await BillingApi.spendAlerts()
-    expect(calls[0].url).toBe(`${ORIGIN}/v1/billing/alerts`)
+    expect(calls[0].url).toBe(`${API}/v1/billing/alerts`)
   })
 })
 
@@ -317,7 +320,7 @@ describe('BillingApi.createPaymentMethod — saves a Square nonce, never a PAN',
     const m = await BillingApi.createPaymentMethod({ type: 'card', token: 'cnon:card-nonce-ok' })
 
     expect(calls).toHaveLength(1)
-    expect(calls[0].url).toBe(`${ORIGIN}/v1/billing/methods`)
+    expect(calls[0].url).toBe(`${API}/v1/billing/methods`)
     expect(calls[0].init.method).toBe('POST')
     const sent = JSON.parse(calls[0].init.body as string) as Record<string, unknown>
     expect(sent).toEqual({ type: 'card', token: 'cnon:card-nonce-ok' })
@@ -361,7 +364,7 @@ describe('BillingApi.removePaymentMethod — detaches by id (DELETE)', () => {
     const calls = captureFetch({}, 200)
     await BillingApi.removePaymentMethod('pm_1')
     expect(calls).toHaveLength(1)
-    expect(calls[0].url).toBe(`${ORIGIN}/v1/billing/methods/pm_1`)
+    expect(calls[0].url).toBe(`${API}/v1/billing/methods/pm_1`)
     expect(calls[0].init.method).toBe('DELETE')
     expect(calls[0].init.body).toBeUndefined() // a detach carries no body
   })
@@ -369,7 +372,7 @@ describe('BillingApi.removePaymentMethod — detaches by id (DELETE)', () => {
   it('encodes an id with unsafe characters (no path injection)', async () => {
     const calls = captureFetch({}, 204)
     await BillingApi.removePaymentMethod('pm/../secret')
-    expect(calls[0].url).toBe(`${ORIGIN}/v1/billing/methods/pm%2F..%2Fsecret`)
+    expect(calls[0].url).toBe(`${API}/v1/billing/methods/pm%2F..%2Fsecret`)
   })
 })
 
@@ -384,7 +387,7 @@ describe('BillingApi.cancelSubscription — at-period-end vs now', () => {
   it('POSTs {atPeriodEnd:true} to /subscriptions/:id/cancel and reflects the scheduled cancel', async () => {
     const calls = captureFetch({ id: 'sub_1', status: 'active', cancel_at_period_end: true, current_period_end: 1893456000 })
     const s = await BillingApi.cancelSubscription('sub_1', true)
-    expect(calls[0].url).toBe(`${ORIGIN}/v1/billing/subscriptions/sub_1/cancel`)
+    expect(calls[0].url).toBe(`${API}/v1/billing/subscriptions/sub_1/cancel`)
     expect(calls[0].init.method).toBe('POST')
     expect(JSON.parse(calls[0].init.body as string)).toEqual({ atPeriodEnd: true })
     expect(s.cancelAtPeriodEnd).toBe(true)
@@ -405,7 +408,7 @@ describe('BillingApi.reactivateSubscription — clears the scheduled cancel', ()
   it('POSTs to /subscriptions/:id/reactivate and reflects the cleared cancel state', async () => {
     const calls = captureFetch({ id: 'sub_1', status: 'active', cancel_at_period_end: false })
     const s = await BillingApi.reactivateSubscription('sub_1')
-    expect(calls[0].url).toBe(`${ORIGIN}/v1/billing/subscriptions/sub_1/reactivate`)
+    expect(calls[0].url).toBe(`${API}/v1/billing/subscriptions/sub_1/reactivate`)
     expect(calls[0].init.method).toBe('POST')
     expect(s.cancelAtPeriodEnd).toBe(false)
   })

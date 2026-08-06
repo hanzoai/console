@@ -4,13 +4,17 @@ import { ReferralsApi, normalizeOverview, normalizeMyReferral, normalizeClaim } 
 
 /**
  * Referrals API + pure normalizers. The client calls the cloud `/v1/referrals`
- * contract through the console's `/v1` user-bearer proxy (`cloudProxyV1Url` →
- * `<origin>/v1/referrals` — the live-ingress-safe form for a bearer-scoped
- * head; a bare `/v1/referrals` 403s on the gateway). These tests pin (1) that each
- * call hits the EXACT `/v1/referrals` path, (2) the real store JSON shape
- * normalizes, and (3) a garbage/absent field degrades to a safe default.
+ * contract on the CANONICAL API host (`cloudProxyV1Url` → `originV1Url` →
+ * `config.cloudUrl` = api.hanzo.ai) — the host is NAMED, not inherited from
+ * wherever the bundle is served, so the page origin below is irrelevant to it.
+ * These tests pin (1) that each call hits the EXACT `/v1/referrals` path on that
+ * host, (2) the real store JSON shape normalizes, and (3) a garbage/absent field
+ * degrades to a safe default.
  */
+/** The origin the SPA is served from — deliberately NOT where the API lives. */
 const ORIGIN = 'https://console.hanzo.ai'
+/** The one API host every `/v1` call resolves against (config's CANONICAL_API_URL). */
+const API = 'https://api.hanzo.ai'
 
 describe('Referrals normalizers — real cloud JSON shape, defensive', () => {
   it('normalizes the overview with all fields', () => {
@@ -66,7 +70,7 @@ describe('Referrals normalizers — real cloud JSON shape, defensive', () => {
   })
 })
 
-describe('ReferralsApi — hits the /v1/referrals bearer-proxy path', () => {
+describe('ReferralsApi — hits /v1/referrals on the canonical API host', () => {
   const fetched: { url: string; method: string }[] = []
 
   beforeEach(() => {
@@ -89,15 +93,15 @@ describe('ReferralsApi — hits the /v1/referrals bearer-proxy path', () => {
     delete (globalThis as { window?: unknown }).window
   })
 
-  it('reads the overview via the /v1 bearer BFF (prefix-free /v1, never a /cloud-prefixed or direct cloud-origin call)', async () => {
+  it('reads the overview at /v1/referrals on the canonical API host (prefix-free /v1, never a /cloud-prefixed call)', async () => {
     const out = await ReferralsApi.overview()
-    expect(fetched[0]).toEqual({ url: `${ORIGIN}/v1/referrals`, method: 'GET' })
+    expect(fetched[0]).toEqual({ url: `${API}/v1/referrals`, method: 'GET' })
     expect(out.code).toBe('ABC')
   })
 
-  it('claims a referral with POST through the proxy', async () => {
+  it('claims a referral with POST to the same host', async () => {
     const r = await ReferralsApi.claim('ABC')
-    expect(fetched[0]).toEqual({ url: `${ORIGIN}/v1/referrals/claim`, method: 'POST' })
+    expect(fetched[0]).toEqual({ url: `${API}/v1/referrals/claim`, method: 'POST' })
     expect(r.created).toBe(true)
   })
 })

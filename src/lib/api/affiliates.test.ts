@@ -13,13 +13,16 @@ import {
 
 /**
  * Affiliates API + pure normalizers. The client calls the cloud `/v1/affiliates`
- * contract through the console's `/v1` user-bearer proxy (`cloudProxyV1Url` →
- * `<origin>/v1/affiliates` — the live-ingress-safe form for a bearer-scoped
- * head; a bare `/v1/affiliates` 403s on the gateway). These tests pin (1) that each
- * call hits the EXACT `/v1/affiliates…` path, (2) the real store JSON shape
- * normalizes, and (3) a garbage/absent field degrades to a safe default.
+ * contract on the canonical API host (`cloudProxyV1Url` = `originV1Url` →
+ * `api.hanzo.ai/v1/affiliates`) — the host is named, never inherited from whatever
+ * origin serves the page. These tests pin (1) that each call hits the EXACT
+ * `/v1/affiliates…` path, (2) the real store JSON shape normalizes, and (3) a
+ * garbage/absent field degrades to a safe default.
  */
+// Two hosts, and the split is the point: ORIGIN is where the PAGE is served, API
+// (`CANONICAL_API_URL`) is where every `/v1` call goes. They no longer coincide.
 const ORIGIN = 'https://console.hanzo.ai'
+const API = 'https://api.hanzo.ai'
 
 describe('Affiliates normalizers — real cloud JSON shape, defensive', () => {
   it('normalizes the enrolled overview with all fields', () => {
@@ -98,7 +101,7 @@ describe('Affiliates normalizers — real cloud JSON shape, defensive', () => {
   })
 })
 
-describe('AffiliatesApi — hits the /v1/affiliates bearer-proxy path', () => {
+describe('AffiliatesApi — hits the /v1/affiliates path on the canonical API', () => {
   const fetched: { url: string; method: string; body: string }[] = []
 
   beforeEach(() => {
@@ -123,23 +126,23 @@ describe('AffiliatesApi — hits the /v1/affiliates bearer-proxy path', () => {
     delete (globalThis as { window?: unknown }).window
   })
 
-  it('reads the overview via the /v1 bearer BFF (prefix-free /v1, never a /cloud-prefixed or direct cloud-origin call)', async () => {
+  it('reads the overview via GET /v1/affiliates (prefix-free /v1, never a /cloud-prefixed path)', async () => {
     const out = await AffiliatesApi.overview()
-    expect(fetched[0]).toEqual({ url: `${ORIGIN}/v1/affiliates`, method: 'GET', body: '' })
+    expect(fetched[0]).toEqual({ url: `${API}/v1/affiliates`, method: 'GET', body: '' })
     expect(out.code).toBe('acme')
   })
 
-  it('applies with POST through the proxy', async () => {
+  it('applies with POST /v1/affiliates/apply', async () => {
     const r = await AffiliatesApi.apply('acme')
-    expect(fetched[0].url).toBe(`${ORIGIN}/v1/affiliates/apply`)
+    expect(fetched[0].url).toBe(`${API}/v1/affiliates/apply`)
     expect(fetched[0].method).toBe('POST')
     expect(fetched[0].body).toContain('acme')
     expect(r.created).toBe(true)
   })
 
-  it('attributes with POST through the proxy', async () => {
+  it('attributes with POST /v1/affiliates/attribute', async () => {
     const r = await AffiliatesApi.attribute('acme')
-    expect(fetched[0].url).toBe(`${ORIGIN}/v1/affiliates/attribute`)
+    expect(fetched[0].url).toBe(`${API}/v1/affiliates/attribute`)
     expect(fetched[0].method).toBe('POST')
     expect(fetched[0].body).toContain('acme')
     expect(r.created).toBe(true)
@@ -219,32 +222,32 @@ describe('AffiliatesApi dashboard — hits the exact /v1/affiliates paths', () =
 
   it('reads earnings via GET /v1/affiliates/me/earnings', async () => {
     await AffiliatesApi.earnings()
-    expect(fetched[0]).toEqual({ url: `${ORIGIN}/v1/affiliates/me/earnings`, method: 'GET', body: '' })
+    expect(fetched[0]).toEqual({ url: `${API}/v1/affiliates/me/earnings`, method: 'GET', body: '' })
   })
   it('reads links via GET /v1/affiliates/me/links', async () => {
     await AffiliatesApi.links()
-    expect(fetched[0]).toEqual({ url: `${ORIGIN}/v1/affiliates/me/links`, method: 'GET', body: '' })
+    expect(fetched[0]).toEqual({ url: `${API}/v1/affiliates/me/links`, method: 'GET', body: '' })
   })
   it('creates a link via POST /v1/affiliates/me/links', async () => {
     const l = await AffiliatesApi.createLink('twitter')
-    expect(fetched[0].url).toBe(`${ORIGIN}/v1/affiliates/me/links`)
+    expect(fetched[0].url).toBe(`${API}/v1/affiliates/me/links`)
     expect(fetched[0].method).toBe('POST')
     expect(fetched[0].body).toContain('twitter')
     expect(l.code).toBe('xy')
   })
   it('sets the handle via POST /v1/affiliates/me/handle', async () => {
     const h = await AffiliatesApi.setHandle('alice')
-    expect(fetched[0].url).toBe(`${ORIGIN}/v1/affiliates/me/handle`)
+    expect(fetched[0].url).toBe(`${API}/v1/affiliates/me/handle`)
     expect(fetched[0].method).toBe('POST')
     expect(h).toBe('alice')
   })
   it('reads the leaderboard via GET /v1/affiliates/leaderboard', async () => {
     await AffiliatesApi.leaderboard()
-    expect(fetched[0]).toEqual({ url: `${ORIGIN}/v1/affiliates/leaderboard`, method: 'GET', body: '' })
+    expect(fetched[0]).toEqual({ url: `${API}/v1/affiliates/leaderboard`, method: 'GET', body: '' })
   })
   it('pings a click via POST /v1/affiliates/click', async () => {
     await AffiliatesApi.click('xy')
-    expect(fetched[0].url).toBe(`${ORIGIN}/v1/affiliates/click`)
+    expect(fetched[0].url).toBe(`${API}/v1/affiliates/click`)
     expect(fetched[0].method).toBe('POST')
     expect(fetched[0].body).toContain('xy')
   })

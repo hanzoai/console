@@ -3,16 +3,19 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { CloudModelApi } from './models-catalog'
 
 /**
- * The catalog must reach the model list at the console's OWN same-origin `/v1/models`
- * with NO prefix (the CTO one-endpoint contract). `next.config.mjs` rewrites the
- * `models` head to the `/ai` bearer proxy, which adds the user bearer the gateway
- * requires — so the client stays keyless AND prefix-free, and never makes a
- * cookie-only cross-origin call to the cloud host (the "models missing" bug). We
+ * The catalog must reach the model list at the canonical API host's `/v1/models`
+ * with NO prefix (the CTO one-endpoint contract) — the host is NAMED, not inherited
+ * from whatever origin serves the bundle. The user bearer travels as a header, so the
+ * call is origin-independent; what must never come back is a prefixed head (`/ai/`,
+ * `/cloud/`) or a second data origin (cloud.hanzo.ai — the "models missing" bug). We
  * assert the exact URL the catalog fetches for the model list.
  */
+/** The PAGE origin — where the SPA is served from. */
 const ORIGIN = 'https://console.hanzo.ai'
+/** The canonical API host every `/v1` call resolves against, whatever origin serves the page. */
+const API = 'https://api.hanzo.ai'
 
-describe('CloudModelApi.list — same-origin /v1/models, no prefix', () => {
+describe('CloudModelApi.list — canonical /v1/models, no prefix', () => {
   const fetched: string[] = []
 
   beforeEach(() => {
@@ -34,22 +37,22 @@ describe('CloudModelApi.list — same-origin /v1/models, no prefix', () => {
     delete (globalThis as { window?: unknown }).window
   })
 
-  it('fetches the model list from the same-origin <origin>/v1/models (no /ai, no /cloud prefix)', async () => {
+  it('fetches the model list from the canonical <api>/v1/models (no /ai, no /cloud prefix)', async () => {
     const models = await CloudModelApi.list()
     const modelsUrl = fetched.find((u) => u.endsWith('/models') && !u.includes('pricing'))
-    expect(modelsUrl).toBe(`${ORIGIN}/v1/models`)
+    expect(modelsUrl).toBe(`${API}/v1/models`)
     expect(modelsUrl).not.toContain('/ai/')
     expect(modelsUrl).not.toContain('/cloud/')
     expect(models.map((m) => m.id)).toEqual(['zen-coder'])
     expect(models[0].premium).toBe(true)
   })
 
-  it('never makes a cookie-only cross-origin call to the cloud host for models', async () => {
+  it('never reaches a second data origin for models', async () => {
     await CloudModelApi.list()
-    // The model list must be same-origin (rewritten to the bearer proxy), never a
-    // direct call to the cloud API host (cloud.hanzo.ai) which would be cookie-only.
+    // The model list resolves against the ONE canonical API host — never the legacy
+    // cloud.hanzo.ai head, which would be a second data origin for the same fact.
     const modelsUrl = fetched.find((u) => u.endsWith('/models') && !u.includes('pricing'))
-    expect(modelsUrl?.startsWith(ORIGIN)).toBe(true)
+    expect(modelsUrl?.startsWith(API)).toBe(true)
     expect(modelsUrl).not.toContain('cloud.hanzo.ai')
   })
 })

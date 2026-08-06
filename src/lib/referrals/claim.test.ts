@@ -5,10 +5,13 @@ import { stashReferralCode, claimReferralOnce, __resetReferralGuard } from './cl
 /**
  * Referral capture + claim — the signup-capture half. Uses a fetch stub (the real
  * client path, like crm.test.ts) so the test proves the ACTUAL POST to
- * `/v1/referrals/claim`, plus the localStorage capture + the once-per-session
- * guards.
+ * `/v1/referrals/claim` on the canonical API host, plus the localStorage capture +
+ * the once-per-session guards.
  */
+/** The origin the SPA is served from — deliberately NOT where the API lives. */
 const ORIGIN = 'https://console.hanzo.ai'
+/** The one API host every `/v1` call resolves against (config's CANONICAL_API_URL). */
+const API = 'https://api.hanzo.ai'
 
 function memStore() {
   const m = new Map<string, string>()
@@ -65,12 +68,12 @@ describe('referral capture + claim', () => {
     expect(ls.getItem('hz_ref')).toBeNull()
   })
 
-  it('claims a stashed code once, POSTing to the /v1 bearer BFF, then consumes it', async () => {
+  it('claims a stashed code once, POSTing to the canonical /v1, then consumes it', async () => {
     ls.setItem('hz_ref', 'ABC')
     claimReferralOnce('orgB')
     await flush()
     expect(fetched).toHaveLength(1)
-    expect(fetched[0].url).toBe(`${ORIGIN}/v1/referrals/claim`)
+    expect(fetched[0].url).toBe(`${API}/v1/referrals/claim`)
     expect(fetched[0].method).toBe('POST')
     expect(fetched[0].body).toContain('ABC')
     expect(ls.getItem('hz_ref')).toBeNull() // consumed on success

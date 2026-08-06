@@ -161,13 +161,16 @@ describe('refs + formatters', () => {
 })
 
 /**
- * The `/v1/code/*` routes are same-origin, prefix-free, and carry NO org param — the
- * console's `app/v1` bearer proxy mints the token and the cloud handler resolves the
- * org from its owner claim (a PHYSICAL per-org SQLite file). These pin that the client
- * builds the right path + query and NEVER leaks an org param client-side.
+ * The `/v1/code/*` routes live on the canonical API host, are prefix-free, and carry NO
+ * org param — the cloud handler resolves the org from the bearer's owner claim (a
+ * PHYSICAL per-org SQLite file). These pin that the client builds the right path + query
+ * and NEVER leaks an org param client-side.
  */
-describe('CodeApi — same-origin, prefix-free, no client-side org', () => {
+describe('CodeApi — canonical API host, prefix-free, no client-side org', () => {
+  /** The PAGE origin — where the console is served from. */
   const ORIGIN = 'https://console.hanzo.ai'
+  /** The API host — where it calls, whatever origin it was served from. */
+  const API = 'https://api.hanzo.ai'
   let calls: { url: string; method: string; body?: string }[] = []
 
   beforeEach(() => {
@@ -195,7 +198,7 @@ describe('CodeApi — same-origin, prefix-free, no client-side org', () => {
     expect(calls).toHaveLength(1)
     expect(calls[0].method).toBe('GET')
     const u = new URL(calls[0].url)
-    expect(u.origin + u.pathname).toBe(`${ORIGIN}/v1/code/search`)
+    expect(u.origin + u.pathname).toBe(`${API}/v1/code/search`)
     expect(u.searchParams.get('q')).toBe('Mount func')
     expect(u.searchParams.get('type')).toBe('symbol')
     expect(u.searchParams.get('limit')).toBe(String(SEARCH_LIMIT))
@@ -215,7 +218,7 @@ describe('CodeApi — same-origin, prefix-free, no client-side org', () => {
   it('ask GETs /v1/code/ask?q (+repo), no org param', async () => {
     await CodeApi.ask('where is auth validated?', 'hanzoai/cloud')
     const u = new URL(calls[0].url)
-    expect(u.origin + u.pathname).toBe(`${ORIGIN}/v1/code/ask`)
+    expect(u.origin + u.pathname).toBe(`${API}/v1/code/ask`)
     expect(u.searchParams.get('q')).toBe('where is auth validated?')
     expect(u.searchParams.get('repo')).toBe('hanzoai/cloud')
     expect(u.searchParams.has('org')).toBe(false)
@@ -224,7 +227,7 @@ describe('CodeApi — same-origin, prefix-free, no client-side org', () => {
   it('context POSTs /v1/code/context with a JSON body', async () => {
     await CodeApi.context('pack this', 'hanzoai/cloud', 4000)
     expect(calls[0].method).toBe('POST')
-    expect(calls[0].url).toBe(`${ORIGIN}/v1/code/context`)
+    expect(calls[0].url).toBe(`${API}/v1/code/context`)
     expect(JSON.parse(calls[0].body ?? '{}')).toMatchObject({ query: 'pack this', repo: 'hanzoai/cloud', budgetTokens: 4000 })
   })
 })

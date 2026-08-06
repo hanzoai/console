@@ -2,7 +2,10 @@ import { describe, it, expect, afterEach, vi } from 'vitest'
 
 import { PlansApi } from './plans'
 
+/** The PAGE origin — where the SPA is served from. */
 const ORIGIN = 'https://console.hanzo.ai'
+/** The canonical API host every `/v1` call resolves against, whatever origin serves the page. */
+const API = 'https://api.hanzo.ai'
 
 /** A captured request URL for asserting the exact path the client hit. */
 let lastUrl = ''
@@ -57,7 +60,7 @@ describe('PlansApi.plans', () => {
   it('reads the per-tenant billing proxy directly (NOT a bare /v1/pricing or /v1/plans that 401s live)', async () => {
     stubPlans(CATALOG)
     await PlansApi.plans()
-    expect(lastUrl).toBe(`${ORIGIN}/v1/billing/plans`)
+    expect(lastUrl).toBe(`${API}/v1/billing/plans`)
   })
 
   it('maps commerce cents -> whole dollars and carries the Pro tier at $49/mo, popular', async () => {

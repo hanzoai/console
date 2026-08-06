@@ -2,9 +2,12 @@ import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest'
 
 import { ModelSyncApi } from './model-sync'
 
+/** The PAGE origin — the admin console host the SPA is served from. */
 const ORIGIN = 'https://admin.hanzo.ai'
+/** The canonical API host every `/v1` call resolves against, whatever origin serves the page. */
+const API = 'https://api.hanzo.ai'
 
-describe('ModelSyncApi — same-origin model sync endpoints', () => {
+describe('ModelSyncApi — canonical-API model sync endpoints', () => {
   const calls: { url: string; method: string }[] = []
 
   beforeEach(() => {
@@ -27,17 +30,17 @@ describe('ModelSyncApi — same-origin model sync endpoints', () => {
     delete (globalThis as { window?: unknown }).window
   })
 
-  it('reloadConfig() POSTs same-origin /v1/reload-model-config', async () => {
+  it('reloadConfig() POSTs the canonical /v1/admin/reload-model-config', async () => {
     await ModelSyncApi.reloadConfig()
     expect(calls).toHaveLength(1)
-    expect(calls[0].url).toBe(`${ORIGIN}/v1/admin/reload-model-config`)
+    expect(calls[0].url).toBe(`${API}/v1/admin/reload-model-config`)
     expect(calls[0].method).toBe('POST')
   })
 
-  it('refreshPricing() POSTs same-origin /v1/refresh-model-pricing', async () => {
+  it('refreshPricing() POSTs the canonical /v1/admin/refresh-model-pricing', async () => {
     const res = await ModelSyncApi.refreshPricing()
     expect(calls).toHaveLength(1)
-    expect(calls[0].url).toBe(`${ORIGIN}/v1/admin/refresh-model-pricing`)
+    expect(calls[0].url).toBe(`${API}/v1/admin/refresh-model-pricing`)
     expect(calls[0].method).toBe('POST')
     expect(res.lastPricingRefresh).toBe('2026-07-05T00:00:00.000Z')
   })

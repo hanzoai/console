@@ -277,8 +277,11 @@ describe('recent — newest first, capped', () => {
   })
 })
 
-describe('fetchUsageRecords — through the per-tenant /billing proxy', () => {
+describe('fetchUsageRecords — the per-tenant /v1/billing/usage path', () => {
+  // Two hosts, and the split is the point: ORIGIN is where the PAGE is served, API
+  // (`CANONICAL_API_URL`) is where every `/v1` call goes. They no longer coincide.
   const ORIGIN = 'https://console.hanzo.ai'
+  const API = 'https://api.hanzo.ai'
   const fetched: string[] = []
   beforeEach(() => {
     fetched.length = 0
@@ -296,9 +299,9 @@ describe('fetchUsageRecords — through the per-tenant /billing proxy', () => {
     delete (globalThis as { window?: unknown }).window
   })
 
-  it('hits the same-origin /v1/billing/usage proxy (the /v1-first billing path), never commerce directly', async () => {
+  it('hits /v1/billing/usage on the canonical API (the /v1-first billing path), never commerce directly', async () => {
     const recs = await fetchUsageRecords()
-    expect(fetched[0]).toBe(`${ORIGIN}/v1/billing/usage`)
+    expect(fetched[0]).toBe(`${API}/v1/billing/usage`)
     expect(recs).toHaveLength(1)
     expect(recs[0].model).toBe('gpt-4o-mini')
   })

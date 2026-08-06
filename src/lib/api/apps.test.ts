@@ -11,16 +11,19 @@ import {
 
 /**
  * Apps API (the hanzo.app buildable-sites store) + pure normalizers. The module
- * calls the DOCUMENTED cloud `/v1/projects` contract same-origin, keyless and
- * prefix-free (`originV1Url` → `<origin>/v1/projects`); `next.config.mjs` rewrites
- * that head to the user-bearer `/v1` proxy. These tests pin (1) each call hits
- * the EXACT same-origin `/v1/projects` path (the canonical Agents/CRM form — never a
- * direct cloud-origin call, which 403s), (2) the real projectsvc JSON shape
+ * calls the DOCUMENTED cloud `/v1/projects` contract keyless and prefix-free on the
+ * canonical API host (`originV1Url` → `api.hanzo.ai/v1/projects`) — the host is named,
+ * never inherited from whatever origin serves the page. These tests pin (1) each call
+ * hits the EXACT `/v1/projects` path (the canonical Agents/CRM form — never a
+ * `/cloud`-prefixed one), (2) the real projectsvc JSON shape
  * (projectView/deploymentView) normalizes, (3) a bare array + the flat store-column
  * fallback both read, (4) garbage degrades to a safe default — never throws, and
  * (5) the `hanzo.app/dev?project=<slug>` edit deep-link is built injection-safe.
  */
+// Two hosts, and the split is the point: ORIGIN is where the PAGE is served, API
+// (`CANONICAL_API_URL`) is where every `/v1` call goes. They no longer coincide.
 const ORIGIN = 'https://console.hanzo.ai'
+const API = 'https://api.hanzo.ai'
 
 describe('Apps normalizers — real projectsvc JSON shape, defensive', () => {
   it('normalizes a project view with the nested repo object', () => {
@@ -111,7 +114,7 @@ describe('builderEditUrl — the console→hanzo.app edit deep-link', () => {
   })
 })
 
-describe('AppsApi — hits the same-origin /v1/projects contract (rewritten to the /v1 bearer proxy)', () => {
+describe('AppsApi — hits the /v1/projects contract on the canonical API', () => {
   const fetched: { url: string; method: string }[] = []
 
   beforeEach(() => {
@@ -136,17 +139,17 @@ describe('AppsApi — hits the same-origin /v1/projects contract (rewritten to t
     delete (globalThis as { window?: unknown }).window
   })
 
-  it('lists sites via the same-origin /v1/projects path (not a direct cloud-origin call)', async () => {
+  it('lists sites via the /v1/projects path (never a /cloud-prefixed one)', async () => {
     const out = await AppsApi.list()
-    expect(fetched[0]).toEqual({ url: `${ORIGIN}/v1/projects`, method: 'GET' })
+    expect(fetched[0]).toEqual({ url: `${API}/v1/projects`, method: 'GET' })
     expect(fetched[0].url).not.toContain('/cloud/')
     expect(out.map((a) => a.slug)).toEqual(['landing'])
   })
 
-  it('gets one site by slug and its deployments through the proxy path', async () => {
+  it('gets one site by slug and its deployments on the same /v1/projects path', async () => {
     await AppsApi.get('landing')
     await AppsApi.deployments('landing')
-    expect(fetched[0].url).toBe(`${ORIGIN}/v1/projects/landing`)
-    expect(fetched[1].url).toBe(`${ORIGIN}/v1/projects/landing/deployments`)
+    expect(fetched[0].url).toBe(`${API}/v1/projects/landing`)
+    expect(fetched[1].url).toBe(`${API}/v1/projects/landing/deployments`)
   })
 })
