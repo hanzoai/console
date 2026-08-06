@@ -88,6 +88,29 @@ export type ConsoleConfig = {
   /** Billing/account portal — PER BRAND. The console LINKS here, never reimplements it. */
   billingUrl: string
   /**
+   * Publishable ingest key (`pk-`) — PER BRAND. THE tenant of this console's own
+   * telemetry, and the only thing that decides it.
+   *
+   * Cloud resolves the org from whatever credential reaches `/v1/event`, and a
+   * validated IAM bearer WINS over a key (`eventTenant`, apps/analytics/event.go:
+   * an early return, so a presented key is not even read). So a console that sends
+   * the visitor's bearer files its OWN product telemetry into whatever org that
+   * visitor happens to be acting in — a customer's tenant. This key is how the
+   * console states its identity instead of borrowing the visitor's.
+   *
+   * PER BRAND because one image serves six brands, resolved at runtime by
+   * `brandFromHost`: a single shared key would file every brand's console — and
+   * every white-label tenant's — into one org. A key names exactly one org.
+   *
+   * Publishable by design: write-only, no read scope, same trust class as a Sentry
+   * DSN, so a literal in the bundle is correct. There is no build arg: a build arg
+   * carries ONE value, and this needs one per brand out of one artifact.
+   *
+   * EMPTY = telemetry OFF for that brand (fail closed). Never fall back to the
+   * bearer — that is the misfiling this field exists to remove, and it is silent.
+   */
+  ingestKey: string
+  /**
    * Hosted top-up/payment page (pay.<brand>) — PER BRAND. The Wallet "Top up" LINKS
    * here (new tab); the console NEVER hosts a card form or mints credit itself.
    * Derived from the brand billing host (billing.<brand> → pay.<brand>), so it is
@@ -214,15 +237,26 @@ const ADMIN_ORG = 'admin'
 // (the Tenants board creates it), NOT a row here. NOT swapped yet: NEXT_PUBLIC_IAM_*
 // + the OAuth issuer bake in at build time, so a blind swap breaks sign-in. Treat
 // these rows as the SEED for the tenant records until every host has one, then delete.
-const BRANDS: Record<BrandId, { brandName: string; iamUrl: string; iamOrgName: string; iamApp: string; adminApp: string; billingUrl: string; docsUrl: string; statusUrl: string }> = {
-  hanzo: { brandName: 'Hanzo Cloud', iamUrl: 'https://hanzo.id', iamOrgName: 'hanzo', iamApp: 'hanzo-cloud', adminApp: 'admin-console', billingUrl: 'https://billing.hanzo.ai', docsUrl: 'https://docs.hanzo.ai', statusUrl: 'https://status.hanzo.ai' },
-  lux: { brandName: 'Lux Cloud', iamUrl: 'https://lux.id', iamOrgName: 'lux', iamApp: 'lux-cloud', adminApp: 'admin-console', billingUrl: 'https://billing.lux.cloud', docsUrl: 'https://docs.lux.network', statusUrl: 'https://status.lux.network' },
-  zoo: { brandName: 'Zoo Cloud', iamUrl: 'https://zoolabs.id', iamOrgName: 'zoo', iamApp: 'zoo-cloud', adminApp: 'admin-console', billingUrl: 'https://billing.zoo.cloud', docsUrl: 'https://docs.zoo.ngo', statusUrl: 'https://status.zoo.ngo' },
-  pars: { brandName: 'Pars Cloud', iamUrl: 'https://pars.id', iamOrgName: 'pars', iamApp: 'pars-cloud', adminApp: 'admin-console', billingUrl: 'https://billing.pars.cloud', docsUrl: 'https://docs.pars.network', statusUrl: 'https://status.pars.network' },
+// `ingestKey` is the brand's OWN publishable key — see the ConsoleConfig field. A
+// brand with `''` emits NOTHING (fail closed); it never borrows the visitor's
+// bearer. Mint one against that brand's IAM as a user of that org:
+// `POST /v1/keys {"type":"publishable"}` → the `pk-` it returns ONCE. That call is
+// create-OR-ROTATE of the caller's one publishable key, so mint from an account
+// whose key nothing else already ships — rotating hanzo's would blank docs.hanzo.ai,
+// hanzo.ai and hanzo.app, which all bake the same org key.
+const BRANDS: Record<BrandId, { brandName: string; iamUrl: string; iamOrgName: string; iamApp: string; adminApp: string; billingUrl: string; docsUrl: string; statusUrl: string; ingestKey: string }> = {
+  // The hanzo org's publishable key — the same one docs.hanzo.ai, hanzo.ai and
+  // hanzo.app already ship, which is why `product` stays whatever the client says:
+  // an org key resolves via IAM and carries no project, so nothing rewrites it
+  // (a PROJECT key would overwrite `product` with the project's name).
+  hanzo: { brandName: 'Hanzo Cloud', iamUrl: 'https://hanzo.id', iamOrgName: 'hanzo', iamApp: 'hanzo-cloud', adminApp: 'admin-console', billingUrl: 'https://billing.hanzo.ai', docsUrl: 'https://docs.hanzo.ai', statusUrl: 'https://status.hanzo.ai', ingestKey: 'pk-live-c88649f1085fb6ad441d8a0072933a9b' },
+  lux: { brandName: 'Lux Cloud', iamUrl: 'https://lux.id', iamOrgName: 'lux', iamApp: 'lux-cloud', adminApp: 'admin-console', billingUrl: 'https://billing.lux.cloud', docsUrl: 'https://docs.lux.network', statusUrl: 'https://status.lux.network', ingestKey: '' },
+  zoo: { brandName: 'Zoo Cloud', iamUrl: 'https://zoolabs.id', iamOrgName: 'zoo', iamApp: 'zoo-cloud', adminApp: 'admin-console', billingUrl: 'https://billing.zoo.cloud', docsUrl: 'https://docs.zoo.ngo', statusUrl: 'https://status.zoo.ngo', ingestKey: '' },
+  pars: { brandName: 'Pars Cloud', iamUrl: 'https://pars.id', iamOrgName: 'pars', iamApp: 'pars-cloud', adminApp: 'admin-console', billingUrl: 'https://billing.pars.cloud', docsUrl: 'https://docs.pars.network', statusUrl: 'https://status.pars.network', ingestKey: '' },
   // White-label cloud tenants seeded as orgs IN the hanzo IAM (hanzo.id) — no own
   // .id issuer, so iamUrl = https://hanzo.id with the per-brand org/app (see NOTE above).
-  '7stars': { brandName: '7Stars Cloud', iamUrl: 'https://hanzo.id', iamOrgName: '7stars', iamApp: '7stars-cloud', adminApp: 'admin-console', billingUrl: 'https://billing.7stars.dev', docsUrl: 'https://docs.7stars.dev', statusUrl: 'https://status.7stars.dev' },
-  yotoda: { brandName: 'Yotoda Cloud', iamUrl: 'https://hanzo.id', iamOrgName: 'yotoda', iamApp: 'yotoda-cloud', adminApp: 'admin-console', billingUrl: 'https://billing.yotoda.tech', docsUrl: 'https://docs.yotoda.tech', statusUrl: 'https://status.yotoda.tech' },
+  '7stars': { brandName: '7Stars Cloud', iamUrl: 'https://hanzo.id', iamOrgName: '7stars', iamApp: '7stars-cloud', adminApp: 'admin-console', billingUrl: 'https://billing.7stars.dev', docsUrl: 'https://docs.7stars.dev', statusUrl: 'https://status.7stars.dev', ingestKey: '' },
+  yotoda: { brandName: 'Yotoda Cloud', iamUrl: 'https://hanzo.id', iamOrgName: 'yotoda', iamApp: 'yotoda-cloud', adminApp: 'admin-console', billingUrl: 'https://billing.yotoda.tech', docsUrl: 'https://docs.yotoda.tech', statusUrl: 'https://status.yotoda.tech', ingestKey: '' },
 }
 
 /** Hostname suffix → brand. First match wins. */
@@ -249,13 +283,32 @@ const HOST_BRANDS: ReadonlyArray<{ suffix: string; brand: BrandId }> = [
  *  the suffix match can never be softened by a padded/ported/FQDN-dot host
  *  (a mis-resolve here would swap the admin-gate `adminDomain`). */
 export function brandFromHost(host?: string | null): BrandId {
+  return brandMatch(host) ?? 'hanzo'
+}
+
+/**
+ * The brand a hostname NAMES, or undefined when no suffix claims it — the ONE
+ * matcher, of which `brandFromHost` is this plus the hanzo default.
+ *
+ * The difference matters for exactly one field. Defaulting to hanzo is right for a
+ * wordmark or a docs link: a stranger host should still look like something. It is
+ * WRONG for `ingestKey`, because that default would hand Hanzo's key to ANY host
+ * this image is ever served on, and that host's console telemetry would then file
+ * into Hanzo's org — the same misfiling as the bearer, just in a new direction.
+ *
+ * This is not hypothetical. `yadota.tech` serves this console today (verified live)
+ * and matches NO suffix, because HOST_BRANDS spells that tenant `yotoda.tech` — a
+ * domain with no DNS. So the one host that exercises the default is a white-label
+ * tenant. Telemetry fails closed there; the spelling itself is left alone
+ * deliberately, since correcting it also repoints that tenant's IAM app and login.
+ */
+function brandMatch(host?: string | null): BrandId | undefined {
   const hostname = normHost(host)
-  if (hostname) {
-    for (const e of HOST_BRANDS) {
-      if (hostname === e.suffix || hostname.endsWith('.' + e.suffix)) return e.brand
-    }
+  if (!hostname) return undefined
+  for (const e of HOST_BRANDS) {
+    if (hostname === e.suffix || hostname.endsWith('.' + e.suffix)) return e.brand
   }
-  return 'hanzo'
+  return undefined
 }
 
 /** Current hostname: window in the browser, NEXT_PUBLIC_DEFAULT_HOST for SSR/build. */
@@ -501,6 +554,11 @@ export function resolveConfig(host: string = currentHost()): ConsoleConfig {
     iamAppName: process.env.NEXT_PUBLIC_IAM_APP_NAME ?? app,
     iamClientId: process.env.NEXT_PUBLIC_IAM_CLIENT_ID ?? app,
     billingUrl: trimSlash(process.env.NEXT_PUBLIC_BILLING_URL ?? b.billingUrl),
+    // Resolved from the EXPLICIT host match, never the hanzo default — an
+    // unrecognized host emits nothing rather than filing into Hanzo's org. No
+    // NEXT_PUBLIC_ override: one artifact serves six brands, so a build-time env
+    // could only ever carry one brand's key, and the wrong one is worse than none.
+    ingestKey: brandMatch(host) ? b.ingestKey : '',
     // pay.<brand> — derived from the brand billing host (billing.<brand> → pay.<brand>),
     // so each brand links to ITS OWN hosted payment page. Env-overridable per-deploy.
     payUrl: trimSlash(process.env.NEXT_PUBLIC_PAY_URL ?? b.billingUrl.replace(/:\/\/billing\./, '://pay.')),

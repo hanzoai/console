@@ -18,10 +18,11 @@
  *
  * Wiring for the console SPA:
  *  - `host: ''` — SAME-ORIGIN. Events POST to the console's own `/v1/event`. The
- *    client NEVER sends an org/tenant — Cloud stamps it from the validated bearer.
- *  - `getToken` — the signed-in visitor's own Hanzo IAM access token. THIS is what
- *    attributes the stream, and it is the only mechanism that is correct here; see
- *    the note below for why no publishable key is passed.
+ *    client NEVER sends an org/tenant on the wire — Cloud stamps it from the
+ *    credential, and `ingestKey` is that credential.
+ *  - `ingestKey` — the BRAND's own publishable key (`config.ingestKey`, resolved
+ *    per host). It names the tenant; see the note below for why it, and not the
+ *    visitor's bearer.
  *  - `dsn` (`NEXT_PUBLIC_HANZO_EVENT_DSN`) — the error plane's own credential,
  *    shaped `https://<key>@api.hanzo.ai/v1/sentry/<project>`. Publishable by design
  *    (it ships in the client bundle). Unset → errors are captured and dropped.
@@ -39,7 +40,7 @@
 import { createAnalytics, type Analytics } from '@hanzo/event'
 import { setTelemetry } from '@hanzo/ui/telemetry'
 
-import { iamAccessToken } from '~/lib/auth/iam'
+import { config } from '~/config'
 
 /** Honor an explicit browser opt-out signal (GPC, then legacy DNT). SSR (no
  *  navigator) defaults to enabled; the browser instance reads the real signal. */
@@ -51,41 +52,49 @@ function consented(): boolean {
   return dnt !== '1' && dnt !== 'yes'
 }
 
-// ── No publishable ingest key is passed, and that is DELIBERATE ──────────────
+// ── THE TENANT IS THIS CONSOLE, NOT ITS VISITOR ──────────────────────────────
 //
-// Do not "fix" this by adding a build arg or by reading NEXT_PUBLIC_PUBLISHABLE_KEY
-// here.
+// This file used to pass `getToken` — the signed-in visitor's IAM bearer — and
+// argued at length that a publishable key would be a cross-tenant leak. It had the
+// leak exactly backwards.
 //
-// A `pk-` resolves to exactly ONE org (cloud stamps the tenant from the key), and
-// this image is brand-agnostic: one build serves cloud.hanzo.ai, cloud.lux.cloud and
-// cloud.zoo.cloud, with the brand resolved at RUNTIME from the request hostname
-// (src/config). Baking a key would file every brand's — and every customer's —
-// traffic into whichever org the key belongs to, which is both wrong data and a
-// cross-tenant leak. It is the same reason Dockerfile bakes no NEXT_PUBLIC_*.
+// Cloud stamps `event.fact.org` from whatever credential reaches the door, and a
+// validated bearer WINS: `eventTenant` (apps/analytics/event.go) returns on the
+// bearer BEFORE a key is read. The org it stamps is `X-Org-Id`, which SanitizeIdentity
+// sets to the org the visitor SELECTED (any org in their signed `orgs` claim), else
+// their home org. So the console's own product telemetry was filed into whichever
+// customer tenant the visitor happened to be acting in. Production proved it: 18
+// rows of Hanzo console analytics under `proofwalk-aug05`, one onboarding walk,
+// because first-run onboarding CREATES an org and re-authenticates into it. Every
+// signed-in customer does that. It scaled with the customer list.
 //
-// Worse, it would be SILENT: @hanzo/event resolves the outgoing credential as
-// `ingestKey ?? token`, so a key takes PRECEDENCE over the bearer — setting one
-// would OVERRIDE each signed-in user's own identity rather than supplement it.
+// Adding a key while KEEPING the bearer would have fixed nothing — the bearer still
+// wins server-side — which is why `getToken` is GONE rather than merely joined.
 //
-// THE COOKIE IS NOT A CREDENTIAL HERE. This file used to claim that posting
-// same-origin let the first-party session ride along, so signed-in traffic landed
-// correctly. It does not. That cookie is the casibase session, while cloud resolves
-// a tenant from a VALIDATED IAM bearer (SanitizeIdentity) — so a cookie-only POST
-// carries no principal. It is not refused: it silently takes the ANONYMOUS lane,
-// which files every row under the `$public` tenant (a partition no org can read) and
-// drops `identify` with a 200 receipt. Production proved it — 498 console rows, all
-// `$public`, zero identified users.
+// The key is not a leak, because it is resolved PER BRAND at runtime from the
+// hostname (`config.ingestKey` → `brandFromHost`), which is the same mechanism that
+// already picks the IAM issuer and the billing host. One artifact, six brands, six
+// keys; a brand with no key emits NOTHING rather than borrowing someone's identity.
+// That is why the key lives in `src/config` and not in a build arg: a build arg
+// carries one value, and one value cannot serve six brands.
 //
-// `getToken` below is the fix, and it has neither problem: cloud resolves the tenant
-// from the token's OWN owner claim, so each visitor's events land in THEIR org, on
-// every brand host, with no per-brand configuration. Logged-out views carry no token
-// and stay anonymous — the honest outcome for a visitor who has not identified
-// themselves, and still the open question for the public/marketing faces (closing
-// that needs a PER-HOST key resolved at RUNTIME, e.g. the `GET /v1/brand?host=`
-// shape src/config already anticipates; a module-scope const cannot receive it).
+// Nothing is lost by dropping the bearer. It was only ever a credential — never the
+// identity. `distinctId` comes from `identify()` (Analytics.tsx binds the stable
+// `owner/name` actor id), so who the person is still rides the stream; only WHERE
+// the row lands has changed hands, from the visitor to the console.
 
 /** Error-plane credential. Unset → captureError is inert (fail-safe). */
 const dsn = process.env.NEXT_PUBLIC_HANZO_EVENT_DSN?.trim() || undefined
+
+/** This brand's publishable key — the tenant of everything this client sends. */
+const ingestKey = config.ingestKey || undefined
+
+/**
+ * The ONE gate, shared by the client and the ambient wrapper below so they cannot
+ * disagree. Both conditions are necessary: consent decides WHETHER we may send, the
+ * key decides WHERE it lands, and without a destination there is nothing to send.
+ */
+const emitting = consented() && Boolean(ingestKey)
 
 /**
  * The ONE console analytics client. Built once at module scope (SSR-safe: the
@@ -95,14 +104,13 @@ const dsn = process.env.NEXT_PUBLIC_HANZO_EVENT_DSN?.trim() || undefined
 export const eventClient: Analytics = createAnalytics({
   product: 'console',
   host: '',
-  // Read through a function, not captured once: this module is a singleton built at
-  // import time, when the visitor is not signed in yet and the token does not exist.
-  // The client calls this at flush time, so a sign-in — and every silent refresh
-  // after it — is picked up with no rebuild. Returns undefined on the server and
-  // when signed out, which is the anonymous path.
-  getToken: () => iamAccessToken() ?? undefined,
+  // The brand's own key, read at module init — in the browser, where `config`
+  // resolves it from the real `window.location.hostname`. Unlike the token it
+  // replaces, this does not change during a session, so there is nothing to
+  // re-read at flush time.
+  ingestKey,
   dsn,
-  enabled: consented(),
+  enabled: emitting,
 })
 
 // ── The shared components emit through THIS client, not a second one ─────────
@@ -117,14 +125,16 @@ export const eventClient: Analytics = createAnalytics({
 //
 // Registering `eventClient` as the ambient client is the whole fix, and it is what
 // keeps the promise this file's header makes: ONE client, one batch, one anon id,
-// one stream, same-origin with the session cookie — so component events arrive
-// CREDENTIALED and are attributed to the signed-in org. `AnalyticsProvider` in
-// Provider.tsx already hands this same instance to `useAnalytics()`.
+// one stream, same-origin — so component events arrive CREDENTIALED, attributed to
+// the BRAND by the key this client carries. `AnalyticsProvider` in Provider.tsx
+// already hands this same instance to `useAnalytics()`.
 //
 // The wrapper is the `Telemetry` shape @hanzogui/telemetry hands out; every method
 // delegates, so there is nothing here to keep in sync but the delegation itself.
+// `enabled` mirrors the client's own gate rather than asserting true: a wrapper
+// that claims to be live over a disabled client makes `telemetry.enabled` lie.
 setTelemetry({
-  enabled: true,
+  enabled: emitting,
   product: 'console',
   client: eventClient,
   track: (event, properties, commerce) => eventClient.capture(event, properties, commerce),
