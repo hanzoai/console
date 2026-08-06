@@ -6,8 +6,8 @@
  *  1. APPLICATION logs (default) — full-text application/platform logs from the
  *     Hanzo o11y (O11y) runtime, read through the same-origin `/v1` bearer
  *     proxy as `POST /v1/o11y/query_range` (the version-less canonical o11y
- *     surface; a `list`-panel `noop` builder query over `dataSource: logs`, newest
- *     first — `ApmApi.logs`). Real
+ *     surface; a v5 `requestType: raw` builder query over `signal: logs`
+ *     — `ApmApi.logs`). Real
  *     log lines (time · severity · service · message), org-scoped by the minted
  *     bearer, filterable by severity + service. Honest states: loading, the
  *     shared o11y `RuntimeNotice` on 503/404/401/403, and an honest "connected ·

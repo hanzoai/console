@@ -4,9 +4,8 @@
  * Per-product Logs — the LIVE application/platform logs for THIS product's OTel
  * service, read from the Hanzo o11y (O11y) runtime via the same-origin `/v1`
  * bearer proxy (`POST /v1/o11y/query_range` — the version-less canonical o11y
- * surface; a `list`-panel `noop` builder query over `dataSource: logs`, newest first,
- * FILTERED to the product's
- * `service.name`). The SAME o11y source the Observe › Logs board reads, scoped to
+ * surface; a v5 `requestType: raw` builder query over `signal: logs`, FILTERED to the
+ * product's `service.name`). The SAME o11y source the Observe › Logs board reads, scoped to
  * one product — org-scoped by the minted bearer, so a customer sees only their own
  * org's lines (o11y scopes every query by the JWT owner → `X-Org-Id`).
  *

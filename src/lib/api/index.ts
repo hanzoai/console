@@ -306,7 +306,7 @@ export {
   type OccurrenceFrame,
   type IssuesQuery,
   type Dashboard,
-  type O11yDataSource,
+  type O11ySignal,
   type LogRow,
   type TraceSpan,
 } from './apm'

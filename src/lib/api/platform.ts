@@ -1,29 +1,23 @@
 /**
  * Platform API — Hanzo cluster inventory + PaaS control plane.
  *
- * TWO transports, cleanly split by authority:
- *   - Cluster INVENTORY + node-pool lifecycle (list / get / add-pool / scale-pool /
- *     delete-pool) go through the unified cloud binary at `/v1/clusters*`, via the
- *     same-origin user-bearer `/v1` proxy (app/v1/[...path]/route.ts → cloud-api,
- *     org resolved from the Bearer owner). This is the native, per-org surface every
- *     cluster consumer reads — one source of truth.
- *   - The apps inventory and cluster PROVISIONING (spin up a whole new DOKS cluster)
- *     stay on the `/paas` control plane (app/paas/[...path]/route.ts), which injects the
- *     platform SERVICE token from server-only env (KMS) and is brand-admin gated — the
- *     right authority for a god-mode, multi-tenant operation. When the token is unset the
- *     proxy returns an honest 501 the UI renders as "not configured"; nothing is fabricated.
+ * ONE transport: everything here goes through the unified cloud binary over the
+ * same-origin user-bearer `/v1` proxy (app/v1/[...path]/route.ts → cloud-api, org
+ * resolved from the Bearer owner). The apps inventory used to be the exception — it rode
+ * the `/paas` control plane and its god-mode platform SERVICE token — but cloud folded
+ * `paas` into `platform` and retired the duplicate head, and the fleet read is per-org
+ * anyway, so it joins the rest on the bearer path. See `fleetUrl`.
  *
  * REAL surfaces:
- *   - GET /v1/apps                 → the apps inventory (Status + Kubernetes modules).
+ *   - GET /v1/platform/fleet       → the apps inventory (Status + Kubernetes modules).
  *   - GET /v1/clusters[/:id]       → the org's DEDICATED Hanzo K8S (DOKS) clusters, with
  *     their node pools. Honest empty when the org has none (shared Hanzo Cloud is default).
  *   - POST   /v1/clusters/:cid/pools            → add a node pool.
  *   - POST   /v1/clusters/:cid/pools/:pid/scale → scale a pool's node count.
  *   - DELETE /v1/clusters/:cid/pools/:pid       → remove a node pool.
- *   - POST /v1/org/{org}/cluster   → provision a fresh dedicated cluster (`/paas`).
+ *   - POST /v1/org/{org}/cluster   → provision a fresh dedicated cluster.
  */
 import { restGet, restPost, restDelete, cloudProxyV1Url } from './client'
-import { IS_EMBED } from '~/lib/embed'
 
 /** Where a cluster lives: shared multi-tenant Hanzo Cloud, or a BYO/managed DOKS. */
 export type ClusterKind = 'shared' | 'byo' | (string & {})
@@ -167,24 +161,23 @@ export type AppsQuery = {
 }
 
 /**
- * Same-origin PaaS inventory path, split by DEPLOYMENT topology:
- *  - STANDALONE console (console2/admin.hanzo.ai): the `/paas/*` server proxy, which
- *    injects the platform SERVICE token (KMS) and is brand-admin gated.
- *  - go:embed console (IS_EMBED, console.hanzo.ai / cloud.hanzo.ai): the static export
- *    has NO server routes — `/paas/*` is pruned and cloud's catch-all serves the SPA
- *    index (HTTP 200 HTML) for any non-`/v1/` path, so the old `/paas` client parsed the
- *    SPA and errored "Invalid response from server (HTTP 200)" → "Could not reach the
- *    platform" (the broken Observe→Status). Cloud serves the SAME fleet inventory
- *    natively at `/v1/paas/<path>` (bearer-scoped from the validated principal), so in
- *    the embed we address it directly. The `/v1` BFF deliberately EXCLUDES `paas/*`
- *    (proxy-allow.ts), which is why this is embed-gated rather than unconditional.
+ * The apps inventory — the operator FLEET board — at `/v1/platform/fleet`.
+ *
+ * `paas` was a second name for `platform`: the same per-org control plane, reachable
+ * under two heads. Cloud folded it into one and retired the duplicate, so
+ * `/v1/paas/apps` now answers a bare 404 and `/v1/platform/fleet` answers the inventory
+ * — `{apps, summary}`, the same rows this reader already unwraps. One product, one name.
+ *
+ * The path is unconditional now, where the old `/paas` reader was split by deployment
+ * topology (the embed addressed cloud natively, the standalone went through the
+ * brand-admin `/paas` proxy and its platform SERVICE token). That split is gone for
+ * this read, and both halves of it are better off:
+ *  - `platform` IS allow-listed on the `/v1` bearer BFF (proxy-allow.ts), so the
+ *    standalone console reaches it as the signed-in user — no god-mode service token
+ *    for what is a plain per-org read. Cloud's SanitizeIdentity scopes the fleet to the
+ *    Bearer owner, which is the scoping we wanted anyway.
+ *  - the embed already spoke `/v1/*` natively, and still does.
  */
-const url = (path: string) =>
-  IS_EMBED
-    ? cloudProxyV1Url(`paas/${path.replace(/^\/+/, '')}`)
-    : `/paas/${path.replace(/^\/+/, '')}`
-const enc = encodeURIComponent
-
 const qs = (q: AppsQuery): string => {
   const p = new URLSearchParams()
   if (q.org) p.set('org', q.org)
@@ -194,6 +187,9 @@ const qs = (q: AppsQuery): string => {
   const s = p.toString()
   return s ? `?${s}` : ''
 }
+
+const fleetUrl = (query: AppsQuery): string => cloudProxyV1Url(`platform/fleet${qs(query)}`)
+const enc = encodeURIComponent
 
 /** Pull a `Cluster[]` from `{clusters:[…]}`, `{data:[…]}`, or a bare array (defensive). */
 const clustersOf = (payload: unknown): Cluster[] => {
@@ -211,9 +207,10 @@ const clustersOf = (payload: unknown): Cluster[] => {
 const clustersUrl = (path = ''): string => cloudProxyV1Url(`clusters${path}`)
 
 export const PlatformApi = {
-  /** The apps inventory — the real "what is running" board across all clusters (`/paas`). */
+  /** The apps inventory — the real "what is running" board across all clusters
+   *  (`GET /v1/platform/fleet` → `{apps, summary}`; see `fleetUrl`). */
   apps: async (query: AppsQuery = {}): Promise<PlatformApp[]> => {
-    const r = await restGet<{ apps?: PlatformApp[] }>(url(`apps${qs(query)}`))
+    const r = await restGet<{ apps?: PlatformApp[] }>(fleetUrl(query))
     return r?.apps ?? []
   },
 

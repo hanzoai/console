@@ -52,31 +52,11 @@ const nowMs = Date.now()
 const win = { startNs: String((nowMs - 3_600_000) * 1e6), endNs: String(nowMs * 1e6), startMs: nowMs - 3_600_000, endMs: nowMs }
 const servicesBody = { start: win.startNs, end: win.endNs, tags: [] as unknown[] }
 const queryRangeBody = {
+  schemaVersion: 'v1',
   start: win.startMs,
   end: win.endMs,
-  step: 60,
-  compositeQuery: {
-    queryType: 'builder',
-    panelType: 'list',
-    builderQueries: {
-      A: {
-        queryName: 'A',
-        dataSource: 'logs',
-        aggregateOperator: 'noop',
-        aggregateAttribute: {},
-        expression: 'A',
-        disabled: false,
-        stepInterval: 60,
-        filters: { items: [], op: 'AND' },
-        groupBy: [],
-        having: [],
-        orderBy: [{ columnName: 'timestamp', order: 'desc' }],
-        limit: null,
-        offset: 0,
-        pageSize: 50,
-      },
-    },
-  },
+  requestType: 'raw',
+  compositeQuery: { queries: [{ type: 'builder_query', spec: { name: 'A', signal: 'logs', limit: 50, offset: 0 } }] },
 }
 
 /** Sign in via the console app sign-in form (email/password → session cookie). */

@@ -8,8 +8,13 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
  * index (HTTP 200 HTML) for any NON-`/v1/` path. The OrgSwitcher hit `/admin/iam/*`
  * and Status hit `/paas/*` — both non-`/v1/`, so they parsed the SPA and errored
  * ("Invalid response from server (HTTP 200)" → empty switcher / "Could not reach the
- * platform"). In the embed these MUST address cloud-native `/v1/iam/*` and
- * `/v1/paas/*` (which the cloud binary serves) with the bearer.
+ * platform"). In the embed these MUST address cloud-native `/v1/*` (which the cloud
+ * binary serves) with the bearer.
+ *
+ * The Status inventory has since moved again, and further than a prefix: cloud folded
+ * `paas` into `platform` and retired the duplicate head, so `/v1/paas/apps` is a bare
+ * 404 and the fleet board lives at `/v1/platform/fleet`. That is what this pins now —
+ * same guard, current address.
  *
  * IS_EMBED is captured at module load, so it is mocked BEFORE importing the clients.
  */
@@ -54,12 +59,14 @@ describe('go:embed IAM-admin + PaaS address cloud-native /v1/* (not the pruned B
     expect(fetched[0].url).not.toContain('/admin/iam/')
   })
 
-  it('Observe→Status apps inventory → GET <origin>/v1/paas/apps (was /paas/apps → SPA 200)', async () => {
+  it('Observe→Status apps inventory → GET <origin>/v1/platform/fleet (was /v1/paas/apps → 404)', async () => {
     const { PlatformApi } = await import('./platform')
     await PlatformApi.apps()
     expect(fetched).toHaveLength(1)
     expect(fetched[0].method).toBe('GET')
-    expect(fetched[0].url).toBe(`${ORIGIN}/v1/paas/apps`)
+    expect(fetched[0].url).toBe(`${ORIGIN}/v1/platform/fleet`)
+    // The retired head must not come back: `/v1/paas/*` answers 404, not an inventory.
+    expect(fetched[0].url).not.toContain('/paas')
   })
 
   it('an IAM-admin mutation also rides the cloud-native /v1/iam surface', async () => {

@@ -15,7 +15,7 @@ import {
   normalizeDashboard,
   normalizeDashboards,
   listQueryPayload,
-  serviceFilterItem,
+  serviceFilterExpression,
   pickService,
   serviceHealthOf,
   parseListRows,
@@ -234,65 +234,153 @@ describe('normalizeDashboard / normalizeDashboards', () => {
   })
 })
 
-describe('listQueryPayload (O11y v3 query_range LIST)', () => {
-  const w = apmWindow(3600)
+// ── The o11y v5 query_range contract, transcribed from the SERVER ─────────────
+//
+// These literals come from `QueryRangeRequest` / `CompositeQuery` / `QueryEnvelope` in
+// github.com/hanzoai/o11y v1.5.58 — the server's own definition of what it will accept.
+// They are deliberately NOT imported from `./apm`. The suite this replaced imported the
+// builder and then asserted that the builder built what the builder was written to build
+// (`p.compositeQuery.queryType === 'builder'`), which is true of any builder and stayed
+// green for as long as it took someone to notice that production had been answering 400
+// to every Logs and Traces load. A payload test is only worth running if the expectation
+// comes from the other side of the wire.
 
-  it('builds a noop list builder query over the given dataSource with ms bounds', () => {
-    const p = listQueryPayload('logs', w, 100) as {
-      start: number
-      end: number
-      compositeQuery: { queryType: string; panelType: string; builderQueries: Record<string, Record<string, unknown>> }
+/** `QueryRangeRequest.requestType` — the accepted result kinds. */
+const REQUEST_TYPES = ['scalar', 'time_series', 'raw', 'raw_stream', 'trace', 'distribution']
+/** `QueryEnvelope.type` — the accepted query kinds. Note `builder` is NOT one of them. */
+const QUERY_TYPES = [
+  'builder_query',
+  'builder_formula',
+  'builder_sub_query',
+  'builder_join',
+  'builder_trace_operator',
+  'promql',
+  'datastore_sql',
+]
+/** `CompositeQuery` has exactly ONE field. Anything else is rejected by name. */
+const COMPOSITE_FIELDS = ['queries']
+/**
+ * The retired v3 envelope, field by field. The server refuses each of these explicitly
+ * (`400 unknown field "queryType" in composite query`, then "panelType", then
+ * "builderQueries"), so any one of them anywhere in the body is a 400 waiting to ship.
+ */
+const V3_KEYS = ['queryType', 'panelType', 'builderQueries', 'dataSource', 'aggregateOperator']
+
+/**
+ * Every object key in a JSON tree, in visit order. Arrays are walked as containers, so a
+ * key buried in `compositeQuery.queries[0].spec.filter` is still seen — a check that
+ * only looked at the top level would quietly stop matching the moment the shape nested.
+ */
+function everyKey(v: unknown, out: string[] = []): string[] {
+  if (Array.isArray(v)) {
+    for (const x of v) everyKey(x, out)
+    return out
+  }
+  if (v && typeof v === 'object') {
+    for (const [k, x] of Object.entries(v as Record<string, unknown>)) {
+      out.push(k)
+      everyKey(x, out)
     }
-    expect(p.start).toBe(w.startMs)
-    expect(p.end).toBe(w.endMs)
-    expect(p.compositeQuery.queryType).toBe('builder')
-    expect(p.compositeQuery.panelType).toBe('list')
-    const A = p.compositeQuery.builderQueries.A
-    expect(A.dataSource).toBe('logs')
-    expect(A.aggregateOperator).toBe('noop')
-    expect(A.expression).toBe('A')
-    expect(A.pageSize).toBe(100)
-    // newest-first
-    expect(A.orderBy).toEqual([{ columnName: 'timestamp', order: 'desc' }])
-  })
+  }
+  return out
+}
 
-  it('carries dataSource=traces for a span search', () => {
-    const p = listQueryPayload('traces', w, 50) as { compositeQuery: { builderQueries: { A: { dataSource: string } } } }
-    expect(p.compositeQuery.builderQueries.A.dataSource).toBe('traces')
+describe('everyKey (the forbidden-key walk itself)', () => {
+  it('descends through objects AND arrays, so nothing hides below the top level', () => {
+    expect(everyKey({ a: 1, b: { c: [{ d: 2 }] } })).toEqual(['a', 'b', 'c', 'd'])
   })
-
-  it('clamps pageSize into [1,1000] and floors it', () => {
-    const big = listQueryPayload('logs', w, 99999) as { compositeQuery: { builderQueries: { A: { pageSize: number } } } }
-    const zero = listQueryPayload('logs', w, 0) as { compositeQuery: { builderQueries: { A: { pageSize: number } } } }
-    const frac = listQueryPayload('logs', w, 12.9) as { compositeQuery: { builderQueries: { A: { pageSize: number } } } }
-    expect(big.compositeQuery.builderQueries.A.pageSize).toBe(1000)
-    expect(zero.compositeQuery.builderQueries.A.pageSize).toBe(1)
-    expect(frac.compositeQuery.builderQueries.A.pageSize).toBe(12)
-  })
-
-  it('defaults to NO filters (whole-org stream) when none are given — back-compat', () => {
-    const p = listQueryPayload('logs', w, 100) as { compositeQuery: { builderQueries: { A: { filters: { items: unknown[]; op: string } } } } }
-    expect(p.compositeQuery.builderQueries.A.filters).toEqual({ items: [], op: 'AND' })
-  })
-
-  it('carries a per-service filter into the builder query when given (per-product scope)', () => {
-    const item = serviceFilterItem('logs', 'iam')
-    const p = listQueryPayload('logs', w, 100, [item]) as { compositeQuery: { builderQueries: { A: { filters: { items: unknown[]; op: string } } } } }
-    expect(p.compositeQuery.builderQueries.A.filters).toEqual({ items: [item], op: 'AND' })
+  it('returns [] for a leaf — which is why every caller asserts it found keys', () => {
+    expect(everyKey(null)).toEqual([])
+    expect(everyKey('nope')).toEqual([])
   })
 })
 
-describe('serviceFilterItem (scope a logs/traces query to one OTel service.name)', () => {
-  it('builds the service.name resource-attribute equality O11y expects', () => {
-    const f = serviceFilterItem('logs', 'vector')
-    expect(f.op).toBe('=')
-    expect(f.value).toBe('vector')
-    expect(f.key.key).toBe('service.name')
-    expect(f.key.type).toBe('resource')
-    expect(f.key.isColumn).toBe(false) // logs: resource attribute, not an indexed column
+describe('listQueryPayload — pinned to the o11y v5 query_range contract', () => {
+  const w = apmWindow(3600)
+  /** The payload as it goes over the WIRE: `JSON.stringify` is what the transport sends,
+   *  and it is where an `undefined`-valued key disappears. Assert on that, not on the
+   *  in-memory object the server never sees. */
+  const wire = (signal: 'logs' | 'traces', limit: number, service?: string): Record<string, unknown> =>
+    JSON.parse(JSON.stringify(listQueryPayload(signal, w, limit, service))) as Record<string, unknown>
+
+  const cases = [
+    { name: 'org-wide logs', body: wire('logs', 100) },
+    { name: 'service-scoped logs', body: wire('logs', 100, 'iam') },
+    { name: 'org-wide traces', body: wire('traces', 50) },
+    { name: 'service-scoped traces', body: wire('traces', 50, 'gateway') },
+  ]
+
+  it('emits a requestType the server accepts, on every payload it can build', () => {
+    expect(cases.length, 'no payloads under test — this asserts nothing').toBeGreaterThan(0)
+    for (const c of cases) {
+      expect(REQUEST_TYPES, `${c.name}: requestType must be one the server accepts`).toContain(c.body.requestType)
+    }
   })
-  it('marks service.name as an indexed column for traces (where it is materialized)', () => {
-    expect(serviceFilterItem('traces', 'gateway').key.isColumn).toBe(true)
+
+  it('compositeQuery carries ONLY `queries`, a non-empty array of accepted envelopes', () => {
+    for (const c of cases) {
+      const composite = c.body.compositeQuery as Record<string, unknown>
+      expect(composite, `${c.name}: compositeQuery is missing`).toBeTruthy()
+      expect(Object.keys(composite).sort(), `${c.name}: compositeQuery must have exactly one field`).toEqual(COMPOSITE_FIELDS)
+      const queries = composite.queries as { type?: unknown }[]
+      expect(Array.isArray(queries), `${c.name}: compositeQuery.queries must be an array`).toBe(true)
+      expect(queries.length, `${c.name}: compositeQuery.queries is empty — no envelope was inspected`).toBeGreaterThan(0)
+      for (const q of queries) {
+        expect(QUERY_TYPES, `${c.name}: envelope type must be one the server accepts`).toContain(q.type)
+      }
+    }
+  })
+
+  it('no v3 envelope key survives ANYWHERE in the serialized body', () => {
+    for (const c of cases) {
+      const keys = everyKey(c.body)
+      expect(keys.length, `${c.name}: the key walk visited nothing, so it proves nothing`).toBeGreaterThan(0)
+      expect(keys.filter((k) => V3_KEYS.includes(k)), `${c.name}: retired v3 keys must not reach the wire`).toEqual([])
+    }
+  })
+
+  it('describes the read: schemaVersion, the ms window, the signal, and the page', () => {
+    const p = wire('logs', 100)
+    expect(p.schemaVersion).toBe('v1')
+    expect(p.start).toBe(w.startMs)
+    expect(p.end).toBe(w.endMs)
+    expect(p.requestType).toBe('raw') // whole rows back, not an aggregate
+    const spec = ((p.compositeQuery as { queries: { spec: Record<string, unknown> }[] }).queries[0]).spec
+    expect(spec.name).toBe('A')
+    expect(spec.signal).toBe('logs')
+    expect(spec.limit).toBe(100)
+    expect(spec.offset).toBe(0)
+    expect(wire('traces', 50).compositeQuery).toMatchObject({ queries: [{ spec: { signal: 'traces' } }] })
+  })
+
+  it('clamps the row limit into [1,1000] and floors it', () => {
+    const limitOf = (n: number): unknown =>
+      ((wire('logs', n).compositeQuery as { queries: { spec: { limit: unknown } }[] }).queries[0]).spec.limit
+    expect(limitOf(99999)).toBe(1000)
+    expect(limitOf(0)).toBe(1)
+    expect(limitOf(12.9)).toBe(12)
+  })
+
+  it('the org-wide stream carries no filter and no order (nothing to scope)', () => {
+    const spec = ((wire('logs', 100).compositeQuery as { queries: { spec: Record<string, unknown> }[] }).queries[0]).spec
+    expect(spec.filter).toBeUndefined()
+    expect(spec.order).toBeUndefined()
+  })
+
+  it('a service scope adds the v5 filter EXPRESSION and a newest-first order', () => {
+    const spec = ((wire('logs', 100, 'iam').compositeQuery as { queries: { spec: Record<string, unknown> }[] }).queries[0]).spec
+    expect(spec.filter).toEqual({ expression: "service.name = 'iam'" })
+    expect(spec.order).toEqual([{ key: { name: 'timestamp' }, direction: 'desc' }])
+  })
+})
+
+describe('serviceFilterExpression (scope a logs/traces query to one OTel service.name)', () => {
+  it('builds the v5 filter expression — one string, not a v3 {key,op,value} item', () => {
+    expect(serviceFilterExpression('vector')).toBe("service.name = 'vector'")
+  })
+  it('escapes the backslash and the quote so a name cannot break out of the literal', () => {
+    expect(serviceFilterExpression("it's")).toBe("service.name = 'it\\'s'")
+    expect(serviceFilterExpression('a\\b')).toBe("service.name = 'a\\\\b'")
   })
 })
 
@@ -338,20 +426,30 @@ describe('serviceHealthOf (RED verdict for one service)', () => {
   })
 })
 
+/** A v5 `requestType: raw` response, as the server sends it. */
+const rawResponse = (rows: unknown[]): unknown => ({
+  status: 'success',
+  data: { type: 'raw', data: { results: [{ queryName: 'A', rows }] } },
+})
+
 describe('parseListRows', () => {
-  it('reads rows from data.result[].list', () => {
-    const body = { data: { result: [{ list: [{ timestamp: '1', data: { body: 'a' } }, { timestamp: '2', data: { body: 'b' } }] }] } }
+  it('reads rows from the v5 location data.data.results[].rows', () => {
+    const body = rawResponse([{ timestamp: '1', data: { body: 'a' } }, { timestamp: '2', data: { body: 'b' } }])
     expect(parseListRows(body)).toHaveLength(2)
   })
-  it('reads rows from the nested data.newResult.data.result[].list mirror', () => {
-    const body = { data: { newResult: { data: { result: [{ list: [{ timestamp: '1', data: {} }] }] } } } }
-    expect(parseListRows(body)).toHaveLength(1)
+  it('concatenates the rows of every result in the response', () => {
+    const body = { data: { data: { results: [{ queryName: 'A', rows: [{ data: {} }] }, { queryName: 'B', rows: [{ data: {} }, { data: {} }] }] } } }
+    expect(parseListRows(body)).toHaveLength(3)
+  })
+  it('does NOT read the retired v3 locations — one shape, and it is the current one', () => {
+    expect(parseListRows({ data: { result: [{ list: [{ timestamp: '1', data: { body: 'a' } }] }] } })).toEqual([])
+    expect(parseListRows({ data: { newResult: { data: { result: [{ list: [{ timestamp: '1', data: {} }] }] } } } })).toEqual([])
   })
   it('returns [] for empty/garbage/missing shapes (never throws)', () => {
     expect(parseListRows(null)).toEqual([])
     expect(parseListRows({})).toEqual([])
-    expect(parseListRows({ data: { result: null } })).toEqual([])
-    expect(parseListRows({ data: { result: [{ list: null }] } })).toEqual([])
+    expect(parseListRows({ data: { data: { results: null } } })).toEqual([])
+    expect(parseListRows({ data: { data: { results: [{ rows: null }] } } })).toEqual([])
     expect(parseListRows('nope')).toEqual([])
   })
 })
@@ -402,15 +500,38 @@ describe('normalizeLogRow / normalizeLogs', () => {
     expect(l.body).toBe('hi')
     expect(l.id).toBe('5-3') // ts-idx fallback
   })
-  it('maps a full query_range logs response, newest-first order preserved', () => {
-    const body = {
-      data: { result: [{ list: [{ timestamp: '2', data: { body: 'newer' } }, { timestamp: '1', data: { body: 'older' } }] }] },
-    }
-    const rows = normalizeLogs(body)
+  it('lifts service.name out of the v5 resources_string map (it is a RESOURCE attribute)', () => {
+    const l = normalizeLogRow(
+      {
+        timestamp: '2026-07-03T00:00:00Z',
+        data: {
+          body: 'request served',
+          severity_text: 'INFO',
+          resources_string: { 'service.name': 'cloud-api', 'deployment.environment': 'main' },
+          attributes_string: { 'client.address': '10.0.0.1', 'http.request.method': 'GET' },
+        },
+      },
+      0,
+    )
+    expect(l.service).toBe('cloud-api')
+    expect(l.body).toBe('request served')
+    expect(l.severity).toBe('info')
+  })
+  it('leaves service empty when the row carries no service.name anywhere (never invented)', () => {
+    const l = normalizeLogRow({ timestamp: 5, data: { body: 'orphan', attributes_string: { error: 'boom' } } }, 0)
+    expect(l.service).toBe('')
+    expect(l.body).toBe('orphan')
+  })
+  it('prefers a materialized top-level column over a same-named nested attribute', () => {
+    const l = normalizeLogRow({ timestamp: 1, data: { body: 'column', attributes_string: { body: 'attribute' } } }, 0)
+    expect(l.body).toBe('column')
+  })
+  it('maps a full v5 query_range logs response, newest-first order preserved', () => {
+    const rows = normalizeLogs(rawResponse([{ timestamp: '2', data: { body: 'newer' } }, { timestamp: '1', data: { body: 'older' } }]))
     expect(rows.map((r) => r.body)).toEqual(['newer', 'older'])
   })
   it('empty result → empty list (honest empty, not a throw)', () => {
-    expect(normalizeLogs({ data: { result: [] } })).toEqual([])
+    expect(normalizeLogs(rawResponse([]))).toEqual([])
   })
 })
 
@@ -432,8 +553,26 @@ describe('normalizeTraceSpan / normalizeSpans', () => {
     expect(normalizeTraceSpan({ data: { spanID: 's' } }, 0).durationNano).toBeNull()
     expect(normalizeTraceSpan({ data: { spanID: 's', durationNano: '' } }, 0).durationNano).toBeNull()
   })
-  it('maps a full query_range traces response', () => {
-    const body = { data: { result: [{ list: [{ timestamp: '1', data: { traceID: 't', name: 'op' } }] }] } }
-    expect(normalizeSpans(body)).toHaveLength(1)
+  it('reads the v5 trace column names (trace_id / span_id / duration_nano / service.name)', () => {
+    const s = normalizeTraceSpan(
+      {
+        timestamp: '2026-07-03T00:00:00Z',
+        data: {
+          trace_id: 't1',
+          span_id: 's1',
+          name: 'GET /v1/chat',
+          duration_nano: 12345,
+          resources_string: { 'service.name': 'gateway' },
+        },
+      },
+      0,
+    )
+    expect(s.id).toBe('s1')
+    expect(s.traceId).toBe('t1')
+    expect(s.service).toBe('gateway')
+    expect(s.durationNano).toBe(12345)
+  })
+  it('maps a full v5 query_range traces response', () => {
+    expect(normalizeSpans(rawResponse([{ timestamp: '1', data: { trace_id: 't', name: 'op' } }]))).toHaveLength(1)
   })
 })
