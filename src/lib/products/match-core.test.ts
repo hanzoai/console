@@ -260,8 +260,10 @@ describe('the ONE level-2 nav — one declaration, read by both the rail and the
     expect(activeSubpage('/models/blend', 'models')).toBe('blend')
     // A deeper route still reports its level-2 parent (routing/<name> → routing).
     expect(activeSubpage('/models/routing/new', 'models')).toBe('routing')
-    // Another product's path never lights this product's nav.
-    expect(activeSubpage('/tasks/queues', 'models')).toBe('')
+    // Another product's path never lights this product's nav — `null`, not '',
+    // so the Overview sub-page ('' slug) is not falsely highlighted when the
+    // sidebar expands a product the user is not currently on.
+    expect(activeSubpage('/tasks/queues', 'models')).toBe(null)
   })
 })
 

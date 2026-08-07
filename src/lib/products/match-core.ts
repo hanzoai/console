@@ -174,13 +174,18 @@ export function subpageSlug(entry: CatalogEntry, seg: string | undefined, showAd
 export const subpageHref = (id: string, slug: string): string => (slug ? `/${id}/${slug}` : `/${id}`)
 
 /**
- * The sub-page slug the CURRENT path is on within a product ('' = index; '' when
- * the path is elsewhere entirely). Level 2 is carried by the URL — nothing else —
- * so a reload, a deep link, and Back all resolve to the same nav state.
+ * The sub-page slug the CURRENT path is on within a product ('' = index; `null`
+ * when the path is elsewhere entirely). Distinguishing "on the index" ('') from
+ * "not in this product" (`null`) matters: the Overview sub-page's own slug IS '',
+ * so a nav that expands a product it is NOT on (the sidebar's in-place SubRows)
+ * would otherwise light Overview for every product — `null` never equals a slug,
+ * so nothing highlights unless the path is genuinely inside the product. Level 2
+ * is carried by the URL — nothing else — so a reload, a deep link, and Back all
+ * resolve to the same nav state.
  */
-export function activeSubpage(pathname: string, id: string): string {
+export function activeSubpage(pathname: string, id: string): string | null {
   const segs = pathname.split('/').filter(Boolean)
-  if (segs[0] !== id) return ''
+  if (segs[0] !== id) return null
   return segs[1] ?? ''
 }
 
