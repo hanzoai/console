@@ -4,8 +4,8 @@
  * SubNav — the ONE level-2 nav for a product.
  *
  * Clicking into a product reveals ITS options rather than replacing the screen.
- * That second level lives in the SIDEBAR (`DrillNav`) — the house pattern, the one
- * the whole console already drills with. This strip is the SAME nav, rendered from
+ * That second level lives in the SIDEBAR (`SubRows`), expanded beneath the product's
+ * own row — the house pattern. This strip is the SAME nav, rendered from
  * the SAME source (`productSubpages` over the registry), for the viewports where
  * the sidebar is not on screen: below `lg` the sidebar is a drawer, so the strip
  * carries level 2 in the content column and hides itself at `lg+` where the rail
@@ -27,9 +27,16 @@ import {
   Activity,
   BarChart3,
   Circle,
+  Coins,
+  CreditCard,
+  FileText,
   House,
+  Receipt,
+  Repeat,
   ScrollText,
   SlidersHorizontal,
+  Target,
+  Users,
 } from '@hanzogui/lucide-icons-2'
 import type { ComponentType } from 'react'
 
@@ -45,6 +52,15 @@ const SUBPAGE_ICON: Record<string, ComponentType<{ size?: number }>> = {
   status: Activity,
   logs: ScrollText,
   metrics: BarChart3,
+  // Common billing/finance slugs get a real icon here (the ONE shared map) rather
+  // than the quiet dot, so every product that names one is iconed — not just billing.
+  reports: FileText,
+  accounts: Users,
+  budgets: Target,
+  invoices: Receipt,
+  subscriptions: Repeat,
+  'payment-methods': CreditCard,
+  credits: Coins,
 }
 
 /** A View is flex-shrink:0 by default; a wrapping row needs this to wrap at all. */
@@ -75,7 +91,7 @@ export function SubNav({
   const to = href ?? ((slug: string) => subpageHref(id, slug))
 
   return (
-    // Hidden at lg+ — the sidebar's DrillNav is the level-2 nav there. Purely a
+    // Hidden at lg+ — the sidebar's SubRows is the level-2 nav there. Purely a
     // CSS media style prop (not a JS media branch), so SSR and first paint match.
     <XStack
       gap="$1.5"

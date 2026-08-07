@@ -19,9 +19,10 @@
  * Wiring for the console SPA:
  *  - `host: ''` — SAME-ORIGIN. Events POST to the console's own `/v1/event`. The
  *    client NEVER sends an org/tenant — Cloud stamps it from the validated bearer.
- *  - `getToken` — the signed-in visitor's own Hanzo IAM access token. THIS is what
- *    attributes the stream, and it is the only mechanism that is correct here; see
- *    the note below for why no publishable key is passed.
+ *  - `getToken` — the signed-in visitor's own Hanzo IAM access token, falling back
+ *    to the publishable key when there is none. The token attributes the stream to
+ *    the visitor's own org on every brand host; the key exists so a SIGNED-OUT view
+ *    is admitted at all. Token first, key second — see the note below.
  *  - `dsn` (`NEXT_PUBLIC_HANZO_EVENT_DSN`) — the error plane's own credential,
  *    shaped `https://<key>@api.hanzo.ai/v1/sentry/<project>`. Publishable by design
  *    (it ships in the client bundle). Unset → errors are captured and dropped.
@@ -51,38 +52,42 @@ function consented(): boolean {
   return dnt !== '1' && dnt !== 'yes'
 }
 
-// ── No publishable ingest key is passed, and that is DELIBERATE ──────────────
+// ── The token FIRST, the publishable key only when there is no token ─────────
 //
-// Do not "fix" this by adding a build arg or by reading NEXT_PUBLIC_PUBLISHABLE_KEY
-// here.
+// The signed-in path is unchanged and remains the point: cloud resolves the
+// tenant from the IAM bearer's OWN owner claim, so each visitor's events land in
+// THEIR org on every brand host — cloud.hanzo.ai, cloud.lux.cloud,
+// cloud.zoo.cloud — with no per-brand configuration. The JWT carries the org;
+// everything downstream is org-scoped by it.
 //
-// A `pk-` resolves to exactly ONE org (cloud stamps the tenant from the key), and
-// this image is brand-agnostic: one build serves cloud.hanzo.ai, cloud.lux.cloud and
-// cloud.zoo.cloud, with the brand resolved at RUNTIME from the request hostname
-// (src/config). Baking a key would file every brand's — and every customer's —
-// traffic into whichever org the key belongs to, which is both wrong data and a
-// cross-tenant leak. It is the same reason Dockerfile bakes no NEXT_PUBLIC_*.
+// What changed is the SIGNED-OUT path, which reported nothing at all. A
+// credential-less POST is refused outright — `401 ingest_key_required`, measured
+// against the live door with and without a browser Origin, for pageviews and
+// exceptions alike. (An earlier version of this comment described an "anonymous
+// lane" that admitted pageview + error under a `$public` tenant and answered 200.
+// That lane is not implemented in the deployed cloud; the same claim was wrong in
+// four other repos and is why keyless surfaces were believed to be half-working.)
 //
-// Worse, it would be SILENT: @hanzo/event resolves the outgoing credential as
-// `ingestKey ?? token`, so a key takes PRECEDENCE over the bearer — setting one
-// would OVERRIDE each signed-in user's own identity rather than supplement it.
+// So the publishable key is a FALLBACK, never an override. That distinction is
+// load-bearing: @hanzo/event resolves the outgoing credential as
+// `ingestKey ?? token`, so passing `ingestKey` would REPLACE each signed-in
+// user's bearer and file their events under the key's org instead of their own —
+// on a multi-brand image, that is a cross-tenant defect. Supplying the key
+// through `getToken` inverts that precedence into `token ?? key`, which is the
+// order this product actually wants.
 //
-// THE COOKIE IS NOT A CREDENTIAL HERE. This file used to claim that posting
-// same-origin let the first-party session ride along, so signed-in traffic landed
-// correctly. It does not. That cookie is the casibase session, while cloud resolves
-// a tenant from a VALIDATED IAM bearer (SanitizeIdentity) — so a cookie-only POST
-// carries no principal. It is not refused: it silently takes the ANONYMOUS lane,
-// which files every row under the `$public` tenant (a partition no org can read) and
-// drops `identify` with a 200 receipt. Production proved it — 498 console rows, all
-// `$public`, zero identified users.
-//
-// `getToken` below is the fix, and it has neither problem: cloud resolves the tenant
-// from the token's OWN owner claim, so each visitor's events land in THEIR org, on
-// every brand host, with no per-brand configuration. Logged-out views carry no token
-// and stay anonymous — the honest outcome for a visitor who has not identified
-// themselves, and still the open question for the public/marketing faces (closing
-// that needs a PER-HOST key resolved at RUNTIME, e.g. the `GET /v1/brand?host=`
-// shape src/config already anticipates; a module-scope const cannot receive it).
+// THE COOKIE IS NOT A CREDENTIAL HERE. This file once claimed that posting
+// same-origin let the first-party session ride along. It does not: that cookie is
+// the casibase session, while cloud resolves a tenant from a VALIDATED IAM bearer
+// (SanitizeIdentity), so a cookie-only POST carries no principal.
+
+/**
+ * Publishable ingest key — the SIGNED-OUT credential only. Org-scoped and
+ * write-only by construction, so it is safe in the bundle. Unset → signed-out
+ * views go back to reporting nothing, which is the previous behaviour and not a
+ * crash.
+ */
+const PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_PUBLISHABLE_KEY?.trim() || undefined
 
 /** Error-plane credential. Unset → captureError is inert (fail-safe). */
 const dsn = process.env.NEXT_PUBLIC_HANZO_EVENT_DSN?.trim() || undefined
@@ -100,7 +105,7 @@ export const eventClient: Analytics = createAnalytics({
   // The client calls this at flush time, so a sign-in — and every silent refresh
   // after it — is picked up with no rebuild. Returns undefined on the server and
   // when signed out, which is the anonymous path.
-  getToken: () => iamAccessToken() ?? undefined,
+  getToken: () => iamAccessToken() ?? PUBLISHABLE_KEY,
   dsn,
   enabled: consented(),
 })

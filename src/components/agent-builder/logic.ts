@@ -23,23 +23,30 @@ export function defaultConfig(): AgentConfig {
   return { temperature: 0.7, topP: 1, topK: 0, stream: true, thinking: false, useTools: true, webSearch: false }
 }
 
-/** The default Zen model to preselect when the catalog offers one. */
-const ZEN_DEFAULT = 'zen-omni'
+/** The Zen text model to preselect when the catalog offers it. */
+const ZEN_DEFAULT = 'zen5'
 
 /**
  * Pick a sensible default model from a live catalog: the Zen default if present,
- * else the first Zen (`hanzo`-owned / `zen-` prefixed) model, else the first
- * catalog id, else '' (nothing to default to — the field stays empty/typeable).
- * PURE. Never invents an id — only returns one the catalog actually lists.
+ * else another model from the Zen TEXT family, else the first catalog id, else ''
+ * (nothing to default to — the field stays empty/typeable). PURE. Never invents an
+ * id — only returns one the catalog actually lists.
+ *
+ * The text-family test is `zen5…`, and that specificity is load-bearing. Zen's naming
+ * splits cleanly: `zen5`, `zen5-mini`, `zen5-flash`, `zen5-coder`, `zen5-pro` are the
+ * text models, while `zen-<noun>` names a MODALITY — zen-embedding, zen-image,
+ * zen-video, zen-rerank, zen-voice, zen-vl. A looser `^zen[-.]` test matched both, and
+ * since a catalog arrives sorted it selected `zen-embedding`: every agent created
+ * without touching the model field was pointed at an embeddings SKU that cannot hold a
+ * conversation. (It went unnoticed because the exact-match arm named `zen-omni`, which
+ * the live catalog does not carry, so the fallback was always the arm that ran.)
  */
 export function defaultModel(options: BuilderOption[]): string {
   if (options.length === 0) return ''
   const exact = options.find((o) => o.value === ZEN_DEFAULT)
   if (exact) return exact.value
-  const zen = options.find(
-    (o) => /^zen[-.]/i.test(o.value) || (o.hint ?? '').toLowerCase().includes('zen'),
-  )
-  return (zen ?? options[0]).value
+  const zenText = options.find((o) => /^zen\d/i.test(o.value))
+  return (zenText ?? options[0]).value
 }
 
 /** True iff the spec can be submitted (a non-empty trimmed name is the only requirement). */
@@ -148,6 +155,111 @@ export function promptBodyFromRow(prompts: BuilderPrompt[], name: string): strin
 /** Map saved prompts to picker rows (label = name, hint = any provided hint). PURE. */
 export function promptOptions(prompts: BuilderPrompt[]): BuilderOption[] {
   return prompts.map((p) => ({ value: p.name, label: p.label ?? p.name, hint: p.hint }))
+}
+
+// ── Drafting an agent from a sentence ───────────────────────────────────────
+//
+// The quickstart lets someone describe an agent in their own words. That is a
+// model call, so the EFFECT is an injected loader (`draftAgent`) like every other;
+// what lives here is the pure half — the instruction we send, and the parse of what
+// comes back. Both are pure so the fragile part (reading a model's JSON) is tested
+// against real malformed answers rather than trusted.
+
+/**
+ * The instruction that turns a description into a spec. It asks for the three
+ * fields a person would otherwise type and NOTHING else — deliberately not `model`
+ * or `tools`: a model id must exist in the org's live catalog and a tool must exist
+ * in its tool plane, and a model asked to name one will happily invent it. Those two
+ * fields stay with the pickers that know the real answers. PURE.
+ */
+export function draftInstruction(): string {
+  return [
+    'You turn a description of an agent into its definition.',
+    '',
+    'Reply with ONE JSON object and nothing else — no prose, no code fence. Keys:',
+    '  "name"         a short lowercase handle, words joined by hyphens (e.g. support-triage)',
+    '  "description"  one sentence on what the agent does',
+    '  "systemPrompt" the agent\'s own instructions, written in the second person',
+    '',
+    'The system prompt is the real work: state what the agent does, what it must not do,',
+    'and how it should behave when it is unsure. Write it as instructions to the agent,',
+    'not as a description of it.',
+  ].join('\n')
+}
+
+/** Stop-words that carry no meaning in a handle. */
+const NOISE = new Set(['a', 'an', 'the', 'that', 'this', 'my', 'our', 'for', 'to', 'of', 'and', 'is', 'it', 'agent'])
+
+/**
+ * Put any string into handle FORM: lowercase, letters and digits kept, everything
+ * else a hyphen, no repeated or trailing hyphens, capped. It reshapes and never
+ * re-words — `support-agent` stays `support-agent`. PURE.
+ */
+export function toHandle(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 32)
+    .replace(/-+$/, '')
+}
+
+/**
+ * A handle proposed from PROSE — the user's own sentence — so the form is never left
+ * with an empty required field even when the draft call fails. Drops the words that
+ * carry no meaning in a handle, keeps the first three that do, and puts the result in
+ * handle form. Returns '' when the text carries nothing usable.
+ *
+ * Distinct from `toHandle` on purpose, and the two must not be confused: this one
+ * REWORDS, which is right for a sentence and wrong for a handle. Running it over an
+ * already-formed handle silently renames it — `support-agent` would come back as
+ * `support`, because "agent" is noise in a sentence and load-bearing in a name. PURE.
+ */
+export function proposeName(description: string): string {
+  const words = description
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, ' ')
+    .split(/[\s-]+/)
+    .filter((w) => w.length > 1 && !NOISE.has(w))
+  return toHandle(words.slice(0, 3).join('-'))
+}
+
+/**
+ * Read a drafted spec out of a model's answer. Tolerant of the two things models
+ * actually do — wrapping the object in a ```json fence, and adding a sentence before
+ * or after it — by taking the outermost braces. Every field is validated and
+ * anything unrecognized is DROPPED, so a creative answer can only ever produce less
+ * than asked, never a field the builder does not understand. Returns null when there
+ * is no object at all. PURE.
+ */
+export function parseDraft(answer: string): Partial<AgentSpec> | null {
+  const start = answer.indexOf('{')
+  const end = answer.lastIndexOf('}')
+  if (start < 0 || end <= start) return null
+  let raw: unknown
+  try {
+    raw = JSON.parse(answer.slice(start, end + 1))
+  } catch {
+    return null
+  }
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null
+  const r = raw as Record<string, unknown>
+  const text = (v: unknown): string | undefined => (typeof v === 'string' && v.trim() ? v.trim() : undefined)
+
+  const out: Partial<AgentSpec> = {}
+  const name = text(r.name)
+  // A handle the backend would refuse is worse than none, so reshape it — but with
+  // `toHandle`, which only changes the FORM. `proposeName` would also re-word it, and
+  // the model was asked for a handle, not a sentence.
+  if (name) {
+    const handle = toHandle(name)
+    if (handle) out.name = handle
+  }
+  const description = text(r.description)
+  if (description) out.description = description
+  const systemPrompt = text(r.systemPrompt) ?? text(r.system_prompt) ?? text(r.prompt)
+  if (systemPrompt) out.systemPrompt = systemPrompt
+  return Object.keys(out).length ? out : null
 }
 
 /**

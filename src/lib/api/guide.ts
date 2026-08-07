@@ -27,7 +27,7 @@
  * rename upstream degrades a cell rather than throwing. Pure normalizers are
  * unit-tested (guide.test.ts).
  */
-import { restGet, restPost, restDelete, restPut, originV1Url } from './client'
+import { restGet, restPost, restDelete, restPut, restStream, originV1Url } from './client'
 
 const BASE = 'guide'
 
@@ -328,23 +328,20 @@ export const GuideApi = {
 /**
  * streamDo runs the Business AI on a step and streams each action as it happens
  * (SSE: plan → draft → action → result → state → end). It POSTs with
- * `Accept: text/event-stream` and reads `res.body` with a small SSE splitter — the
- * same transport pattern as the chat stream (NOT EventSource, which can't POST or
- * carry the session credential). onEvent fires per frame; it resolves when the
- * stream ends. A backend that answers plain JSON (no stream) is handled by the
- * caller falling back to `GuideApi.do`.
+ * `Accept: text/event-stream` through `restStream` and reads `res.body` with a small
+ * SSE splitter — the same transport as the chat stream, and the same reason it is not
+ * EventSource, which can neither POST nor carry a credential. onEvent fires per frame;
+ * it resolves when the stream ends. A backend that answers plain JSON (no stream) is
+ * handled by the caller falling back to `GuideApi.do`.
  */
 export async function streamDo(
   id: string,
   onEvent: (e: GuideEvent) => void,
   signal?: AbortSignal,
 ): Promise<void> {
-  const res = await fetch(originV1Url(`${BASE}/steps/${encodeURIComponent(id)}/do`), {
-    method: 'POST',
-    credentials: 'include',
-    headers: { Accept: 'text/event-stream', 'Content-Type': 'application/json' },
+  const res = await restStream(originV1Url(`${BASE}/steps/${encodeURIComponent(id)}/do`), undefined, {
+    headers: { Accept: 'text/event-stream' },
     signal,
-    cache: 'no-store',
   })
   if (!res.ok || !res.body) {
     throw Object.assign(new Error(`guide do failed: ${res.status}`), { status: res.status })

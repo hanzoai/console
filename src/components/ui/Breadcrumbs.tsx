@@ -12,6 +12,7 @@ import { Text, XStack } from '@hanzo/gui'
 import { ChevronRight } from '@hanzogui/lucide-icons-2'
 
 import { findEntry, categoryFromSlug } from '~/lib/products/registry'
+import { productSubpages } from '~/lib/products/match'
 
 type Crumb = { label: string; href?: string }
 
@@ -38,9 +39,18 @@ function crumbsFor(pathname: string): Crumb[] {
 
   const entry = findEntry(segs[0])
   if (entry) {
-    crumbs.push({ label: entry.category })
+    // Skip the category crumb when it just repeats the product's own name — the
+    // `Settings` product lives in the `Settings` category, and `Home / Settings /
+    // Settings / …` says the same word twice.
+    if (entry.category !== entry.label) crumbs.push({ label: entry.category })
     crumbs.push({ label: entry.label, href: segs.length > 1 ? `/${entry.id}` : undefined })
-    for (let i = 1; i < segs.length; i++) crumbs.push({ label: decodeURIComponent(segs[i]) })
+    // Label trailing segments from the product's own sub-page list (so `/settings/logs`
+    // reads `… / Logs`, not the raw slug); detail params that aren't sub-pages pass through.
+    const subs = productSubpages(entry)
+    for (let i = 1; i < segs.length; i++) {
+      const sp = subs.find((s) => s.slug === segs[i])
+      crumbs.push({ label: sp ? sp.label : decodeURIComponent(segs[i]) })
+    }
   } else {
     for (const s of segs) crumbs.push({ label: decodeURIComponent(s) })
   }

@@ -51,7 +51,8 @@ import { config } from '~/config'
 import { MetricCard } from '~/components/ui/Metric'
 import { RuntimeNotice } from '~/components/products/observability/RuntimeNotice'
 import { TracesModule } from '~/components/products/TracesModule'
-import { curlFor, eventsFrom, hanzoCli, inspectorRoute, parseCommand, renderOutput, type PlatformEvent } from './logic'
+import { curlFor, eventsFrom, inspectorRoute, renderOutput, type PlatformEvent } from './logic'
+import { Terminal } from './Terminal'
 import { toneColor } from '~/components/ui/tone'
 
 const usd = (cents: number, dp = 2): string => `$${(cents / 100).toFixed(dp)}`
@@ -903,119 +904,13 @@ export function TracesTab() {
   )
 }
 
-// ── Shell / API Explorer ─────────────────────────────────────────────────────────
+// ── Shell — the cloud shell ──────────────────────────────────────────────────
 
-type ShellEntry = { cmd: string; path: string; output: string; ok: boolean }
-
-/** Quick GET resources — the common `/v1` reads, run with one tap. */
-const SHELL_RESOURCES = ['models', 'agents', 'prompts', 'functions', 'automations/flows', 'billing/usage'] as const
-
+/**
+ * The Shell tab IS a terminal. The component that carries it lives on its own
+ * (Terminal.tsx) because it loads xterm in the browser and owns a socket, and
+ * neither belongs in a file of render-only tabs.
+ */
 export function ShellTab() {
-  const [entries, setEntries] = useState<ShellEntry[]>([])
-  const [input, setInput] = useState('')
-  const [running, setRunning] = useState(false)
-  const endRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    endRef.current?.scrollIntoView({ block: 'nearest' })
-  }, [entries])
-
-  const run = useCallback(async (line: string) => {
-    const cmd = line.trim()
-    if (!cmd || running) return
-    setInput('')
-    const parsed = parseCommand(cmd)
-    if ('error' in parsed) {
-      setEntries((e) => [...e, { cmd, path: '', output: parsed.error, ok: false }])
-      return
-    }
-    setRunning(true)
-    try {
-      const data = await restGet<unknown>(cloudProxyV1Url(parsed.path))
-      setEntries((e) => [...e, { cmd, path: parsed.path, output: renderOutput(data), ok: true }])
-    } catch (err) {
-      const output =
-        err instanceof ApiError ? `HTTP ${err.status} — ${err.message}` : err instanceof Error ? err.message : String(err)
-      setEntries((e) => [...e, { cmd, path: parsed.path, output, ok: false }])
-    } finally {
-      setRunning(false)
-    }
-  }, [running])
-
-  return (
-    <YStack flex={1} minH={0}>
-      {/* Resource picker — run a common /v1 GET with one tap. */}
-      <XStack items="center" gap="$1" px="$2" height={34} borderBottomWidth={1} borderColor="$borderColor" flexWrap="wrap">
-        <Text fontSize="$1" color="$color10">
-          GET
-        </Text>
-        {SHELL_RESOURCES.map((r) => (
-          <Button
-            key={r}
-            size="$1"
-            chromeless
-            bg="$color3"
-            rounded="$4"
-            px="$2"
-            onPress={() => void run(`GET /v1/${r}`)}
-            aria-label={`Run GET /v1/${r}`}
-          >
-            <Text fontSize="$1" color="$color11" className="hz-mono">
-              {r}
-            </Text>
-          </Button>
-        ))}
-      </XStack>
-
-      <ScrollView flex={1} minH={0}>
-        <YStack p="$3" gap="$2">
-          {entries.length === 0 ? (
-            <Text fontSize="$1" color="$color10" className="hz-mono">
-              Read-only /v1 explorer — pick a resource above or type `GET /v1/models`. Runs as you, in your org.
-            </Text>
-          ) : null}
-          {entries.map((e, i) => (
-            <YStack key={i} gap="$1">
-              <XStack items="center" gap="$2">
-                <Text fontSize="$1" color="$color11" className="hz-mono" flex={1} numberOfLines={1}>
-                  $ {e.cmd}
-                </Text>
-                {e.ok && e.path ? (
-                  <>
-                    <CopyBtn value={curlFor(e.path)} label="curl" />
-                    <CopyBtn value={hanzoCli(e.path)} label="CLI" />
-                  </>
-                ) : null}
-              </XStack>
-              <Text fontSize="$1" color={e.ok ? '$color12' : toneColor('critical')} className="hz-mono" style={{ whiteSpace: 'pre-wrap' }}>
-                {e.output}
-              </Text>
-            </YStack>
-          ))}
-          <div ref={endRef} />
-        </YStack>
-      </ScrollView>
-
-      <XStack items="center" gap="$2" px="$3" height={44} borderTopWidth={1} borderColor="$borderColor">
-        <Text fontSize="$2" color="$color10" className="hz-mono">
-          $
-        </Text>
-        <Input
-          flex={1}
-          unstyled
-          autoFocus
-          value={input}
-          onChangeText={setInput}
-          onSubmitEditing={() => void run(input)}
-          placeholder={running ? 'Running…' : 'Enter a /v1 command…'}
-          fontSize="$2"
-          color="$color12"
-          className="hz-mono"
-          autoCapitalize="none"
-          autoCorrect={false}
-          aria-label="Workbench shell command"
-        />
-      </XStack>
-    </YStack>
-  )
+  return <Terminal />
 }

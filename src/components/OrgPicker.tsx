@@ -10,10 +10,11 @@
  * to that org (X-Org-Id) and drops into it; the sidebar "Home" affordance
  * ({@link leaveOrg}) returns here and de-scopes.
  *
- * Data source mirrors {@link OrgSwitcher}: a global admin lists all orgs via the
- * gated `/admin/iam` proxy; a tenant (who 403s that list) sees just their own org,
- * synthesized from the session — so the picker is always honest and never fabricates
- * an org. All decisions (sort, filter, paginate, card view-model) live in the pure
+ * Data source: a global admin lists every org via the gated `/admin/iam` proxy;
+ * everyone else lists the orgs they are a MEMBER of — their membership rows
+ * unioned with their home org, each read as its own record so a card carries the
+ * ORG's name and logo. It never fabricates an org, and it never labels one with
+ * the signed-in person. All decisions (sort, filter, paginate, card view-model) live in the pure
  * `org-picker/logic.ts`; this file is a thin render of it with honest loading /
  * empty / error states.
  */
@@ -25,7 +26,7 @@ import { getBrand } from '~/lib/branding/brands'
 import { useSession } from '~/lib/auth/session'
 import { useIsSuperAdmin } from '~/lib/auth/admin'
 import { enterOrg } from '~/lib/org-scope'
-import { IamAdminApi, type Organization } from '~/lib/api'
+import { IamAdminApi, MembershipApi, TeamApi, orgNamesFor, type Organization } from '~/lib/api'
 import { BrandMark } from '~/components/ui/BrandLogo'
 import { OrgOnboarding } from '~/components/OrgOnboarding'
 import { PAGE_SIZE, pickerView, type OrgCard, type PickerContext } from '~/components/org-picker/logic'
@@ -114,25 +115,60 @@ export function OrgPicker() {
   const [page, setPage] = useState(1)
   const [creating, setCreating] = useState(false)
 
-  // The caller's OWN org, synthesized from the session — the single org that IS a
-  // tenant's identity, and the honest fallback if the cross-tenant list can't load.
+  // The caller's HOME org, named by its own slug — the last-resort fallback when
+  // even the membership read fails.
+  //
+  // Its displayName used to be `account.displayName`, which is the signed-in
+  // PERSON. An org card then announced a human ("Dave Lorenzini") where the
+  // organization belongs, and the monogram it derived was the person's initials
+  // rather than the org's mark. A person is not an org; when the org's own row
+  // cannot be read, its slug is the honest label.
   const ownOrgOnly = useMemo<Organization[]>(
-    () =>
-      owner
-        ? [{ owner: 'admin', name: owner, displayName: account?.displayName?.trim() || titleCase(owner) } as Organization]
-        : [],
-    [owner, account?.displayName],
+    () => (owner ? [{ owner: 'admin', name: owner, displayName: titleCase(owner) } as Organization] : []),
+    [owner],
   )
 
   // Load the caller's visible orgs. A global admin gets the full cross-tenant list
-  // (paged large, then this component client-paginates); a tenant 403s that list, so
-  // it sees just its own org — honest, never fabricated.
+  // (paged large, then this component client-paginates). Everyone else gets the
+  // orgs they are a MEMBER of — their memberships unioned with their home org,
+  // each read as its own row so the card shows the ORG's name and logo.
+  //
+  // This used to be one card synthesized from the session, which could never show
+  // a second org: a customer with a workspace besides their home tenant simply did
+  // not see it. Reading each row is also what puts a real logo on the card; IAM
+  // authorizes a member to read the orgs they belong to (v1.34.26), so the fetch
+  // that used to 403 for a tenant now answers.
   useEffect(() => {
     if (!owner) return
     let live = true
     if (!isSuperAdmin) {
-      setOrgs(ownOrgOnly)
-      return
+      const me = account?.name ? `${owner}/${account.name}` : ''
+      if (!me) {
+        setOrgs(ownOrgOnly)
+        return
+      }
+      MembershipApi.mine(me)
+        .then((rows) => orgNamesFor(owner, rows))
+        .then((names) =>
+          // One read per org, and a row that cannot be read degrades to its slug
+          // rather than dropping the org off a list the person is entitled to see.
+          Promise.all(
+            names.map((name) =>
+              TeamApi.organization(name).catch(
+                () => ({ owner: 'admin', name, displayName: titleCase(name) }) as Organization,
+              ),
+            ),
+          ),
+        )
+        .then((rows) => {
+          if (live) setOrgs(rows)
+        })
+        .catch(() => {
+          if (live) setOrgs(ownOrgOnly)
+        })
+      return () => {
+        live = false
+      }
     }
     setOrgs(null)
     setError(null)
@@ -151,7 +187,7 @@ export function OrgPicker() {
     return () => {
       live = false
     }
-  }, [owner, isSuperAdmin, ownOrgOnly])
+  }, [owner, isSuperAdmin, ownOrgOnly, account?.name])
 
   const ctx: PickerContext = useMemo(
     () => ({ ownOrg: owner, isSuperAdmin, callerIsAdmin: Boolean(account?.isAdmin) }),

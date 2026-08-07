@@ -19,7 +19,7 @@ import { createContext, useCallback, useContext, useEffect, useRef, useState, ty
 
 import { AccountApi, type Account } from '~/lib/api'
 import { withTimeout } from '~/lib/with-timeout'
-import { signinRedirect, stashReturnTo, iamSignOut } from './iam'
+import { signinRedirect, stashReturnTo, iamSignOut, iamSignOutUrl } from './iam'
 import { refreshSession } from './refresh'
 import { setCurrentActor } from '~/lib/actor-scope'
 import { claimReferralOnce, stashReferralCode } from '~/lib/referrals/claim'
@@ -133,10 +133,21 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     await AccountApi.signout()
     iamSignOut()
     applyAccount(null)
-    // Redirect DETERMINISTICALLY to /signin. A hard navigation is the single source of
-    // truth for "signed out -> /signin" and clears all in-memory state (org scope,
-    // caches, balances) — the same `window.location.assign` the sign-IN path uses.
-    if (typeof window !== 'undefined') window.location.assign('/signin')
+    // Redirect DETERMINISTICALLY, and through the ISSUER. A hard navigation is
+    // still the single source of truth for "signed out -> /signin" — it clears
+    // all in-memory state (org scope, caches, balances) exactly as the sign-IN
+    // path does — but it has to go via RP-initiated logout, which returns here
+    // through post_logout_redirect_uri.
+    //
+    // Assigning '/signin' directly is what made sign-out not stick: the two
+    // calls above end the session HERE, and the `iam_session_id` cookie at the
+    // issuer survives, so /signin's silent SSO immediately mints a code from it
+    // and puts the user back in the console they just left. Measured: same
+    // probe, `status: ok` with a code before this change, "please sign in
+    // first" after.
+    if (typeof window !== 'undefined') {
+      window.location.assign(iamSignOutUrl(window.location.origin, '/signin'))
+    }
   }, [applyAccount])
 
   return (

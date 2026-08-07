@@ -1,16 +1,17 @@
 'use client'
 
 /**
- * Agents — the New-Agent form and the per-agent detail view, both rendered inside
- * the shared right-side `DetailPane`.
+ * Agents — the per-agent detail view, rendered inside the shared right-side
+ * `DetailPane`. It shows the agent's REAL facts, its REAL cost from the charged
+ * commerce ledger, and a best-effort activity feed from `GET /v1/agents/:name`;
+ * never fabricated telemetry.
  *
- * The New-Agent form is now a THIN adapter over the CANONICAL, shareable
- * `AgentBuilder` (`~/components/agent-builder`) — the ONE agent builder across every
- * Hanzo surface. console2 supplies its live `/v1` sources via `agentBuilderLoaders`
- * (model catalog → `/v1/models`, saved prompts → `/v1/prompts`, create →
- * `/v1/agents`); the builder owns the form, the LIVE model + prompt dropdowns, and
- * the honest states. The detail view renders the agent's REAL facts (+ best-effort
- * recent activity from `GET /v1/agents/:name`), never fabricated telemetry.
+ * CREATING an agent does not live here. It used to — a thin `NewAgentForm` adapter
+ * that opened the canonical `AgentBuilder` in this same pane — and that made two
+ * differently-shaped entrances to one builder, only one of which could offer
+ * templates, drafting, or anywhere to run what it made. The quickstart
+ * (`/agents/quickstart`) is the one way now, and the board's New-Agent button goes
+ * there.
  */
 import { useEffect, useState } from 'react'
 import { Spinner, Text, XStack, YStack } from '@hanzo/gui'
@@ -29,7 +30,6 @@ import {
 } from '~/lib/api/agents'
 import { fetchUsageRecords, agentUsageFor, type AgentUsage } from '~/lib/api/aimetrics'
 import { AgentBuilder } from '~/components/agent-builder'
-import { agentBuilderLoaders } from './loaders'
 import { StatusPill, ActivityFeed } from './parts'
 
 const DASH = '—'
@@ -46,16 +46,6 @@ function Fact({ label, value }: { label: string; value: string }) {
       </Text>
     </XStack>
   )
-}
-
-/**
- * The New-Agent form — the canonical `AgentBuilder` wired to console2's live `/v1`
- * sources. On a successful `POST /v1/agents` it calls `onCreated` (the board
- * reloads + the pane closes); a 404/unavailable backend degrades to the builder's
- * own honest "not connected — create with the CLI" note.
- */
-export function NewAgentForm({ onCreated, onCancel }: { onCreated: () => void; onCancel: () => void }) {
-  return <AgentBuilder loaders={agentBuilderLoaders} onCreated={onCreated} onCancel={onCancel} />
 }
 
 /**

@@ -80,6 +80,19 @@ describe('allowCloudSurface', () => {
     expect(allowCloudSurface('v1/agents/agent-1/runs')).toBe(true)
   })
 
+  // The tool plane is admitted so the agent builder can offer an org's REAL tool
+  // names. Discovery only: a head admits every sub-path, and `POST /v1/tools/call`
+  // RUNS a tool — that belongs to whatever runs an agent, never to a browser tab.
+  it('admits tool discovery but refuses the dispatch door', () => {
+    expect(CLOUD_HEADS).toContain('tools')
+    expect(allowCloudSurface('v1/tools')).toBe(true)
+    expect(allowCloudSurface('v1/tools?activated=true')).toBe(true)
+    expect(allowCloudSurface('v1/tools/catalog')).toBe(true)
+    expect(allowCloudSurface('v1/tools/call')).toBe(false)
+    expect(allowCloudSurface('/v1/tools/call')).toBe(false)
+    expect(allowCloudSurface('v1/tools/call?x=1')).toBe(false)
+  })
+
   it('admits the evals facade (scores/datasets/rubrics/evaluators/runs)', () => {
     expect(CLOUD_HEADS).toContain('evals')
     for (const sub of ['scores', 'datasets', 'rubrics', 'evaluators', 'runs']) {

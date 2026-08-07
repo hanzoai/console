@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vitest'
 
-import { categoryIsOpen, toggleCategory, type CategoryOpen } from './nav-accordion'
+import {
+  categoryIsOpen,
+  toggleCategory,
+  productIsOpen,
+  toggleProduct,
+  NAV_OPEN_PREF,
+  NAV_PRODUCT_OPEN_PREF,
+  type CategoryOpen,
+} from './nav-accordion'
 
 const ctx = (filtering = false) => ({ filtering })
 
@@ -66,5 +74,43 @@ describe('toggleCategory (independent per-section)', () => {
     const next = toggleCategory(stored, 'AI')
     expect(stored).toEqual({ AI: false })
     expect(next).not.toBe(stored)
+  })
+})
+
+describe('productIsOpen / toggleProduct', () => {
+  // Where you are is the one product whose options you are certain to want.
+  it('opens the ACTIVE product and leaves the others closed', () => {
+    expect(productIsOpen({}, 'agents', { filtering: false, active: true })).toBe(true)
+    expect(productIsOpen({}, 'models', { filtering: false, active: false })).toBe(false)
+  })
+
+  it('respects an explicit choice over the active default, in both directions', () => {
+    expect(productIsOpen({ agents: false }, 'agents', { filtering: false, active: true })).toBe(false)
+    expect(productIsOpen({ models: true }, 'models', { filtering: false, active: false })).toBe(true)
+  })
+
+  // The filter narrows PRODUCTS; a matched product's sub-pages are not themselves
+  // matches, so expanding them would push the other hits off screen.
+  it('closes everything while filtering, active or not', () => {
+    expect(productIsOpen({}, 'agents', { filtering: true, active: true })).toBe(false)
+    expect(productIsOpen({ agents: true }, 'agents', { filtering: true, active: true })).toBe(false)
+  })
+
+  // Whichever way the chevron points, the click does that.
+  it('first click on the active one collapses it; on any other one expands it', () => {
+    expect(toggleProduct({}, 'agents', { active: true })).toEqual({ agents: false })
+    expect(toggleProduct({}, 'models', { active: false })).toEqual({ models: true })
+  })
+
+  it('leaves every other product untouched and never mutates the input', () => {
+    const stored = { models: true }
+    expect(toggleProduct(stored, 'agents', { active: false })).toEqual({ models: true, agents: true })
+    expect(stored).toEqual({ models: true })
+  })
+
+  // Products and categories share a preference SHAPE but not a default, and they are
+  // stored under different keys — a product must never inherit a category's open-by-default.
+  it('is keyed apart from the category accordion', () => {
+    expect(NAV_PRODUCT_OPEN_PREF).not.toBe(NAV_OPEN_PREF)
   })
 })

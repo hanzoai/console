@@ -531,6 +531,40 @@ export type NewAgentBody = {
   config?: Partial<AgentConfig>
 }
 
+/**
+ * One recorded run of an agent — what `POST /v1/agents/:ref/run` answers with.
+ *
+ * Every run this carries reflects an execution that ACTUALLY happened: the backend
+ * records a model failure as a run with `status: "error"` and its message, and
+ * answers 502 with that same run as the body. So a caller reads the run either way,
+ * and a failure is a fact about the run rather than a transport error to guess at.
+ */
+export type AgentRun = {
+  id: string
+  /** `ok` when the completion came back, `error` when it did not. */
+  status: string
+  /** The model actually used — a failover run reports the one it fell over to. */
+  model: string
+  /** The completion, when there was one. */
+  output?: string
+  /** The failure, when there was one. */
+  error?: string
+  durationMs?: number
+}
+
+/** Normalize a run payload defensively — a renamed field degrades, never throws. */
+export function normalizeRun(payload: unknown): AgentRun {
+  const r = asRecord(payload)
+  return {
+    id: str(r.id) ?? '',
+    status: str(r.status) ?? '',
+    model: str(r.model) ?? '',
+    output: str(r.output),
+    error: str(r.error),
+    durationMs: num(r.durationMs),
+  }
+}
+
 export const AgentsApi = {
   /** The agent registry (`GET /v1/agents`). Honest-empty/error until bound. */
   list: (): Promise<Agent[]> => restGet<unknown>(originV1Url(BASE)).then(normalizeAgents),
@@ -550,6 +584,19 @@ export const AgentsApi = {
 
   /** Create an agent (`POST /v1/agents`) — only called when the backend is live. */
   create: (body: NewAgentBody): Promise<unknown> => restPost<unknown>(originV1Url(BASE), body),
+
+  /**
+   * Run an agent once (`POST /v1/agents/:ref/run`) and get the recorded run back.
+   * `ref` is the agent's name or its `agent_…` id — either resolves the same agent.
+   *
+   * THIS MOVES MONEY: the backend authorizes the org's balance BEFORE any inference,
+   * so an unfunded org gets 402 and no free compute. A model failure answers 502 with
+   * the RUN as the body, whose `error` field the transport surfaces as the thrown
+   * message — so a caller that shows `e.message` is already showing the run's own
+   * reason, not a generic transport failure.
+   */
+  run: (ref: string, input: string): Promise<AgentRun> =>
+    restPost<unknown>(originV1Url(`${agentPath(ref)}/run`), { input }).then(normalizeRun),
 
   /** Delete an agent (`DELETE /v1/agents/:name`) — keyed by the agent's NAME, never the
    *  display `id`. Only called when the backend is live. */

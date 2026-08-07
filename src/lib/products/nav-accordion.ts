@@ -57,3 +57,49 @@ export function toggleCategory(stored: CategoryOpen, category: string): Category
   const current = stored[category] === undefined ? true : stored[category]
   return { ...stored, [category]: !current }
 }
+
+// ── Products, which expand IN PLACE ─────────────────────────────────────────
+//
+// A product with sub-pages expands beneath its own row, so its options appear
+// without the rest of the catalog disappearing. This replaced a DRILL — clicking a
+// product used to swap the entire rail for that product's sub-nav, behind a "Back to
+// all products" button. The options were the same either way; what the drill took
+// away was every other product, which is exactly what a person needs to see when the
+// reason they clicked was to compare or to move on somewhere else.
+//
+// The default here is the OPPOSITE of a category's, and deliberately: categories are
+// few and describe the whole catalog, so they open; products are many and each brings
+// four to eight rows, so opening them all would bury the catalog under its own detail.
+
+/** Preference key for which products are expanded in the rail. */
+export const NAV_PRODUCT_OPEN_PREF = 'navProductsOpen'
+
+/**
+ * Whether a product's sub-pages render EXPANDED:
+ *  - while FILTERING: closed. The filter narrows PRODUCTS, and a matched product's
+ *    sub-pages are not themselves matches — expanding them would push the other hits
+ *    off screen;
+ *  - the ACTIVE product: open, unless the user explicitly collapsed it. Where you are
+ *    is the one place whose options you are certain to want;
+ *  - otherwise: the user's explicit choice, else CLOSED.
+ */
+export function productIsOpen(
+  stored: CategoryOpen,
+  id: string,
+  ctx: { filtering: boolean; active: boolean },
+): boolean {
+  if (ctx.filtering) return false
+  const v = stored[id]
+  return v === undefined ? ctx.active : v
+}
+
+/**
+ * Toggle one product's expansion (pure + immutable). The stored value is what the
+ * product is being toggled AWAY from, so the first click on the active product
+ * collapses it and the first click on any other one expands it — in both cases the
+ * click does the thing the chevron was pointing at.
+ */
+export function toggleProduct(stored: CategoryOpen, id: string, ctx: { active: boolean }): CategoryOpen {
+  const current = stored[id] === undefined ? ctx.active : stored[id]
+  return { ...stored, [id]: !current }
+}

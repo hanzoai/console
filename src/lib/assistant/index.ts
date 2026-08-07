@@ -10,3 +10,4 @@ export {
   ASSISTANT_DOCS_STORE,
   type AssistantPromptOptions,
 } from './system-prompt'
+export { assistantState } from './state'

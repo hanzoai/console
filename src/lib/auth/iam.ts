@@ -80,6 +80,18 @@ export function iamAccessToken(): string | null {
   }
 }
 
+/**
+ * True when the browser still holds an IAM session to refresh — an access token is
+ * stored, even if the SDK considers it expired (`getAccessToken` returns the raw
+ * stored token). Cheap + synchronous, no network. Used to BOUND the refresh retry:
+ * an anonymous visitor (no stored token) never waits through the backoff, and a
+ * retry stops the moment the session is gone from storage (a revoked token the SDK
+ * cleared cannot be brought back by retrying).
+ */
+export function iamHasSession(): boolean {
+  return iamAccessToken() != null
+}
+
 /** A valid (auto-refreshed if needed) access token, or null. */
 export async function iamValidAccessToken(): Promise<string | null> {
   if (typeof window === 'undefined') return null
@@ -130,6 +142,47 @@ export function iamSignOut(): void {
   } catch {
     /* best-effort */
   }
+}
+
+/**
+ * Where to send the browser to END THE SESSION AT THE ISSUER.
+ *
+ * `iamSignOut()` above drops this tab's tokens and nothing else, which is only
+ * half of signing out and is the half nobody notices. The other half is the
+ * `iam_session_id` cookie at hanzo.id: leave it and signing out does not stick,
+ * because the very next thing the app does is bounce to `/signin`, and sign-in
+ * asks the issuer for a code from the EXISTING session. Measured against prod —
+ * clear the tokens the way this module did and silent SSO still answers
+ * `status: ok` with a code, so the user lands straight back in the console they
+ * just left. Clearing the whole session cookie jar is not an option either: it
+ * is set on hanzo.id, and this origin cannot touch it.
+ *
+ * Only the issuer can end the issuer's session, so sign-out has to be a
+ * NAVIGATION there. RP-initiated logout returns the browser to
+ * `post_logout_redirect_uri`, which is why this replaces the `/signin` assign
+ * rather than racing it: one navigation, and it lands where the old one did.
+ *
+ * Verified: after this URL, the same silent-SSO probe answers
+ * "please sign in first" and mints nothing.
+ */
+export function iamSignOutUrl(origin: string, returnPath = '/signin'): string {
+  // The origin is a PARAMETER, not `window.location.origin` read in here. Every
+  // other function in this module guards `typeof window === 'undefined'` because
+  // this file is imported by server-rendered code; one that reads `window`
+  // unguarded throws the moment anything touches it during SSR. Taking it as an
+  // argument removes the hazard instead of guarding it, and makes the URL a pure
+  // function of its inputs — testable with no DOM, which is what this repo's
+  // suite runs.
+  const url = new URL('/v1/iam/oauth/logout', config.iamUrl)
+  // Resolve the return against OUR origin, then require it to have stayed there.
+  // An absolute URL wins over a base in `new URL`, so a caller passing a foreign
+  // one would otherwise hand the IdP an open redirect to hand back. A return leg
+  // that left this origin is never what sign-out meant, so it falls back to the
+  // sign-in page rather than being honored.
+  const back = new URL(returnPath, origin)
+  const safe = back.origin === origin ? back : new URL('/signin', origin)
+  url.searchParams.set('post_logout_redirect_uri', safe.toString())
+  return url.toString()
 }
 
 // -- Graceful re-auth: return the user to their task after re-signing in --------

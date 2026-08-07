@@ -110,7 +110,7 @@ export {
   type RawValidator,
   type RawPeer,
 } from './nodes'
-export { TeamApi } from './team'
+export { TeamApi, MembershipApi, orgNamesFor, type Membership } from './team'
 export {
   PlaygroundApi,
   type ChatMessage,
@@ -283,8 +283,8 @@ export {
   normalizeIssueDetail,
   normalizeDashboard,
   normalizeDashboards,
-  listQueryPayload,
-  parseListRows,
+  rawQueryPayload,
+  parseRawRows,
   toIso,
   normalizeLogRow,
   normalizeLogs,
@@ -306,7 +306,7 @@ export {
   type OccurrenceFrame,
   type IssuesQuery,
   type Dashboard,
-  type O11ySignal,
+  type O11yDataSource,
   type LogRow,
   type TraceSpan,
 } from './apm'

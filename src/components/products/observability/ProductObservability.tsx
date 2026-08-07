@@ -137,7 +137,7 @@ export function ProductObservability({
       {!service ? (
         <Text fontSize="$3" color="$color11">
           {label} is a managed surface with no dedicated telemetry service — its signals roll up under the
-          platform-wide Observe views. No per-product metrics are fabricated here.
+          platform-wide Observe views.
         </Text>
       ) : st.error ? (
         <RuntimeNotice surface="observability" error={st.error} />

@@ -33,6 +33,13 @@ export const CLOUD_HEADS: readonly string[] = [
   'functions',
   'prompts',
   'agents',
+  // The unified tool plane (cloud apps/tools): /v1/tools — discovery across every
+  // source (connector actions, functions, zap-service routes, agents, skills, the
+  // org's own MCP servers), deduplicated by name. `scopeOf` derives the org+project
+  // from the Bearer owner and 403s a cookie-only call, so it routes through /v1
+  // exactly like agents/prompts. Discovery only — `/v1/tools/call` is refused below,
+  // because running a tool belongs to whatever runs an agent, not to a browser tab.
+  'tools',
   // Login manager (cloud clients/link): /v1/links[/…] — the org+user-scoped registry
   // of which AI provider accounts are signed in on which machines + their usage. The
   // handler resolves org from the Bearer owner + the user from the validated subject
@@ -239,6 +246,17 @@ export const CLOUD_HEADS: readonly string[] = [
   'gpus',
   'fleet',
   'clusters',
+  // Sandboxes (cloud apps/sandbox): the org's leased gVisor pods — lease/list/get/
+  // end, exec, fs, and the ticket that opens an interactive terminal
+  // (/v1/sandboxes[/:id[/exec|/fs|/terminal]]). Same gate as the rest: the handler
+  // resolves the org from the Bearer owner and answers 403 without one, and an id
+  // belonging to another org is a 404.
+  //
+  // The terminal's SOCKET does not come through here and cannot: a Next route
+  // handler proxies requests, not upgrades. The browser dials the API host
+  // directly, carrying the single-use ticket this proxy fetched for it — which is
+  // the whole reason the ticket exists.
+  'sandboxes',
   // DO-native: virtual private clouds and managed load balancers — FULL CRUD
   // (/v1/vpcs[/:id], /v1/balancers[/:id]).
   'vpcs',
@@ -366,6 +384,13 @@ export const CLOUD_HEADS: readonly string[] = [
   // user bearer forwards it as the signed-in user. The primary go:embed console hits
   // cloud's /v1/event natively (the BFF is pruned there).
   'event',
+  // User preferences (cloud apps/prefs): GET + PATCH /v1/prefs — the caller's OWN
+  // document (theme, pinned nav) following them across every Hanzo surface. The
+  // subject is the `<owner>/<name>` identity built from the validated Bearer and is
+  // the mandatory predicate on both verbs, so it routes through /v1 exactly like
+  // agents/prompts. There is no path to another user's document, which is why the
+  // head admits no sub-path beyond the one it serves.
+  'prefs',
 ]
 
 /** The `<head>` of a `v1/<head>/...` path, or null when it isn't a `v1/` path. */
@@ -388,7 +413,15 @@ export function v1Head(path: string): string | null {
  * rule would break a live surface while claiming to preserve a property that never
  * covered it. Defense in depth — the backend gates cross-tenant reads on its own.
  */
-const REFUSED_SUBPATHS: readonly RegExp[] = [/^v1\/ai\/stores\/global(?:$|[/?#])/]
+const REFUSED_SUBPATHS: readonly RegExp[] = [
+  /^v1\/ai\/stores\/global(?:$|[/?#])/,
+  // The tool plane's DISPATCH door. `tools` is allow-listed for discovery — the agent
+  // builder needs to offer the org's real tool names — but a head admits every
+  // sub-path, and `POST /v1/tools/call` RUNS a tool. Executing one belongs to whatever
+  // runs an agent, never to a form in a browser tab, so the console's proxy is a
+  // read-only window onto the plane.
+  /^v1\/tools\/call(?:$|[/?#])/,
+]
 
 export function allowCloudSurface(path: string): boolean {
   const rel = path.replace(/^\/+/, '')

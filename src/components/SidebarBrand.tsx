@@ -30,7 +30,7 @@ import { BookOpen, Globe, Info, SlidersHorizontal } from '@hanzogui/lucide-icons
 
 import { config } from '~/config'
 import { getBrand } from '~/lib/branding/brands'
-import { useOrgIdentity } from '~/components/ui/BrandLogo'
+import { BrandMark, useOrgIdentity } from '~/components/ui/BrandLogo'
 import { Z } from '~/lib/z'
 import { OrgMark } from '@hanzo/ui/product'
 
@@ -170,7 +170,16 @@ export function SidebarBrand({ collapsed, onNavigate }: { collapsed: boolean; on
             marker declares that here, at our call site, rather than teaching the
             design gate a library's class names. */}
         <span data-monogram style={{ display: 'contents' }}>
-          <OrgMark org={org} size={24} maxW={140} />
+          {org.logo ? (
+            <OrgMark org={org} size={24} maxW={140} />
+          ) : (
+            // An org that has not uploaded a mark yet wears the HOST's brand, not
+            // its own initial: on console.hanzo.ai that is the Hanzo mark, on a
+            // white-labelled host the brand that host resolves to. The surface
+            // reads as the tenant's own from the first sign-in, and uploading a
+            // logo in Settings → Branding replaces it.
+            <BrandMark size={24} />
+          )}
         </span>
       </div>
       {menu ? <BrandMenu x={menu.x} y={menu.y} items={items} onClose={() => setMenu(null)} /> : null}

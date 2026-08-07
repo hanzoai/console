@@ -12,7 +12,7 @@ export function ModelSelect({
   ids,
   onChange,
   disabled,
-  placeholder = 'model id, e.g. zen-omni',
+  placeholder = 'model id, e.g. zen5-mini',
 }: {
   value: string
   ids: string[]

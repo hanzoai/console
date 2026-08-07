@@ -179,7 +179,7 @@ function O11yHealthBand({ label, health }: { label: string; health: ServiceHealt
       <Text fontSize="$1" color="$color10">
         Live RED metrics from the o11y runtime for service{' '}
         <Text fontSize="$1" color="$color11" fontWeight="600">{health.service}</Text>, scoped to your organization. {label} is
-        serving traffic — this is real telemetry, not a fabricated status.
+        serving traffic.
       </Text>
     </Card>
   )
@@ -210,8 +210,8 @@ function ManagedCard({ entry, hasService }: { entry: CatalogEntry; hasService: b
       </XStack>
       <Text fontSize="$3" color="$color11">
         {hasService
-          ? `Neither the o11y runtime nor the control-plane inventory reports a running ${entry.label} service for your organization right now. It may be a shared managed service reported elsewhere, or idle in this window — its live health lights up automatically once it serves traffic or is reported. No status is fabricated.`
-          : `${entry.label} is a managed Hanzo Cloud capability with no discrete service to report health for. It is available through the API; there is no fabricated status shown.`}
+          ? `Neither the o11y runtime nor the control-plane inventory reports a running ${entry.label} service for your organization right now. It may be a shared managed service reported elsewhere, or idle in this window — its live health lights up automatically once it serves traffic or is reported.`
+          : `${entry.label} is a managed Hanzo Cloud capability with no discrete service to report health for. It is available through the API.`}
       </Text>
     </Card>
   )

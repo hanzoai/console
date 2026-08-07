@@ -305,6 +305,7 @@ import { ProjectsModule as FleetProjectsModule } from '~/components/products/adm
 import { BetaFeaturesModule } from '~/components/products/BetaFeaturesModule'
 // GitOps — the native ArgoCD replacement (SuperAdmin operator surface).
 import { GitOpsModule } from '~/components/products/gitops/GitOpsModule'
+import { DeployModule } from '~/components/products/deploy/DeployModule'
 import { ContactModule } from '~/components/products/ContactModule'
 
 /** A Hanzo GUI icon component (e.g. `Server` from `@hanzogui/lucide-icons-2`). */
@@ -1236,6 +1237,10 @@ export const catalog: CatalogEntry[] = [
       { path: ':tab', component: AgentsModule },
     ],
     subpages: [
+      // The guided way in: describe an agent or start from a template, configure it in
+      // the ONE builder, run it, and take the call away. Leads the sub-nav because it
+      // is where someone with no agents yet should land.
+      { slug: 'quickstart', label: 'Quickstart' },
       { slug: 'status', label: 'Status' },
       { slug: 'logs', label: 'Logs' },
       { slug: 'metrics', label: 'Metrics' },
@@ -1274,7 +1279,6 @@ export const catalog: CatalogEntry[] = [
     status: 'enabled',
     brands: ['hanzo'],
     repo: 'hanzoai/cloud',
-    docs: `${DOCS}/automations`,
     kind: 'module',
     routes: [
       { path: '', component: AutomationsModule },
@@ -1375,7 +1379,6 @@ export const catalog: CatalogEntry[] = [
     category: 'AI',
     status: 'enabled',
     repo: 'hanzoai/cloud',
-    docs: `${DOCS}/knowledge`,
     kind: 'module',
     routes: [{ path: '', component: KnowledgeModule }],
   },
@@ -1708,7 +1711,6 @@ export const catalog: CatalogEntry[] = [
     category: 'Network',
     status: 'enabled',
     repo: 'luxfi/node',
-    docs: `${DOCS}/nodes`,
     kind: 'module',
     routes: [{ path: '', component: NodesModule }],
   },
@@ -2107,7 +2109,44 @@ export const catalog: CatalogEntry[] = [
     ],
   },
   {
-    // Deploy — the native ArgoCD replacement, rendered as a Railway-grade fleet MAP
+    // Deploy — the front door for shipping. ONE section over the two things an org
+    // deploys (container apps via `/v1/platform/projects/:p/apps`, static sites via
+    // `/v1/platform/sites`) plus readings of the three planes a deploy touches:
+    // CD (`/v1/deploy/applications` — reconciliation of the caller's own App CRs),
+    // CI (`/v1/builds`), and Storage (`/v1/s3/buckets`). Each is the ONE canonical
+    // head for its subject; there is deliberately no `/v1/platform/cd|ci|s3` alias,
+    // which would give the estate two paths to the same data.
+    //
+    // It COMPOSES the existing typed clients rather than re-implementing them, and
+    // deep-links to the product that owns each subject for anything deeper — so App
+    // Platform stays the place to operate one app, and S3 to browse objects.
+    // NOT admin-gated: shipping your own code is the customer's own business, and
+    // every read is org-scoped server-side from the bearer proxy's token owner.
+    id: 'deploy',
+    label: 'Deploy',
+    icon: Rocket,
+    description:
+      'Ship an app or a static site — pick a repo, bind a host, set env, deploy. Then watch CD reconcile it, CI build it, and storage serve it.',
+    gcp: 'Cloud Deploy',
+    category: 'Platform',
+    status: 'enabled',
+    repo: 'hanzoai/cloud',
+    kind: 'module',
+    routes: [
+      { path: '', component: DeployModule },
+      { path: ':tab', component: DeployModule },
+    ],
+    subpages: [
+      { slug: 'apps', label: 'Apps', icon: AppWindow },
+      { slug: 'sites', label: 'Sites', icon: Globe },
+      { slug: 'domains', label: 'Domains', icon: Cable },
+      { slug: 'cd', label: 'CD', icon: GitBranch },
+      { slug: 'ci', label: 'CI', icon: Hammer },
+      { slug: 'storage', label: 'Storage', icon: HardDrive },
+    ],
+  },
+  {
+    // The native ArgoCD replacement, rendered as a Railway-grade fleet MAP
     // (the surface cd.hanzo.ai serves). A PLATFORM surface (admin: true → hidden from
     // every customer's nav/palette today; the org-scoped projection opens it
     // per-org) that reads the live operator App CRs through cloud's /v1/deploy/* — the
@@ -2116,8 +2155,12 @@ export const catalog: CatalogEntry[] = [
     // sync, owned-resource topology, CI builds, logs, and confirm-gated Sync/Rollback
     // (rollback pins the CR image tag to a prior clean-semver release → the operator
     // reconciles). The map/drawer are the shared @hanzo/canvas primitive.
+    // Labelled `Fleet`, not `Deploy`: this is the ESTATE map (every org's App CRs,
+    // admin-only), while `deploy` above is the customer's own front door. Two
+    // entries labelled "Deploy" would have sat side by side in a SuperAdmin's
+    // Platform section, one of them showing somebody else's workloads.
     id: 'gitops',
-    label: 'Deploy',
+    label: 'Fleet',
     icon: GitBranch,
     description: 'The fleet deploy map — every operator App CR as a live node with reconciled health, sync, resource topology, CI builds, logs, and one-click rollback. The Hanzo operator reconciles.',
     gcp: 'Cloud Deploy',
@@ -2426,7 +2469,6 @@ export const catalog: CatalogEntry[] = [
     category: 'Observe',
     status: 'enabled',
     repo: 'hanzoai/o11y',
-    docs: `${DOCS}/apm`,
     kind: 'module',
     routes: [{ path: '', component: ServiceMapModule }],
   },
@@ -2565,7 +2607,6 @@ export const catalog: CatalogEntry[] = [
     category: 'Observe',
     status: 'enabled',
     repo: 'hanzoai/finance',
-    docs: `${DOCS}/finance`,
     kind: 'module',
     routes: [{ path: '', component: FinanceModule }],
   },
@@ -3179,7 +3220,6 @@ export const catalog: CatalogEntry[] = [
     category: 'Apps',
     status: 'enabled',
     repo: 'hanzoai/cloud',
-    docs: `${DOCS}/cms`,
     kind: 'module',
     routes: [
       { path: '', component: CmsModule },
@@ -3220,7 +3260,6 @@ export const catalog: CatalogEntry[] = [
     category: 'Apps',
     status: 'enabled',
     repo: 'hanzoai/cloud',
-    docs: `${DOCS}/helpdesk`,
     kind: 'module',
     routes: [
       { path: '', component: HelpModule },

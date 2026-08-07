@@ -12,12 +12,60 @@
  */
 import { PlaygroundApi, PromptsApi } from '~/lib/api'
 import { AgentsApi } from '~/lib/api/agents'
-import type { AgentBuilderLoaders, BuilderOption, BuilderPrompt } from '~/components/agent-builder/types'
+import { ToolsApi } from '~/lib/api/tools'
+import { defaultModel, draftInstruction, parseDraft } from '~/components/agent-builder/logic'
+import type { AgentBuilderLoaders, AgentSpec, BuilderOption, BuilderPrompt } from '~/components/agent-builder/types'
 
 /** The live model catalog as builder options (id → {value,label,hint}). */
 async function loadModels(): Promise<BuilderOption[]> {
   const ids = await PlaygroundApi.listModels() // sorted, de-duplicated live catalog
   return ids.map((id) => ({ value: id, label: id }))
+}
+
+/**
+ * The org's REAL callable tools (`GET /v1/tools`) as builder options. The plane spans
+ * every source — connector actions, functions, zap-service routes, agents, skills and
+ * the org's own MCP servers — already deduplicated by name.
+ *
+ * A tool that lists but is NOT activated says so in its hint, because listing it
+ * silently would offer a name that resolves and then refuses at invocation time. An
+ * org with nothing activated gets an empty list, which is a real answer: the field
+ * stays typeable and the user is not shown a tool that does not exist.
+ */
+async function loadTools(): Promise<BuilderOption[]> {
+  const tools = await ToolsApi.list()
+  return tools.map((t) => ({
+    value: t.name,
+    label: t.name,
+    hint: [t.source, t.description, t.activated ? undefined : 'not activated'].filter(Boolean).join(' · ') || undefined,
+  }))
+}
+
+/**
+ * Draft a spec from a plain-English description — one real completion through the
+ * gateway, with the shared instruction and the shared parse (both pure, both tested).
+ *
+ * Deliberately cheap and deterministic: this is a formatting job, not a reasoning one.
+ * `parseDraft` drops anything it does not recognize, so a creative answer can only
+ * ever fill FEWER fields than asked — never inject one the builder cannot express.
+ */
+async function draftAgent(description: string): Promise<Partial<AgentSpec>> {
+  // The model comes from the LIVE catalog through the same `defaultModel` rule the
+  // builder's own picker uses — never a literal id here. A hardcoded one drifts
+  // silently the moment the catalog changes, which is exactly how `zen-omni` came to
+  // be named in a rule that could no longer match anything.
+  const model = defaultModel(await loadModels())
+  if (!model) throw new Error('No model is available to draft with — pick one and write the prompt yourself.')
+  const completion = await PlaygroundApi.chat({
+    model,
+    messages: [
+      { role: 'system', content: draftInstruction() },
+      { role: 'user', content: description },
+    ],
+    temperature: 0.2,
+  })
+  const answer = completion?.choices?.[0]?.message?.content ?? ''
+  return parseDraft(answer) ?? {}
 }
 
 /** The org's saved prompts as builder rows (names; bodies fetched lazily on select). */
@@ -72,8 +120,8 @@ export const agentBuilderLoaders: AgentBuilderLoaders = {
   loadModels,
   loadPrompts,
   loadPromptBody,
-  // No live tool catalog endpoint on this deployment yet — the builder's tools
-  // field stays typeable-only (honest), never a fabricated tool list. Wire
-  // `loadTools` here when `/v1/agents/tools` (or the MCP tool catalog) is bound.
+  loadTools,
+  draftAgent,
   createAgent: (body) => AgentsApi.create(body),
+  runAgent: (name, input) => AgentsApi.run(name, input),
 }

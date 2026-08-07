@@ -42,6 +42,12 @@ export const ALWAYS_ON_PRODUCTS: readonly string[] = [
   'profile', // the signed-in user's own profile
   'api-keys', // credentials to call the API
   'platform', // the project HUB — create/deploy/ship a project (first-class, every org)
+  // The deploy FRONT DOOR (apps, sites, domains, and the CD/CI/storage readings).
+  // Always-on for the same reason 'platform' is: shipping your own code is not a
+  // separate SKU, and it grants no backend reach — every head it reads was already
+  // reachable, and cloud still enforces authz and the spend gate server-side. Gating
+  // it would hide the primary section of platform.<brand> behind "Add product".
+  'deploy',
   'tracker', // native @hanzo/gui issue tracker — first-class work surface, every org (peer of the HUB; replaces the retired Huly/hanzo.team)
   'guide', // the Business AI launch checklist — foundational onboarding, every org (like 'platform')
   'company', // self-service incorporation — the formation wizard, foundational for every org (peer of 'platform')

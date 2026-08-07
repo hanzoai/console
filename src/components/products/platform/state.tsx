@@ -13,7 +13,7 @@ import { CheckCircle2, TriangleAlert } from '@hanzogui/lucide-icons-2'
 
 import { ApiError } from '~/lib/api'
 
-export type PlatformErrorKind = 'not-configured' | 'forbidden' | 'unavailable' | 'error'
+export type PlatformErrorKind = 'not-configured' | 'forbidden' | 'payment' | 'unavailable' | 'error'
 
 export type PlatformError = { kind: PlatformErrorKind; message: string }
 
@@ -27,6 +27,12 @@ export function interpretPlatformError(e: unknown): PlatformError {
   // the infra PAAS_SERVICE_TOKEN message (that would be a false claim to a customer).
   if (status === 501) return { kind: 'not-configured', message }
   if (status === 401 || status === 403) return { kind: 'forbidden', message }
+  // 402 = the spend gate refused: no active subscription and no prepaid credit, or
+  // a spend cap was reached. The control plane is reachable and the caller is
+  // authorized — it is a BILLING answer, so it must not read as an outage. The
+  // backend's own sentence already names the cure ("Add credits at …"), so it is
+  // shown verbatim rather than replaced with a guess about which cure applies.
+  if (status === 402) return { kind: 'payment', message }
   if (status === 404) return { kind: 'unavailable', message }
   // 503 = the route is mounted but its runtime/dependency is not configured on
   // THIS deployment (e.g. zt networking fail-closed until ZT_CLIENT_* is set).
@@ -40,6 +46,7 @@ export function interpretPlatformError(e: unknown): PlatformError {
 const TITLES: Record<PlatformErrorKind, string> = {
   'not-configured': 'PaaS control plane not configured',
   forbidden: 'Connected · managed by Hanzo',
+  payment: 'Billing required',
   unavailable: 'Endpoint not served here',
   error: 'Could not reach the platform',
 }
@@ -51,6 +58,8 @@ const BODIES: Record<PlatformErrorKind, string> = {
     'Your workloads run on managed Hanzo Cloud — no cluster to operate. The full control-plane fleet view (clusters, nodes, raw workloads) is an admin surface; deploy and scale through Functions, Agents, and the platform.',
   unavailable:
     'The platform backend on this deployment does not serve this endpoint (it ships as a separate service). This view reads live data wherever the endpoint is served; nothing is fabricated here.',
+  // Empty → the card shows the backend's own sentence, which names the cure.
+  payment: '',
   error: '',
 }
 

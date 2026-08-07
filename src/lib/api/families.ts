@@ -210,6 +210,24 @@ export function groupByFamily(catalog: CatalogEntry[]): FamilyGroup[] {
   return groupModelsByFamily(catalog, { chatOnly: true })
 }
 
+/**
+ * The catalog's suggested models — one live model per pinned family, in the
+ * pinned order (the house default naturally leads: `sortMembers` puts it at the
+ * top of the Enso family). `exclude` drops models the caller already shows
+ * elsewhere (the user's own Recent trail), compared case-insensitively. Only
+ * genuinely servable models are ever suggested. PURE.
+ */
+export function suggestedModels(groups: FamilyGroup[], exclude: readonly string[] = []): CatalogEntry[] {
+  const skip = new Set(exclude.map((s) => s.toLowerCase()))
+  const out: CatalogEntry[] = []
+  for (const g of groups) {
+    if (!(PINNED_FAMILIES as readonly string[]).includes(g.id)) continue
+    const m = g.models.find((x) => x.available && !skip.has(modelId(x).toLowerCase()))
+    if (m) out.push(m)
+  }
+  return out
+}
+
 /** Filter grouped families by a query (name/id/provider), dropping empty families. PURE. */
 export function filterFamilies(groups: FamilyGroup[], q: string): FamilyGroup[] {
   const t = q.trim().toLowerCase()

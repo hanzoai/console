@@ -21,6 +21,46 @@ import type { Organization, IamUser, Role } from './admin'
  *  email/OTP is not wired on this deployment). */
 export type InviteLink = { link: string; org: string; name: string; email: string }
 
+/** One org a person may act in, with the role they hold there. */
+export type Membership = { user: string; org: string; role: string }
+
+/**
+ * The organizations THIS person may act in.
+ *
+ * A person's account lives in ONE tenant; the organizations they work in are a
+ * SET, and the membership rows are that set — the same one the token's `orgs`
+ * claim carries and the same one IAM's policy authorizes reads with. Anything
+ * that lists "your orgs" reads this: deriving the list from the account's owner
+ * instead is how a second org became invisible and a card ended up titled with
+ * the signed-in person's name.
+ *
+ * The caller's HOME org is not necessarily a row here (it is implicit), so
+ * callers union it in — {@link orgNamesFor} does.
+ */
+export const MembershipApi = {
+  mine: async (userId: string): Promise<Membership[]> => {
+    const { rows } = await iamList<Membership>('memberships', { user: userId })
+    return rows.filter((m) => m && typeof m.org === 'string' && m.org !== '')
+  },
+}
+
+/**
+ * Every org name the caller can act in, home org FIRST and duplicates removed.
+ * Pure, so the ordering rule is testable without a network: the home org leads
+ * because it is the one a person lands in by default.
+ */
+export function orgNamesFor(homeOrg: string, memberships: Membership[]): string[] {
+  const seen = new Set<string>()
+  const out: string[] = []
+  for (const name of [homeOrg, ...memberships.map((m) => m.org)]) {
+    const n = (name ?? '').trim()
+    if (!n || seen.has(n)) continue
+    seen.add(n)
+    out.push(n)
+  }
+  return out
+}
+
 export const TeamApi = {
   /** Members of `orgName` (the caller's own org, or any for a global admin). */
   members: (orgName: string, params: ListParams = {}): Promise<Paged<IamUser>> =>

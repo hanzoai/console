@@ -14,6 +14,9 @@ import {
   promptBodyFromRow,
   promptOptions,
   classifyBuilderError,
+  proposeName,
+  toHandle,
+  parseDraft,
 } from './logic'
 import type { AgentConfig, AgentSpec, BuilderOption, BuilderPrompt } from './types'
 
@@ -32,13 +35,21 @@ describe('defaultModel', () => {
     expect(defaultModel([])).toBe('')
   })
 
-  it('prefers the exact zen-omni default when present', () => {
-    expect(defaultModel([opt('gpt-4o'), opt('zen-omni'), opt('claude')])).toBe('zen-omni')
+  it('prefers the exact zen5 default when present', () => {
+    expect(defaultModel([opt('gpt-4o'), opt('zen5'), opt('claude')])).toBe('zen5')
   })
 
-  it('falls back to the first Zen-family model (prefix or provider hint)', () => {
-    expect(defaultModel([opt('gpt-4o'), opt('zen-coder')])).toBe('zen-coder')
-    expect(defaultModel([opt('gpt-4o'), opt('some-model', 'Zen')])).toBe('some-model')
+  it('falls back to another Zen TEXT model', () => {
+    expect(defaultModel([opt('gpt-4o'), opt('zen5-coder')])).toBe('zen5-coder')
+  })
+
+  // The defect this rule exists to prevent: a catalog arrives sorted, so a loose
+  // `^zen[-.]` test selected `zen-embedding` — an embeddings SKU that cannot hold a
+  // conversation — as the default model for every new agent.
+  it('never defaults to a modality SKU over a text model', () => {
+    const live = [opt('zen-embedding'), opt('zen-image'), opt('zen-rerank'), opt('zen-vl'), opt('zen5'), opt('zen5-mini')]
+    expect(defaultModel(live)).toBe('zen5')
+    expect(defaultModel(live.filter((o) => o.value !== 'zen5'))).toBe('zen5-mini')
   })
 
   it('falls back to the first catalog id when no Zen model exists', () => {
@@ -187,5 +198,71 @@ describe('classifyBuilderError', () => {
   })
   it('has a safe default message for an opaque error', () => {
     expect(classifyBuilderError('boom')).toEqual({ kind: 'error', message: 'Could not create the agent.' })
+  })
+})
+
+describe('proposeName', () => {
+  it('makes a handle out of the words a person actually typed', () => {
+    expect(proposeName('An agent that triages support tickets')).toBe('triages-support-tickets')
+  })
+  it('drops noise words and punctuation', () => {
+    expect(proposeName('The agent for our  billing!! questions')).toBe('billing-questions')
+  })
+  it('is empty when there is nothing usable', () => {
+    expect(proposeName('   ')).toBe('')
+    expect(proposeName('a the it')).toBe('')
+  })
+  it('caps the length so the handle stays a handle', () => {
+    expect(proposeName('extraordinarily verbose descriptive nomenclature').length).toBeLessThanOrEqual(32)
+  })
+})
+
+describe('toHandle', () => {
+  it('reshapes without re-wording — a handle survives intact', () => {
+    expect(toHandle('support-agent')).toBe('support-agent')
+    expect(toHandle('Support Triage Bot!')).toBe('support-triage-bot')
+  })
+  it('collapses runs and trims the edges', () => {
+    expect(toHandle('  --a  //  b--  ')).toBe('a-b')
+  })
+  it('caps the length and never ends on a hyphen', () => {
+    const h = toHandle('extraordinarily verbose descriptive nomenclature here')
+    expect(h.length).toBeLessThanOrEqual(32)
+    expect(h.endsWith('-')).toBe(false)
+  })
+})
+
+describe('parseDraft', () => {
+  it('reads the three fields it asked for', () => {
+    const d = parseDraft('{"name":"support-triage","description":"Triages tickets.","systemPrompt":"You triage."}')
+    expect(d).toEqual({ name: 'support-triage', description: 'Triages tickets.', systemPrompt: 'You triage.' })
+  })
+
+  // The two things models actually do to JSON.
+  it('survives a code fence and surrounding prose', () => {
+    const answer = 'Sure! Here you go:\n```json\n{"name":"helper","systemPrompt":"You help."}\n```\nHope that works.'
+    expect(parseDraft(answer)).toEqual({ name: 'helper', systemPrompt: 'You help.' })
+  })
+
+  it('normalizes a handle the backend would refuse', () => {
+    expect(parseDraft('{"name":"Support Triage Bot!"}')?.name).toBe('support-triage-bot')
+  })
+
+  it('accepts the snake_case and bare spellings of the prompt', () => {
+    expect(parseDraft('{"system_prompt":"You help."}')?.systemPrompt).toBe('You help.')
+    expect(parseDraft('{"prompt":"You help."}')?.systemPrompt).toBe('You help.')
+  })
+
+  // A creative answer may only ever produce LESS than asked, never a field the
+  // builder cannot express.
+  it('drops every key it does not recognize', () => {
+    const d = parseDraft('{"name":"a-b","model":"gpt-9","tools":["rm -rf"],"webhook":"http://evil"}')
+    expect(d).toEqual({ name: 'a-b' })
+  })
+
+  it('is null when there is no object, or only empty fields', () => {
+    expect(parseDraft('I could not do that.')).toBeNull()
+    expect(parseDraft('{ not json }')).toBeNull()
+    expect(parseDraft('{"name":"   ","description":""}')).toBeNull()
   })
 })

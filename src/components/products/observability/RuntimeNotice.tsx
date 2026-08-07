@@ -8,13 +8,6 @@
  * never fabricate traces, sessions, scores, or charts — this card explains the
  * real reason and names the endpoint, so an empty observability area always reads
  * truthfully.
- *
- * The endpoint it names comes off `ApiError.endpoint` — the URL the failed request
- * was actually sent to. It used to be synthesized from the `surface` prop, which is a
- * DISPLAY label ("logs", "traces", "scores"), so the card confidently printed
- * `/v1/o11y/logs` for a failure at `/v1/o11y/query_range`. `/v1/o11y/logs` is a real
- * route that 405s a POST, which makes the wrong answer look like a lead, and someone
- * chased it. A label is not an address: when the error carries no path we print none.
  */
 import { Button, Card, Text, XStack } from '@hanzo/gui'
 import { BarChart3, TriangleAlert } from '@hanzogui/lucide-icons-2'
@@ -48,22 +41,14 @@ const TITLE: Record<RuntimeStatus, string> = {
   error: 'Could not reach observability',
 }
 
-/** The path the failed request was sent to, or '' when the error carries none. */
-export function failedEndpoint(e: unknown): string {
-  return e instanceof ApiError ? e.endpoint : ''
-}
-
 export function RuntimeNotice({ surface, error }: { surface: string; error: unknown }) {
   const status = classifyRuntime(error)
   const message = error instanceof Error ? error.message : String(error)
-  const endpoint = failedEndpoint(error)
   const body: Record<RuntimeStatus, string> = {
-    'not-initialized': `Observability runtime initializing — your ${surface} will appear here once it's enabled. The /v1/o11y routes are mounted, but the runtime (telemetry stores, query service) is not initialized on this deployment yet. This page shows live ${surface} the moment the runtime is online — it never shows placeholder data.`,
-    unavailable: endpoint
-      ? `${endpoint} is not routed on this host yet, so your ${surface} can't be read.`
-      : `The observability surface behind your ${surface} is not routed on this host yet.`,
+    'not-initialized': `Observability runtime initializing — your ${surface} will appear here once it's enabled. The /v1/o11y routes are mounted, but the runtime (telemetry stores, query service) is not initialized on this deployment yet. This page shows live ${surface} the moment the runtime is online.`,
+    unavailable: `The /v1/o11y/${surface} surface is not proxied on this host yet.`,
     // 403 for a signed-in user — observability isn't provisioned for their org.
-    access: `Observability isn't enabled for your organization yet, so your ${surface} can't be read. It appears here automatically once it is — never placeholder data.`,
+    access: `Observability isn't enabled for your organization yet, so your ${surface} can't be read. It appears here automatically once it is.`,
     // 401 — the session itself lapsed.
     signin: `Your session has expired or isn't recognized here. Sign in again to view your ${surface}.`,
     error: message,
@@ -95,8 +80,7 @@ export function RuntimeNotice({ surface, error }: { surface: string; error: unkn
         </Button>
       ) : null}
       <Text fontSize="$2" color="$color10">
-        {endpoint ? `endpoint · ${endpoint} · ` : ''}
-        {config.brandName}
+        endpoint · /v1/o11y/{surface} · {config.brandName}
       </Text>
     </Card>
   )

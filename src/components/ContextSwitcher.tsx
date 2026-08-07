@@ -27,7 +27,7 @@
 import { useCallback, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button, Popover, Text, XStack, YStack } from '@hanzo/gui'
-import { ChevronsUpDown, FolderGit2, Plus } from '@hanzogui/lucide-icons-2'
+import { ChevronsUpDown, FolderGit2, Plus, SlidersHorizontal } from '@hanzogui/lucide-icons-2'
 
 import { useScope } from '~/lib/scope-context'
 import { useOrgIdentity } from '~/components/ui/BrandLogo'
@@ -38,7 +38,7 @@ import { currentOrg, leaveOrg, switchOrg } from '~/lib/org-scope'
 import { contextLabel, scopedOrgRow, titleCase } from '~/lib/account/org-state'
 import { MenuRow } from '~/components/ui/MenuRow'
 import { paper } from '~/components/ui/paper'
-import { SearchInput } from '@hanzo/ui/product'
+import { OrgMark, SearchInput } from '@hanzo/ui/product'
 
 export function ContextSwitcher() {
   const router = useRouter()
@@ -126,9 +126,16 @@ export function ContextSwitcher() {
               ) : null}
             </XStack>
           ) : (
-            <Text fontSize="$3" fontWeight="600" color="$color12" numberOfLines={1} flex={1}>
-              {contextLabel(orgLabel, scope.project)}
-            </Text>
+            // No uploaded logo: lead with the org's shared OrgMark (its monogram —
+            // the SAME mark SidebarBrand and the account widget wear), so the switcher
+            // is never a bare name. White-label safe: OrgMark is the tenant's OWN mark
+            // (the org's IAM logo when set, else its monogram), never the house glyph.
+            <XStack items="center" gap="$2" flex={1} minW={0}>
+              <OrgMark org={org} size={20} />
+              <Text fontSize="$3" fontWeight="600" color="$color12" numberOfLines={1} flex={1}>
+                {contextLabel(orgLabel, scope.project)}
+              </Text>
+            </XStack>
           )}
         </Button>
       </Popover.Trigger>
@@ -157,6 +164,7 @@ export function ContextSwitcher() {
               <MenuRow
                 key={o.name}
                 label={o.displayName || o.name}
+                icon={<OrgMark org={o} size={18} />}
                 active={scoped === o.name}
                 onPress={pick(() => {
                   if (o.name !== scoped) switchOrg(o.name)
@@ -170,6 +178,12 @@ export function ContextSwitcher() {
               {orgs === null ? 'Loading…' : 'No organization matches that.'}
             </Text>
           ) : null}
+
+          <MenuRow
+            label="Organization settings"
+            icon={<SlidersHorizontal size={14} />}
+            onPress={pick(() => router.push('/settings/branding'))}
+          />
 
           <MenuRow label="All organizations" icon={<Plus size={14} />} onPress={pick(leaveOrg)} />
 

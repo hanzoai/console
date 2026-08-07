@@ -14,12 +14,13 @@
  * facade (`AgentsApi.metrics`); until that route is bound they show a truthful "not
  * connected" note, never a placeholder trend. When the org has ZERO agents (or the
  * `/v1/agents` route isn't bound yet) the board is replaced by a polished
- * "create your first agent" empty state with the real New-Agent flow — never the
- * mockup's sample data.
+ * "create your first agent" empty state that opens the QUICKSTART — the one way to
+ * create an agent here — never the mockup's sample data.
  *
  * Style props use the @hanzo/gui v5 shorthand set (bg/p/px/py/gap/rounded/items/…).
  */
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Button, Card, Input, Spinner, Text, XStack, YStack } from '@hanzo/gui'
 import { useAnalytics } from '@hanzo/event/react'
 import { EVENTS } from '@hanzo/event'
@@ -77,7 +78,9 @@ import {
   TopAgents,
   VersionBadge,
 } from './agents/parts'
-import { AgentDetailView, NewAgentForm } from './agents/forms'
+import { AgentDetailView } from './agents/forms'
+import { agentBuilderLoaders } from './agents/loaders'
+import { AgentQuickstart } from '~/components/agent-builder'
 import { BackendStateCard, DataTable, EmptyState, PageHeader, classifyBackend, type BackendState, type Column } from '@hanzo/ui/product'
 
 const PAGE_SIZE = 8
@@ -134,6 +137,7 @@ function useAgents() {
 }
 
 export function AgentsModule(props: { params: Record<string, string> }) {
+  const router = useRouter()
   const detail = useDetailPane()
   const { agents, loading, error, live, activity, reload, setAgents } = useAgents()
 
@@ -226,26 +230,11 @@ export function AgentsModule(props: { params: Record<string, string> }) {
 
   const analytics = useAnalytics()
 
-  const openNew = useCallback(
-    () =>
-      detail.open({
-        title: 'New agent',
-        subtitle: 'Define a model, prompt, and tools',
-        icon: Bot,
-        iconColor: agentColor,
-        content: (
-          <NewAgentForm
-            onCancel={detail.close}
-            onCreated={() => {
-              analytics.capture(EVENTS.AGENT_CREATED)
-              detail.close()
-              void reload()
-            }}
-          />
-        ),
-      }),
-    [detail, agentColor, reload, analytics],
-  )
+  // ONE way to create an agent, and it is the quickstart. This used to open the
+  // builder in a side pane — the same component, reached by a different shape, with
+  // no templates, no drafting and nowhere to run what it made. Two entrances to one
+  // builder is two things to keep in step; the pane was the lesser of them.
+  const openNew = useCallback(() => router.push('/agents/quickstart'), [router])
 
   const header = (
     <PageHeader
@@ -278,6 +267,36 @@ export function AgentsModule(props: { params: Record<string, string> }) {
       }
     />
   )
+
+  // Owned sub-pages: Status/Logs/Metrics render focused slices of the agents' OWN
+  // runs (from /v1/agents), so they are never the empty generic o11y/ledger subpage.
+  // Overview ('') shows everything. Metrics = counts + invocation trend + resource;
+  // Status = health donut + agents table; Logs = the invocation activity feed.
+  const routeTab = props.params?.tab ?? ''
+
+  // ── Quickstart ──────────────────────────────────────────────────────────────
+  // Its own surface, and it answers BEFORE the list's loading/error/empty states on
+  // purpose: building an agent does not depend on reading the ones that exist, and
+  // the moments you most need it — no agents yet, or the registry not answering —
+  // are exactly the ones those early returns would have swallowed it in.
+  if (routeTab === 'quickstart') {
+    return (
+      <>
+        <PageHeader
+          title="Build an agent"
+          subtitle="Describe what you want, or start from a template. Four steps, and every one is a real call."
+        />
+        <AgentQuickstart
+          loaders={agentBuilderLoaders}
+          apiBase={config.apiUrl}
+          onFinished={() => {
+            analytics.capture(EVENTS.AGENT_CREATED)
+            void reload()
+          }}
+        />
+      </>
+    )
+  }
 
   // ── Initial loading ─────────────────────────────────────────────────────────
   if (loading && agents.length === 0 && !error) {
@@ -397,11 +416,6 @@ export function AgentsModule(props: { params: Record<string, string> }) {
   const tabs: StatusTab[] = ['all', ...AGENT_STATUSES]
   const tabCount = (t: StatusTab): number => (t === 'all' ? agents.length : health[t])
 
-  // Owned sub-pages: Status/Logs/Metrics render focused slices of the agents' OWN
-  // runs (from /v1/agents), so they are never the empty generic o11y/ledger subpage.
-  // Overview ('') shows everything. Metrics = counts + invocation trend + resource;
-  // Status = health donut + agents table; Logs = the invocation activity feed.
-  const routeTab = props.params?.tab ?? ''
   const showMetrics = routeTab === '' || routeTab === 'metrics'
   const showStatus = routeTab === '' || routeTab === 'status'
   const showLogs = routeTab === '' || routeTab === 'logs'

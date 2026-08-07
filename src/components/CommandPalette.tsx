@@ -73,7 +73,7 @@ import {
 
 import { AiApi, IamAdminApi, type Organization } from '~/lib/api'
 import { findEntry, type CatalogEntry } from '~/lib/products/registry'
-import { commandBarSystemPrompt, hanzoAssistantSystemPrompt } from '~/lib/assistant'
+import { assistantState, commandBarSystemPrompt, hanzoAssistantSystemPrompt } from '~/lib/assistant'
 import { searchDestinations, type Destination } from '~/lib/products/search'
 import { DEFAULT_GROUP_LABEL, pinnedFirst } from '~/lib/products/pins-core'
 import { usePins, useProductColors } from '~/lib/products/pins'
@@ -83,7 +83,7 @@ import { openProduct } from '~/lib/products/open'
 import { currentOrg, switchOrg } from '~/lib/org-scope'
 import { useSession } from '~/lib/auth/session'
 import { useIsSuperAdmin } from '~/lib/auth/admin'
-import { BackendStateCard, asColor, classifyBackend, type BackendState } from '@hanzo/ui/product'
+import { BackendStateCard, asColor, type BackendState } from '@hanzo/ui/product'
 
 const titleCase = (s: string) => (s ? s[0].toUpperCase() + s.slice(1) : s)
 
@@ -543,7 +543,7 @@ function PaletteDialog({
         setRun({ status: 'text', text: ans })
       }
     } catch (e) {
-      setRun({ status: 'error', state: classifyBackend(e) })
+      setRun({ status: 'error', state: assistantState(e) })
     }
   }, [mode, sub, showAdmin])
 

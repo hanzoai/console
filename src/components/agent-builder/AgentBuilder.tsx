@@ -58,18 +58,32 @@ const CUSTOM = '__custom__'
 
 export function AgentBuilder({
   loaders,
+  initial,
   onCreated,
   onCancel,
   submitLabel = 'Create agent',
 }: {
   loaders: AgentBuilderLoaders
-  /** Called after a successful create (the host reloads its list + closes the form). */
-  onCreated: () => void
+  /**
+   * A spec to start from — a template's preset, or what a description drafted.
+   * Read ONCE, at mount: the form is the user's from that point on, so a seed can
+   * never overwrite something they have already typed. A host that swaps seeds
+   * (the quickstart, when a different template is picked) remounts with a `key`,
+   * which states the intent — a new starting point — instead of hiding it in an
+   * effect that races the user's keystrokes.
+   */
+  initial?: Partial<AgentSpec>
+  /**
+   * Called after a successful create, with the NAME the agent was created under
+   * (the handle every `/v1/agents/:ref` route is keyed by) so the host can go
+   * straight to running it rather than looking it back up.
+   */
+  onCreated: (name: string) => void
   /** Called when the user cancels (optional — omit for an always-open form). */
   onCancel?: () => void
   submitLabel?: string
 }) {
-  const [spec, setSpec] = useState<AgentSpec>(emptySpec)
+  const [spec, setSpec] = useState<AgentSpec>(() => ({ ...emptySpec(), ...initial }))
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [unavailable, setUnavailable] = useState(false)
@@ -165,8 +179,9 @@ export function AgentBuilder({
     setError(null)
     setUnavailable(false)
     try {
-      await loaders.createAgent(toCreateBody(spec))
-      onCreated()
+      const body = toCreateBody(spec)
+      await loaders.createAgent(body)
+      onCreated(body.name)
     } catch (e) {
       const c = classifyBuilderError(e)
       if (c.kind === 'unavailable') setUnavailable(true)
@@ -202,7 +217,10 @@ export function AgentBuilder({
           loading={models.phase === 'loading'}
           error={models.phase === 'error' ? `Model catalog unavailable — type a model id. (${models.message})` : null}
           onRetry={loadModels}
-          placeholder="zen-omni · gpt-4o-mini · claude-sonnet-4-5"
+          // A placeholder is an example, and an example that does not exist is a lie
+          // the user only discovers at the agent's first run. These are ids the live
+          // catalog actually serves; the field itself offers the real list.
+          placeholder="zen5 · zen5-mini · claude-sonnet-5"
         />
       </FieldRow>
 
@@ -239,7 +257,14 @@ export function AgentBuilder({
             loading={tools.phase === 'loading'}
             error={tools.phase === 'error' ? `Tool catalog unavailable — type a tool id.` : null}
             onRetry={loadTools}
-            placeholder="add a tool — e.g. web.search, code.exec"
+            // No invented examples here either: the tool plane is per-org, so nobody
+            // can name a tool that is certain to exist. The field offers what the org
+            // has actually activated, and stays typeable for what it has not.
+            placeholder={
+              tools.phase === 'ready' && tools.options.length === 0
+                ? 'No tools activated yet — type one to use it anyway'
+                : 'Search your tools'
+            }
             emptyText="Press Add to include what you typed."
           />
           <XStack gap="$2">

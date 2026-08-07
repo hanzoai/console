@@ -1,5 +1,19 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
+// The credential. @hanzo/iam is the console's ONE identity source, and the client
+// reads it synchronously per request — so holding it here is what lets a test assert
+// what the streamed request actually put on the wire.
+const iam = vi.hoisted(() => ({ token: null as string | null }))
+
+vi.mock('~/lib/auth/iam', () => ({
+  iamAccessToken: () => iam.token,
+  iamValidAccessToken: async () => iam.token,
+  iamHasSession: () => iam.token != null,
+  iamExpiresInSeconds: () => (iam.token ? 3600 : null),
+  iamUserInfo: async () => null,
+  iamSignOut: () => {},
+}))
+
 import { AiApi } from './ai'
 import { PlaygroundApi } from './playground'
 
@@ -20,7 +34,61 @@ function jsonResponse(status: number, body: unknown): Response {
   return new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } })
 }
 
-afterEach(() => vi.restoreAllMocks())
+afterEach(() => {
+  vi.restoreAllMocks()
+  vi.unstubAllGlobals()
+  iam.token = null
+})
+
+/**
+ * The assistant's send is a STREAMING completion, and a stream is the one shape that
+ * cannot go through the client's parsing helpers — which is exactly how it came to be
+ * built on a bare `fetch` and to carry no credential at all. Measured live: the same
+ * page whose every other call succeeded got `401 Invalid API key format. Expected
+ * 'Bearer API_KEY'` on `POST /v1/chat/completions`, because there was no Authorization
+ * header on it. These drive the REAL path (no stub between AiApi and fetch) and read
+ * the request off the wire, so the credential is proven, not assumed.
+ */
+describe('the streamed completion carries the console credential', () => {
+  it('sends the access token as a Bearer, exactly as a non-streaming completion does', async () => {
+    iam.token = 'live-access-token'
+    const fetchMock = vi.fn(async (_url: string, _init: RequestInit) => sse(['data: [DONE]\n\n']))
+    vi.stubGlobal('fetch', fetchMock)
+
+    await AiApi.ragChatStream({ question: 'hi', model: 'zen' }, () => {})
+
+    const [url, init] = fetchMock.mock.calls[0]
+    expect(url).toContain('/v1/chat/completions')
+    const headers = init.headers as Record<string, string>
+    expect(headers.Authorization).toBe('Bearer live-access-token')
+    // The tenant stamp rides the same request, so a streamed answer is org-scoped too.
+    expect(headers['X-Org-Id']).toBeTruthy()
+    expect(headers.Accept).toBe('text/event-stream')
+    expect(JSON.parse(init.body as string).stream).toBe(true)
+  })
+
+  it('omits the header when signed out, rather than sending an empty Bearer', async () => {
+    iam.token = null
+    const fetchMock = vi.fn(async (_url: string, _init: RequestInit) => sse(['data: [DONE]\n\n']))
+    vi.stubGlobal('fetch', fetchMock)
+
+    await AiApi.ragChatStream({ question: 'hi', model: 'zen' }, () => {})
+
+    const init = fetchMock.mock.calls[0][1]
+    expect('Authorization' in (init.headers as Record<string, string>)).toBe(false)
+  })
+
+  it('carries it on speech too — the other call that reads its own response body', async () => {
+    iam.token = 'live-access-token'
+    const fetchMock = vi.fn(async (_url: string, _init: RequestInit) => new Response(new Blob(['audio']), { status: 200 }))
+    vi.stubGlobal('fetch', fetchMock)
+
+    await PlaygroundApi.speech({ model: 'tts', input: 'hello' })
+
+    const init = fetchMock.mock.calls[0][1]
+    expect((init.headers as Record<string, string>).Authorization).toBe('Bearer live-access-token')
+  })
+})
 
 describe('AiApi.ragChatStream — grounded streaming send', () => {
   it('accumulates deltas, resolves the final text, and grounds via retrieval headers', async () => {

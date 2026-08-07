@@ -82,7 +82,11 @@ export const SLUG_ALIASES: Record<string, string> = {
   auto: 'automations',
   automation: 'automations',
   traces: 'o11y',
-  deploy: 'app-platform',
+  // `deploy` used to alias App Platform, back when the PaaS canvas was the only
+  // place a deploy happened. It is a real product now — the front door over apps,
+  // sites, domains, CD, CI, and storage — so the slug resolves to itself and App
+  // Platform keeps its own id. An alias to a sibling would make the front door
+  // unreachable: `canonicalSlug` rewrites the head before any lookup.
   'plans-pricing': 'plans',
   wallets: 'wallet',
   'model-catalog': 'models',
@@ -117,15 +121,30 @@ export const indexSubpage = (entry: CatalogEntry): ProductSubpage =>
  */
 export const BASE_SUBPAGES: ProductSubpage[] = [
   { slug: 'settings', label: 'Settings' },
-  { slug: 'status', label: 'Status' },
+  // Observability trio reads raw → summary: Logs, then Metrics, then Status LAST
+  // (the live-health verdict comes after the signals it is derived from).
   { slug: 'logs', label: 'Logs' },
   { slug: 'metrics', label: 'Metrics' },
+  { slug: 'status', label: 'Status' },
 ]
 
 /**
+ * The base sub-pages a product actually gets: the uniform set minus any whose
+ * slug IS the product's own id. A product that already IS one of these concerns
+ * — Settings, Status, Logs, Metrics — must not also carry a base sub-tab bearing
+ * its own name (that is a self-referential duplicate: the Settings product would
+ * show a "Settings" tab of itself). One rule, read by both the nav and the
+ * router, so the two never disagree on whether that tab exists.
+ */
+export const baseSubpagesFor = (entry: CatalogEntry): ProductSubpage[] =>
+  BASE_SUBPAGES.filter((b) => b.slug !== entry.id)
+
+/**
  * The full ordered level-2 nav for a product: Overview, then its declared
- * SPECIFIC sub-pages, then the uniform base set (a base slug the product already
- * declares as a specific is not duplicated). Non-module entries have none.
+ * SPECIFIC sub-pages, then the uniform base set (`baseSubpagesFor` — the uniform
+ * set minus any slug that IS the product's own id, so Settings has no "Settings"
+ * child). A base slug the product already declares as a specific is not duplicated.
+ * Non-module entries have none.
  *
  * `showAdmin` gates admin-only specifics (e.g. Models › Routing): a customer
  * never sees them in the sub-nav (default true keeps every existing caller
@@ -136,7 +155,7 @@ export function productSubpages(entry: CatalogEntry, showAdmin = true): ProductS
   const specifics = (entry.subpages ?? []).filter((s) => s.slug !== '' && (showAdmin || !s.admin))
   const seen = new Set(specifics.map((s) => s.slug))
   const out: ProductSubpage[] = [indexSubpage(entry), ...specifics]
-  for (const b of BASE_SUBPAGES) if (!seen.has(b.slug)) out.push(b)
+  for (const b of baseSubpagesFor(entry)) if (!seen.has(b.slug)) out.push(b)
   return out
 }
 
@@ -289,7 +308,7 @@ export function resolveProductView(
     if (entry && entry.kind === 'module') {
       const seg = slug[1]
       const ownsAsSpecific = (entry.subpages ?? []).some((s) => s.slug === seg)
-      const base = BASE_SUBPAGES.find((s) => s.slug === seg)
+      const base = baseSubpagesFor(entry).find((s) => s.slug === seg)
       if (base && !ownsAsSpecific) return { kind: 'subpage', entry, subpage: base }
     }
   }
@@ -302,7 +321,7 @@ export function resolveProductView(
     if (entry && entry.kind === 'module') {
       const seg = slug[1]
       const declared = (entry.subpages ?? []).find((s) => s.slug === seg)
-      const base = BASE_SUBPAGES.find((s) => s.slug === seg)
+      const base = baseSubpagesFor(entry).find((s) => s.slug === seg)
       const sp = declared ?? base
       if (sp) return { kind: 'stub', entry, subpage: sp }
     }

@@ -40,11 +40,13 @@ import {
   groupByFamily,
   filterFamilies,
   familyOf,
+  suggestedModels,
   totalModels,
   displayLabel,
   DEFAULT_MODEL,
   type FamilyGroup,
 } from '~/lib/api/families'
+import { useRecentModels } from '~/lib/models/recent'
 import { ProviderLogo } from '~/components/ui/ProviderLogo'
 import { Filters } from '~/components/ui/Filters'
 import { useList } from '~/lib/list'
@@ -390,6 +392,50 @@ function CatalogSkeleton() {
   )
 }
 
+/** One tappable model chip — the family mark + the model's display name. */
+function ModelChip({ m, onOpen }: { m: CatalogEntry; onOpen: () => void }) {
+  return (
+    <Button size="$2" icon={<ProviderLogo provider={familyOf(m).logo} size={15} />} onPress={onOpen}>
+      {displayLabel(m)}
+    </Button>
+  )
+}
+
+/** Recent + Suggested — the reach-first chips above the full family list. Recents
+ *  are the user's own trail; suggestions are one live rung per pinned family. An
+ *  empty section renders nothing — never a fabricated chip. */
+function ShortcutStrip({
+  recents,
+  suggested,
+  onOpen,
+}: {
+  recents: CatalogEntry[]
+  suggested: CatalogEntry[]
+  onOpen: (m: CatalogEntry) => void
+}) {
+  if (!recents.length && !suggested.length) return null
+  return (
+    <XStack items="center" gap="$2" flexWrap="wrap">
+      {recents.length ? (
+        <Text fontSize="$1" color="$color10" fontWeight="500">
+          Recent
+        </Text>
+      ) : null}
+      {recents.map((m) => (
+        <ModelChip key={modelId(m)} m={m} onOpen={() => onOpen(m)} />
+      ))}
+      {suggested.length ? (
+        <Text fontSize="$1" color="$color10" fontWeight="500" ml={recents.length ? '$2' : undefined}>
+          Suggested
+        </Text>
+      ) : null}
+      {suggested.map((m) => (
+        <ModelChip key={modelId(m)} m={m} onOpen={() => onOpen(m)} />
+      ))}
+    </XStack>
+  )
+}
+
 type LoadState =
   | { phase: 'loading' }
   | { phase: 'error'; err: ApiError }
@@ -423,6 +469,23 @@ export function ModelCatalogModule(_props: { params: Record<string, string> }) {
   const models = state.phase === 'ready' ? state.models : []
   const groups = useMemo(() => groupByFamily(models), [models])
   const visible = useMemo(() => filterFamilies(groups, query), [groups, query])
+
+  // Opening a model records the use, so the Recent chips are the user's real
+  // trail — the same trail chat writes when a turn is sent.
+  const { recent, record } = useRecentModels()
+  const openModel = useCallback(
+    (m: CatalogEntry) => {
+      record(modelId(m))
+      setSelected(m)
+    },
+    [record],
+  )
+  const shortcuts = useMemo(() => {
+    const byId = new Map(models.map((x) => [modelId(x).toLowerCase(), x]))
+    // A recent id whose model left the catalog silently drops — honest absence.
+    const recents = recent.map((id) => byId.get(id.toLowerCase())).filter((x): x is CatalogEntry => x !== undefined)
+    return { recents, suggested: suggestedModels(groups, recents.map((x) => modelId(x))) }
+  }, [models, groups, recent])
 
   const stats = useMemo(() => {
     const shown = totalModels(visible)
@@ -466,6 +529,12 @@ export function ModelCatalogModule(_props: { params: Record<string, string> }) {
           {/* Search across all families — the ONE list bar, not a fourth search box. */}
           <Filters list={list} placeholder="Search models across every family…" />
 
+          {/* Reach first: the user's recent models, then one suggestion per house/
+              flagship family — hidden while searching (the query owns the page). */}
+          {state.phase === 'ready' && !query ? (
+            <ShortcutStrip recents={shortcuts.recents} suggested={shortcuts.suggested} onOpen={openModel} />
+          ) : null}
+
           {state.phase === 'loading' ? (
             <CatalogSkeleton />
           ) : visible.length === 0 ? (
@@ -479,7 +548,7 @@ export function ModelCatalogModule(_props: { params: Record<string, string> }) {
             <YStack gap="$2.5">
               {visible.map((g, i) => (
                 <FadeIn key={g.id} index={i} step={40}>
-                  <FamilySection group={g} onOpen={setSelected} />
+                  <FamilySection group={g} onOpen={openModel} />
                 </FadeIn>
               ))}
             </YStack>

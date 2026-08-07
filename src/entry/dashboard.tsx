@@ -1,19 +1,27 @@
 'use client'
 
 /**
- * Dashboard shell — a TWO-LEVEL sidebar (product list ⇄ drill into a product) + top
- * bar + content, responsive across phone / tablet / laptop / desktop.
+ * Dashboard shell — a TWO-LEVEL sidebar (products, each expanding its own sub-pages
+ * in place) + top bar + content, responsive across phone / tablet / laptop / desktop.
  *
  * Level 1 (the product list) renders from the catalog: fixed Overview/Docs, a
  * Pinned section the user curates, then every product grouped by category. Each
  * CATEGORY is an INDEPENDENTLY collapsible section that renders EXPANDED by default
  * (nothing auto-collapses); the header is flush-left with the top-level items and
- * carries an OPTIONAL collapse chevron whose state persists per-user. Clicking a
- * PRODUCT that has sub-pages DRILLS the sidebar INTO that product's sub-nav
- * (Overview + specifics + the uniform base set: Settings · Status · Logs · Metrics)
- * with a clear BACK affordance to the full list — Level 2. A product with only an
- * Overview navigates directly (no drill). Sub-pages with no backend yet are dimmed
- * and open an honest placeholder (never a dead link).
+ * carries an OPTIONAL collapse chevron whose state persists per-user.
+ *
+ * Level 2 — a product's sub-pages (Overview + specifics + the uniform base set:
+ * Settings · Status · Logs · Metrics) — expands BENEATH that product's own row, so
+ * its options appear without the rest of the catalog going away. The label
+ * navigates; the chevron beside it only expands or collapses, and that choice
+ * persists per-user (the product you are IN is open unless you closed it). Sub-pages
+ * with no backend yet are dimmed and open an honest placeholder, never a dead link.
+ *
+ * This replaced a DRILL: clicking a product used to swap the whole rail for that
+ * product's sub-nav, behind a "Back to all products" button. The options were the
+ * same either way — what the drill took away was every OTHER product, which is
+ * precisely what someone needs when the reason they opened the rail was to go
+ * somewhere else.
  *
  * Level 2 is DECLARED once, in the registry (`subpages` + `indexLabel`), and read
  * here and by `SubNav` (the same nav, for the viewports where this sidebar is a
@@ -26,8 +34,8 @@
  * drawer (hamburger) instead; the collapse/rail is a desktop concern.
  *
  * The assistant is opened from its OWN floating control bottom-right (`FloatingChat`),
- * never from this topbar; all this shell owns about it is `docked`, which reserves the
- * PERMANENT right column at `lg+`.
+ * never from this topbar; all this shell owns about it is `column`, which reserves the
+ * PERMANENT right column when the assistant is that column.
  *
  * Every product icon carries a tasteful per-product COLOR, recolorable/pinnable from
  * the customize pane — all persisted per-user via the account-backed preferences.
@@ -42,11 +50,10 @@
  * NOT a JS media branch, so SSR and first paint match. The nav body (`SidebarNav`) is
  * shared by the sidebar, the flyout, and the drawer (DRY) — one definition, many mounts.
  */
-import { useEffect, useMemo, useState, type ComponentType, type ReactNode } from 'react'
+import { useMemo, useState, type ComponentType, type ReactNode } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { Button, Input, ScrollView, Text, XStack, YStack } from '@hanzo/gui'
 import {
-  ArrowLeft,
   BarChart3,
   Bell,
   BookOpen,
@@ -61,7 +68,6 @@ import {
   Lock,
   Menu,
   PanelLeft,
-  Plus,
   Repeat,
   ScrollText,
   Search,
@@ -89,9 +95,17 @@ import { entryMatches } from '~/lib/products/search'
 import { usePins, useProductColors } from '~/lib/products/pins'
 import { useAppsBeta } from '~/lib/products/beta'
 import { orderEntries } from '~/lib/products/order'
-import { categoryIsOpen, toggleCategory, NAV_OPEN_PREF, EMPTY_OPEN, type CategoryOpen } from '~/lib/products/nav-accordion'
+import {
+  categoryIsOpen,
+  toggleCategory,
+  productIsOpen,
+  toggleProduct,
+  NAV_OPEN_PREF,
+  NAV_PRODUCT_OPEN_PREF,
+  EMPTY_OPEN,
+  type CategoryOpen,
+} from '~/lib/products/nav-accordion'
 import { usePreferences } from '~/lib/products/preferences'
-import { useSession } from '~/lib/auth/session'
 import { useIsSuperAdmin } from '~/lib/auth/admin'
 import { useEntitlements } from '~/lib/entitlements-context'
 import { AddProductPanel } from '~/components/AddProductPanel'
@@ -113,7 +127,6 @@ import { ContextSwitcher } from '~/components/ContextSwitcher'
 import { useFloatingChat, DockedChatPanel } from '~/components/FloatingChat'
 import { WorkbenchDock } from '~/components/workbench/Workbench'
 import { Z } from '~/lib/z'
-import { ThemeToggle } from '@hanzo/ui/product'
 
 const EXPANDED_W = 264
 const COLLAPSED_W = 64
@@ -197,14 +210,18 @@ function FixedRow({
   )
 }
 
-/** A level-1 catalog row — colored product icon, opens the product; trailing is a
- *  pin star (catalog rows) or a color/customize dot (pinned rows). */
+/** A level-1 catalog row — colored product icon, opens the product; trailing is an
+ *  expansion chevron (products with sub-pages) then a pin star (catalog rows) or a
+ *  color/customize dot (pinned rows). */
 function NavRow({
   entry,
   active,
   color,
   collapsed,
   pinned,
+  expandable,
+  expanded,
+  onExpand,
   onOpen,
   onToggle,
   onCustomize,
@@ -214,6 +231,10 @@ function NavRow({
   color: string
   collapsed: boolean
   pinned?: boolean
+  /** True when the product has sub-pages to expand beneath it. */
+  expandable?: boolean
+  expanded?: boolean
+  onExpand?: () => void
   onOpen: () => void
   onToggle?: () => void
   onCustomize?: () => void
@@ -251,6 +272,27 @@ function NavRow({
       >
         {entry.label}
       </Button>
+      {/* Expansion is its OWN control, separate from the row: the label navigates,
+          the chevron only opens or closes. One target that did both would make
+          "show me what's in here" and "take me there" the same gesture. */}
+      {expandable && onExpand ? (
+        <Button
+          size="$2"
+          chromeless
+          onPress={onExpand}
+          aria-expanded={expanded}
+          aria-controls={`nav-sub-${entry.id}`}
+          aria-label={`${expanded ? 'Collapse' : 'Expand'} ${entry.label}`}
+          icon={
+            <span
+              className="hz-chevron"
+              style={{ display: 'inline-flex', transform: expanded ? 'rotate(90deg)' : undefined }}
+            >
+              <ChevronRight size={14} color="$color9" />
+            </span>
+          }
+        />
+      ) : null}
       {onCustomize ? (
         <ColorDot color={color} onPress={onCustomize} label={`Customize ${entry.label}`} />
       ) : onToggle ? (
@@ -268,58 +310,32 @@ function NavRow({
 }
 
 /**
- * Level 2 — the drilled product's sub-nav. Reached by clicking a product with
- * sub-pages; a BACK affordance returns to the full product list (Level 1). The
- * header shows the product (colored icon + name) under a category breadcrumb; the
- * body is `productSubpages(entry)` — Overview + specifics + the uniform base set —
- * with an unwired sub-page dimmed but honest (opens a placeholder, never a dead link).
+ * Level 2 — a product's sub-pages, expanded IN PLACE beneath its own row. The list
+ * is `productSubpages(entry)` (Overview + specifics + the uniform base set), with an
+ * unwired sub-page dimmed but honest: it opens a placeholder, never a dead link.
+ *
+ * Indented under the product and hung on a hairline, so the nesting is legible
+ * without a second heading — the product's own row above IS the heading. Collapsed,
+ * the rows are `inert`, so hidden options leave the tab order.
  */
-function DrillNav({
+function SubRows({
   entry,
   subs,
   pathname,
-  color,
-  onBack,
+  open,
   onGo,
 }: {
   entry: CatalogEntry
   subs: ProductSubpage[]
   pathname: string
-  color: string
-  onBack: () => void
+  open: boolean
   onGo: (path: string) => void
 }) {
   const activeSlug = activeSubpage(pathname, entry.id)
-  const Icon = entry.icon
   return (
-    <>
-      {/* Back to the full product list, with the category as a quiet breadcrumb. */}
-      <Button
-        chromeless
-        size="$2"
-        height={34}
-        px="$2"
-        justify="flex-start"
-        icon={<ArrowLeft size={17} />}
-        onPress={onBack}
-        hoverStyle={{ bg: '$color3' }}
-        aria-label="Back to all products"
-      >
-        <Text fontSize="$1" color="$color10" fontWeight="500">
-          {entry.category}
-        </Text>
-      </Button>
-
-      {/* The product header. */}
-      <XStack items="center" gap="$2.5" px="$2" py="$1.5" mb="$1">
-        <ProductIcon icon={Icon} color={color} size={22} />
-        <Text flex={1} fontSize="$5" fontWeight="800" color="$color12" numberOfLines={1}>
-          {entry.label}
-        </Text>
-      </XStack>
-
-      <ScrollView flex={1} minH={0}>
-        <YStack gap="$0.5">
+    <div className="hz-acc" data-open={open ? 'true' : 'false'} id={`nav-sub-${entry.id}`} inert={!open}>
+      <div className="hz-acc-inner">
+        <YStack gap="$0.5" ml="$4" pl="$2" pt="$0.5" borderLeftWidth={1} borderColor="$borderColor">
           {subs.map((sp) => {
             const wired = subpageWired(entry.id, sp.slug)
             const active = sp.slug === activeSlug
@@ -330,9 +346,9 @@ function DrillNav({
                 onPress={() => onGo(sp.slug ? `/${entry.id}/${sp.slug}` : `/${entry.id}`)}
                 bg={active ? '$color4' : 'transparent'}
                 justify="flex-start"
-                icon={<SubIcon size={17} />}
+                icon={<SubIcon size={15} />}
                 iconAfter={!wired ? <Circle size={7} opacity={0.5} /> : undefined}
-                size="$3"
+                size="$2"
                 opacity={wired ? 1 : 0.6}
                 aria-label={wired ? sp.label : `${sp.label} (not available yet)`}
               >
@@ -341,8 +357,8 @@ function DrillNav({
             )
           })}
         </YStack>
-      </ScrollView>
-    </>
+      </div>
+    </div>
   )
 }
 
@@ -470,31 +486,23 @@ function SidebarNav({
   const navOpen = prefs.get<CategoryOpen>(NAV_OPEN_PREF, EMPTY_OPEN)
   const toggleSection = (category: string) => prefs.set(NAV_OPEN_PREF, toggleCategory(navOpen, category))
 
-  // ── Drill-in state (Level 1 ⇄ Level 2) ────────────────────────────────────
+  // ── Level 2, in place ─────────────────────────────────────────────────────
+  // A product's sub-pages expand beneath its own row; nothing replaces the list.
   const activeId = activeModuleId(pathname)
-  const activeEntry = activeId ? findEntry(activeId) ?? null : null
-  const activeSubs = useMemo(
-    () => (activeEntry && activeEntry.kind === 'module' ? productSubpages(activeEntry, showAdmin) : []),
-    [activeEntry, showAdmin],
-  )
-  // `manualList` = the user hit BACK — force the Level-1 list even though the active
-  // route is a drillable product. Entering a DIFFERENT product resets it (auto-drill).
-  const [manualList, setManualList] = useState(false)
-  useEffect(() => {
-    setManualList(false)
-  }, [activeId])
-  const canDrill = Boolean(activeEntry) && activeSubs.length > 1
-  const drilled = canDrill && !manualList && !collapsed
   const isActive = (id: string) => pathname === `/${id}` || pathname.startsWith(`/${id}/`)
+  const productOpen = prefs.get<CategoryOpen>(NAV_PRODUCT_OPEN_PREF, EMPTY_OPEN)
+  const toggleExpand = (id: string) =>
+    prefs.set(NAV_PRODUCT_OPEN_PREF, toggleProduct(productOpen, id, { active: id === activeId }))
 
   // Navigate to a LEAF (a sub-page or a no-sub-page product) — closes the drawer.
   const go = (path: string) => {
     router.push(path)
     onNavigate()
   }
-  // Open a product from the list: DRILL if it has sub-pages (keep the drawer open so
-  // the sub-nav shows), else navigate directly (leaf → close the drawer). An external
-  // launch tile opens its deployed app in a new tab.
+  // Open a product from the list. One with sub-pages keeps the drawer open, because
+  // becoming active expands it in place and its options are the next thing to read;
+  // a leaf navigates and closes. An external launch tile opens its deployed app in a
+  // new tab.
   const open = (entry: CatalogEntry) => {
     if (entry.kind === 'external') {
       openProduct(entry, go)
@@ -504,11 +512,47 @@ function SidebarNav({
     setFilter('')
     const subs = productSubpages(entry, showAdmin)
     if (subs.length > 1) {
-      setManualList(false)
-      router.push(`/${entry.id}`) // DRILL — keep the drawer open for the sub-nav
+      router.push(`/${entry.id}`) // its sub-pages open beneath it
     } else {
       go(`/${entry.id}`) // leaf — navigate + close
     }
+  }
+
+  /**
+   * ONE product row — the row itself plus, for a product that has them, its sub-pages
+   * expanded beneath. Both the Pinned group and the category groups render through
+   * this, so a product looks and behaves identically wherever it appears.
+   */
+  const productRow = (entry: CatalogEntry, opts: { pinned?: boolean } = {}) => {
+    const subs = productSubpages(entry, showAdmin)
+    // A pinned product appears TWICE — once under Pinned, once in its category — and
+    // only ONE of those may carry the sub-pages. Two copies of the same list is two
+    // navs painting at once, which is the very thing this rail exists to avoid, and
+    // it doubles the rail's height for no information. The PINNED copy owns it: the
+    // user put it up there, and it is the one they read first.
+    const owns = opts.pinned || !isPinned(entry.id)
+    const expandable = owns && entry.kind === 'module' && subs.length > 1
+    const expanded = expandable && productIsOpen(productOpen, entry.id, { filtering, active: entry.id === activeId })
+    return (
+      <YStack key={`${opts.pinned ? 'pin' : 'cat'}-${entry.id}`} gap="$0.5">
+        <NavRow
+          entry={entry}
+          active={isActive(entry.id)}
+          color={colorOf(entry.id)}
+          collapsed={false}
+          pinned={opts.pinned ?? isPinned(entry.id)}
+          expandable={expandable}
+          expanded={expanded}
+          onExpand={expandable ? () => toggleExpand(entry.id) : undefined}
+          onOpen={() => open(entry)}
+          onToggle={opts.pinned ? undefined : () => toggle(entry.id)}
+          onCustomize={opts.pinned ? () => customize(entry) : undefined}
+        />
+        {expandable ? (
+          <SubRows entry={entry} subs={subs} pathname={pathname} open={expanded} onGo={go} />
+        ) : null}
+      </YStack>
+    )
   }
   const openDocs = () => {
     if (typeof window !== 'undefined') window.open(config.docsUrl, '_blank', 'noopener')
@@ -681,26 +725,9 @@ function SidebarNav({
     )
   }
 
-  // ── Level 2 — drilled into a product's sub-nav, with a BACK affordance ──
-  if (drilled && activeEntry) {
-    return (
-      <>
-        <DrillNav
-          entry={activeEntry}
-          subs={activeSubs}
-          pathname={pathname}
-          color={colorOf(activeEntry.id)}
-          onBack={() => setManualList(true)}
-          onGo={go}
-        />
-        <SidebarAccount collapsed={false} />
-        <SidebarWallet collapsed={false} />
-      </>
-    )
-  }
-
-  // ── Level 1 — the full product list: brand; filter; Overview/Docs; Pinned; every
-  //    category (EXPANDED by default, collapsible); All-products; identity + wallet. ──
+  // ── The product list: brand; filter; Overview/Docs; Pinned; every category
+  //    (EXPANDED by default, collapsible), each product expanding its own sub-pages
+  //    in place; All-products; identity + wallet. ──
   return (
     // The product rail is a NAVIGATION LANDMARK. It had no role at all, so a
     // screen-reader user had no way to jump to the product list and no way to
@@ -778,18 +805,7 @@ function SidebarNav({
                   {group.entries.map((e) => {
                     const entry = findEntry(e.id)
                     if (!entry) return null
-                    return (
-                      <NavRow
-                        key={`pin-${e.id}`}
-                        entry={entry}
-                        active={isActive(e.id)}
-                        color={colorOf(e.id)}
-                        collapsed={false}
-                        pinned
-                        onOpen={() => open(entry)}
-                        onCustomize={() => customize(entry)}
-                      />
-                    )
+                    return productRow(entry, { pinned: true })
                   })}
                 </YStack>
               ))}
@@ -804,18 +820,7 @@ function SidebarNav({
               open={categoryIsOpen(navOpen, group.category, { filtering })}
               onToggle={() => toggleSection(group.category)}
             >
-              {group.entries.map((entry) => (
-                <NavRow
-                  key={entry.id}
-                  entry={entry}
-                  active={isActive(entry.id)}
-                  color={colorOf(entry.id)}
-                  collapsed={false}
-                  pinned={isPinned(entry.id)}
-                  onOpen={() => open(entry)}
-                  onToggle={() => toggle(entry.id)}
-                />
-              ))}
+              {group.entries.map((entry) => productRow(entry))}
             </CategorySection>
           ))}
 
@@ -944,10 +949,10 @@ export function Dashboard({ children }: { children: ReactNode }) {
   // drawer, dock), never a route change.
   const router = useRouter()
   const { get, set } = usePreferences()
-  // The assistant: `docked` is the only thing the SHELL owns about it — it reserves
-  // the right column at lg+. Opening it belongs to the assistant's own floating
+  // The assistant: `column` is the only thing the SHELL owns about it — it reserves
+  // the width beside the content. Opening it belongs to the assistant's own floating
   // control (`AssistantFab`), not to this topbar.
-  const { docked } = useFloatingChat()
+  const { column } = useFloatingChat()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   // Collapsed-rail hover flyout (desktop only): the full sidebar overlays the content
@@ -1071,24 +1076,21 @@ export function Dashboard({ children }: { children: ReactNode }) {
               search box fills the row (two flex:1 siblings would halve it). */}
           <XStack display="none" $lg={{ display: 'flex' }} flex={1} />
 
-          {/* Full topbar controls — shown only at lg+. */}
+          {/* Full topbar controls — shown only at lg+. The bar carries navigation
+              only: status and docs. Theme lives in the account menu, alerts at
+              /alerts, and the network picker and app launcher in the account drawer
+              — production is the default environment, so the environment is chrome
+              you open, not chrome you wear. */}
           <XStack display="none" $lg={{ display: 'flex' }} items="center" gap="$2">
             <SystemStatusBadge />
-            <ThemeToggle />
             <Button size="$2" chromeless icon={<CircleHelp size={16} />} onPress={openDocs} aria-label="Documentation" />
-            <Button size="$2" chromeless icon={<Bell size={16} />} onPress={() => push('/alerts')} aria-label="Notifications" />
-            {/* The cross-app launcher, from the shared shell — the same one chat
-                and every other Hanzo surface carries. ⌘K stays with the command
-                palette; the launcher must not claim it too. */}
-            <HanzoAppLauncher currentApp="console" align="right" quickSwitchKey={false} />
-            <ScopeSwitcher />
           </XStack>
 
-          {/* Compact topbar trigger — the switchers + account fold into a drawer. */}
+          {/* Account drawer trigger — every viewport. The drawer is where the
+              occasional controls live (environment, notifications, account). */}
           <Button
             size="$3"
             chromeless
-            $lg={{ display: 'none' }}
             icon={<SlidersHorizontal size={18} />}
             onPress={() => setMenuOpen(true)}
             aria-label="Account and settings"
@@ -1113,25 +1115,27 @@ export function Dashboard({ children }: { children: ReactNode }) {
         <WorkbenchDock />
       </YStack>
 
-      {/* Docked assistant — a PERMANENT right column (lg+ only). Reserves its own
-          width beside the content; toggled from the assistant header. On phones the
-          assistant stays the floating bubble/sheet (no room for a column). */}
-      <YStack
-        display="none"
-        $lg={{ display: docked ? 'flex' : 'none' }}
-        width={DOCK_W}
-        minW={DOCK_W}
-        borderLeftWidth={1}
-        borderColor="$borderColor"
-        bg="$color1"
-      >
-        <DockedChatPanel />
-      </YStack>
+      {/* Docked assistant — a PERMANENT right column. Reserves its own width beside
+          the content; toggled from the assistant header. Rendered only when it IS the
+          assistant, so a narrow viewport (where the sheet serves instead) does not
+          also hold a second, invisible conversation. */}
+      {column ? (
+        <YStack width={DOCK_W} minW={DOCK_W} borderLeftWidth={1} borderColor="$borderColor" bg="$color1">
+          <DockedChatPanel />
+        </YStack>
+      ) : null}
 
-      {/* Mobile account drawer — the SAME account control as the rail foot, so
-          identity, tenancy, theme, billing and sign-out read identically on a
-          phone. Only the phone-only extras (project/network scope, alerts) sit
-          beside it; the drawer no longer keeps its own copies of them. */}
+      {/* Account drawer — the SAME account control as the rail foot, so identity,
+          tenancy, theme, billing and sign-out read identically everywhere. The
+          occasional controls sit beside it: the environment picker (production
+          is the default, switching it is a deliberate act), notifications, and the
+          cross-app launcher.
+
+          The launcher lives HERE and only here. It used to sit in the lg+ topbar
+          group, which is display:none on a phone — so the grid of the other Hanzo
+          apps was unreachable from the console on the viewport most likely to want
+          it. This drawer's trigger is on EVERY viewport, which makes one launcher
+          serve them all rather than a second copy serving the small one. */}
       <SlideOver open={menuOpen} onClose={() => setMenuOpen(false)} side="right" size={320} title="Account">
         <YStack gap="$2" className="hz-touch-target">
           <AccountMenu />
@@ -1146,6 +1150,15 @@ export function Dashboard({ children }: { children: ReactNode }) {
           >
             Notifications
           </Button>
+          {/* From the shared shell — the same launcher chat and every other Hanzo
+              surface carries. ⌘K stays with the command palette; the launcher
+              must not claim it too. */}
+          <XStack items="center" gap="$2">
+            <HanzoAppLauncher currentApp="console" align="right" quickSwitchKey={false} />
+            <Text fontSize="$3" color="$color11">
+              Hanzo apps
+            </Text>
+          </XStack>
         </YStack>
       </SlideOver>
     </XStack>

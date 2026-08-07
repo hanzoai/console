@@ -9,6 +9,7 @@ import {
   groupByFamily,
   groupModelsByFamily,
   filterFamilies,
+  suggestedModels,
   totalModels,
   displayLabel,
   DEFAULT_MODEL,
@@ -305,5 +306,32 @@ describe('groupModelsByFamily — chatOnly toggles modality filtering', () => {
   it('chatOnly (default) still drops non-chat modalities', () => {
     const groups = groupModelsByFamily([zen5flash, zen3image], { chatOnly: true })
     expect(groups.find((g) => g.id === 'zen')!.models.map((x) => x.name)).not.toContain('zen3-image')
+  })
+})
+
+describe('suggestedModels — one live model per pinned family, house default first', () => {
+  const ensoFlash = m({ name: 'enso-flash', available: true })
+  const ensoUltra = m({ name: 'enso-ultra', available: true })
+  const catalog = [ensoUltra, ensoFlash, zen5flash, gpt4o, claude, deepseek]
+
+  it('suggests the pinned families in order, led by the default model', () => {
+    const s = suggestedModels(groupByFamily(catalog))
+    expect(s.map((x) => x.name)).toEqual([DEFAULT_MODEL, 'zen5-flash', 'claude-opus-4-8', 'gpt-4o'])
+  })
+
+  it('never suggests an unavailable model', () => {
+    const down = m({ name: 'enso-flash', available: false })
+    const s = suggestedModels(groupByFamily([down, ensoUltra]))
+    expect(s.map((x) => x.name)).toEqual(['enso-ultra'])
+  })
+
+  it('excludes case-insensitively and falls through to the family next rung', () => {
+    const s = suggestedModels(groupByFamily(catalog), ['Enso-Flash'])
+    expect(s.map((x) => x.name)).toEqual(['enso-ultra', 'zen5-flash', 'claude-opus-4-8', 'gpt-4o'])
+  })
+
+  it('an unpinned vendor is never suggested', () => {
+    const s = suggestedModels(groupByFamily([deepseek]))
+    expect(s).toEqual([])
   })
 })

@@ -9,10 +9,12 @@
  * lifts cleanly into a published `@hanzo/agent-builder` package.
  */
 export { AgentBuilder } from './AgentBuilder'
+export { AgentQuickstart } from './Quickstart'
 export type {
   AgentSpec,
   AgentConfig,
   AgentCreateBody,
+  AgentRunResult,
   ReasoningEffort,
   AgentBuilderLoaders,
   BuilderOption,
@@ -34,4 +36,10 @@ export {
   promptBodyFromRow,
   promptOptions,
   classifyBuilderError,
+  draftInstruction,
+  parseDraft,
+  proposeName,
+  toHandle,
 } from './logic'
+export { AGENT_TEMPLATES, matchTemplate, searchTemplates, templateById, specFromTemplate } from './templates'
+export type { AgentTemplate } from './templates'

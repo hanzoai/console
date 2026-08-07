@@ -31,9 +31,8 @@ import { useRouter } from 'next/navigation'
 import { Button, ScrollView, Text, XStack, YStack } from '@hanzo/gui'
 import {
   Activity,
-  ChevronDown,
-  ChevronUp,
   Maximize2,
+  Mic,
   Minimize2,
   RefreshCw,
   ScrollText,
@@ -43,6 +42,9 @@ import {
 
 import { fetchUsageRecords, type UsageRecord } from '~/lib/api/aimetrics'
 import { usePreferences } from '~/lib/products/preferences'
+import { useFloatingChat } from '~/components/FloatingChat'
+import { BrandMark } from '~/components/ui/BrandLogo'
+import { voiceSupported } from '~/lib/voice'
 import {
   EventsTab,
   HealthTab,
@@ -73,6 +75,10 @@ const LEDGER_TABS: ReadonlySet<TabId> = new Set<TabId>(['overview', 'logs', 'eve
 export function WorkbenchDock() {
   const router = useRouter()
   const { get, set } = usePreferences()
+  // The assistant lives in this bar on desktop (the floating bubble is suppressed
+  // at lg+). The mic starts it listening; the brand mark opens it.
+  const { openChat, startVoice } = useFloatingChat()
+  const [voiceOk] = useState(() => voiceSupported())
   const open = get<boolean>('workbenchOpen', false)
   const [tab, setTab] = useState<TabId>('overview')
   // Freely resizable dock height (px), persisted per-user — drag the top handle to
@@ -283,7 +289,7 @@ export function WorkbenchDock() {
               $
             </Text>
             <Text flex={1} fontSize="$2" color="$color10" className="hz-mono" numberOfLines={1}>
-              Run a /v1 command — models, agents, logs…
+              Open a cloud shell — a real terminal in your sandbox
             </Text>
           </XStack>
         ) : (
@@ -291,13 +297,24 @@ export function WorkbenchDock() {
         )}
         <Button size="$2" chromeless icon={<Activity size={16} />} onPress={() => openTo('overview')} aria-label="API activity" />
         <Button size="$2" chromeless icon={<ScrollText size={16} />} onPress={() => openTo('logs')} aria-label="Recent API logs" />
+        {/* The assistant's home on desktop — mic starts it listening, the brand mark
+            opens it. The floating bubble is hidden at lg+ (this is where it lives);
+            it stays on phones, where this dock is not shown. */}
+        {voiceOk ? (
+          <Button size="$2" chromeless icon={<Mic size={16} />} onPress={startVoice} aria-label="Talk to Hanzo" />
+        ) : null}
         <Button
           size="$2"
-          icon={open ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
-          onPress={() => set('workbenchOpen', !open)}
-          aria-label={open ? 'Collapse the workbench' : 'Open the workbench'}
+          bg="$color4"
+          borderWidth={1}
+          borderColor="$borderColor"
+          icon={<BrandMark size={16} />}
+          onPress={openChat}
+          aria-label="Ask Hanzo"
         >
-          {open ? 'Hide' : 'Open'}
+          <Text fontSize="$2" fontWeight="700" color="$color12">
+            AI
+          </Text>
         </Button>
       </XStack>
     </YStack>

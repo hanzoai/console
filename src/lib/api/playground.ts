@@ -6,14 +6,18 @@
  *   - GET  /v1/models            → the model catalog (ids the gateway accepts)
  *   - POST /v1/chat/completions  → run a non-streaming chat completion
  *
- * These endpoints REQUIRE an `Authorization: Bearer` token (a session cookie is
- * rejected), so the browser does NOT call the gateway directly. It calls its OWN
- * origin at a clean `/v1/*` with NO prefix (`originV1Url` — the CTO one-endpoint
- * form); `next.config.mjs` rewrites the AI heads (models/chat/embeddings/audio) to
- * the console's `/ai` bearer proxy, which resolves the user from the session cookie
- * and forwards with a short-lived user token. ONE place addresses the AI runtime.
+ * These endpoints REQUIRE an `Authorization: Bearer` token — a cookie is rejected —
+ * and every call here gets one the same way every other console call does: from
+ * `baseHeaders` in the client, the ONE place identity is attached. That holds for the
+ * STREAMING calls too, which is why they go through `restStream` rather than `fetch`.
+ *
+ * The URL is always the console's OWN origin at a clean `/v1/*` with NO prefix
+ * (`originV1Url` — the CTO one-endpoint form). In the go:embed console that IS the
+ * cloud binary, which reads the Bearer directly; standalone, `next.config.mjs` rewrites
+ * the AI heads (models/chat/embeddings/audio) to the console's `/ai` proxy, which
+ * re-mints a short-lived user token server-side. ONE place addresses the AI runtime.
  */
-import { ApiError, restGet, restPost, originV1Url } from './client'
+import { ApiError, restGet, restPost, restStream, originV1Url } from './client'
 import { invalidateBalance } from '~/lib/billing/live-balance'
 
 /** One OpenAI chat message. */
@@ -132,21 +136,19 @@ export const PlaygroundApi = {
    * lets the multi-model compare board measure real time-to-first-token and
    * render each model's tokens as they arrive. `stream_options.include_usage`
    * asks the gateway to emit a final usage chunk so prompt/completion token
-   * counts (and therefore cost) are REAL, not estimated. Credentials are the
-   * session cookie only; the keyless `/ai` proxy mints the bearer the gateway
-   * requires and forwards the SSE bytes straight through. Optional `headers` ride
-   * the same request — the retrieval/RAG switch (`X-Retrieval-Store`) is the only
+   * counts (and therefore cost) are REAL, not estimated. It goes through `restStream`,
+   * the client's streaming door, so the request carries the SAME Bearer every other
+   * call carries — reaching for `fetch` here is what left the assistant's completions
+   * unauthenticated while the identical non-streaming call succeeded. Optional `headers`
+   * ride the same request — the retrieval/RAG switch (`X-Retrieval-Store`) is the only
    * caller that sets them, so grounded chat streams over this ONE binding too.
    */
   streamChat: (req: ChatStreamRequest, signal?: AbortSignal, headers?: Record<string, string>): Promise<Response> =>
-    fetch(originV1Url('chat/completions'), {
-      method: 'POST',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json', Accept: 'text/event-stream', ...headers },
-      body: JSON.stringify({ ...req, stream: true, stream_options: { include_usage: true } }),
-      signal,
-      cache: 'no-store',
-    }),
+    restStream(
+      originV1Url('chat/completions'),
+      { ...req, stream: true, stream_options: { include_usage: true } },
+      { headers: { Accept: 'text/event-stream', ...headers }, signal },
+    ),
 
   /** Run an embeddings request; returns the raw OpenAI embeddings response. */
   embeddings: (req: EmbeddingsRequest): Promise<EmbeddingsResponse> =>
@@ -187,14 +189,9 @@ export const PlaygroundApi = {
    * message on failure so the caller renders an honest state, never silence.
    */
   speech: async (req: SpeechRequest, signal?: AbortSignal): Promise<Blob> => {
-    const res = await fetch(originV1Url('audio/speech'), {
-      method: 'POST',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(req),
-      signal,
-      cache: 'no-store',
-    })
+    // The response is audio bytes, not JSON, so it takes the streaming door too —
+    // and carries the Bearer for the same reason a completion does.
+    const res = await restStream(originV1Url('audio/speech'), req, { signal })
     if (!res.ok) {
       const text = await res.text().catch(() => '')
       let msg = `Request failed (HTTP ${res.status})`

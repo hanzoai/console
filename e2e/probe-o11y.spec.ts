@@ -59,11 +59,16 @@ const PROBES: Probe[] = [
     path: 'o11y/query_range',
     method: 'POST',
     body: {
-      schemaVersion: 'v1',
       start: startMs,
       end: endMs,
-      requestType: 'raw',
-      compositeQuery: { queries: [{ type: 'builder_query', spec: { name: 'A', signal: 'logs', limit: 50, offset: 0 } }] },
+      step: 60,
+      compositeQuery: {
+        queryType: 'builder',
+        panelType: 'list',
+        builderQueries: {
+          A: { queryName: 'A', dataSource: 'logs', aggregateOperator: 'noop', aggregateAttribute: {}, expression: 'A', disabled: false, stepInterval: 60, filters: { items: [], op: 'AND' }, groupBy: [], having: [], orderBy: [{ columnName: 'timestamp', order: 'desc' }], limit: null, offset: 0, pageSize: 50 },
+        },
+      },
     },
   },
   // ── Infra ──

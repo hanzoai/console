@@ -16,13 +16,16 @@ vi.mock('./client', async () => {
   const actual = await vi.importActual<typeof import('./client')>('./client')
   return {
     ApiError: actual.ApiError,
-    patch: vi.fn(),
+    originV1Url: actual.originV1Url,
     post: vi.fn(),
     postForm: (...a: unknown[]) => postForm(...a),
+    restGet: vi.fn(),
+    restPatch: vi.fn(),
   }
 })
 vi.mock('~/lib/auth/iam', () => ({
   iamValidAccessToken: vi.fn(),
+  iamHasSession: vi.fn(() => false),
   iamUserInfo: vi.fn(),
   iamExpiresInSeconds: vi.fn(),
   iamSignOut: vi.fn(),

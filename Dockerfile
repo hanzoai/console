@@ -33,6 +33,18 @@ ENV NEXT_TELEMETRY_DISABLED=1 NODE_OPTIONS=--max-old-space-size=8192
 # identically to one served from inside cloud.
 ARG NEXT_PUBLIC_ANALYTICS_WEBSITE_ID=7dce54ee-41f6-4751-96bf-fe005067c7c7
 ENV NEXT_PUBLIC_ANALYTICS_WEBSITE_ID=$NEXT_PUBLIC_ANALYTICS_WEBSITE_ID
+# The publishable ingest key, for SIGNED-OUT views only. A signed-in visitor is
+# still attributed by their own IAM bearer -- src/lib/event.ts feeds this through
+# getToken as `token ?? key`, never as `ingestKey`, so it can only fill the gap
+# where there is no token and can never displace one.
+#
+# PUBLISHABLE_KEY is the name in KMS (org hanzo, path deploy, env prod) and on the
+# --build-arg; NEXT_PUBLIC_ is what makes the bundler inline it and is a property
+# of THIS build, so it is applied here and the secret store keeps the one plain
+# name. No default: absent means signed-out views report nothing, exactly as
+# before, which is a degradation and not a break.
+ARG PUBLISHABLE_KEY
+ENV NEXT_PUBLIC_PUBLISHABLE_KEY=$PUBLISHABLE_KEY
 COPY . .
 RUN corepack enable && pnpm install --frozen-lockfile
 # FAIL-HARD: the export MUST emit a real bundle, never a placeholder shell. An
@@ -44,7 +56,11 @@ RUN pnpm build:embed && [ -s out/index.html ] && [ -d out/_next ] \
 # hanzoai/static, digest-pinned: a base image is pinned by digest so the bytes
 # cannot change under a rebuild. (The console's OWN release is named by semver in
 # the values file — that is the version a human reads.)
-FROM ghcr.io/hanzoai/static@sha256:346ad30dc7f762c508b4467c2801b3d7e9ec201ec9b257bc7a38b60d59cecc05
+#
+# v0.5.7: serves a directory's index IN PLACE. The prior pin 301'd `/` to
+# `/index.html`, so the address bar carried the internal filename and the
+# console's breadcrumb dutifully read "Home > index.html".
+FROM ghcr.io/hanzoai/static@sha256:46b9a9b359b24377e228d39fb3d4e485af594d55bf1034dcc7b7a1e858a0bba6
 COPY --from=build /console/out/ /srv/
 EXPOSE 3000
 ENTRYPOINT ["/static"]

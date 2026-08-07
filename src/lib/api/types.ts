@@ -152,18 +152,10 @@ export type Account = {
   organization?: string
   isAdmin?: boolean
   accessToken?: string
-  /** Arbitrary per-user key/value store on the IAM account. Cross-product,
-   * cross-device user customizations live here under `hanzo.preferences`. */
+  /** Arbitrary per-user key/value store on the IAM account. NOT where user
+   * customizations live — those are the preference document (`AccountApi.preferences`),
+   * which is read live rather than recovered from a snapshot in these claims. */
   properties?: Record<string, string>
-  /**
-   * When the identity token carrying these claims was minted (`iat`, SECONDS).
-   *
-   * `properties` is a SNAPSHOT taken at that instant, not a live read — nothing
-   * serves a GET for it — so anything written afterwards is newer than what is
-   * here. Preference reconciliation needs that ordering; without it a snapshot
-   * silently re-asserted itself over the user's more recent changes.
-   */
-  issuedAt?: number
   [key: string]: unknown
 }
 

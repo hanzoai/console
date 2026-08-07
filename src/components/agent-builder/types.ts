@@ -139,12 +139,45 @@ export type AgentBuilderLoaders = {
   /** The live tool catalog. Rejects → typeable-only tools. */
   loadTools?: () => Promise<BuilderOption[]>
   /**
+   * Draft a spec from a plain-English description — the quickstart's "describe your
+   * agent" box. A model call, so it is an effect like the rest; the instruction and
+   * the parse of the answer are pure (`draftInstruction`, `parseDraft`) and shared.
+   * Absent → the quickstart still works: the description seeds the handle and the
+   * description field, and the user writes the prompt. Rejects → the same fallback,
+   * with the reason shown, so a drafting failure never blocks building an agent.
+   */
+  draftAgent?: (description: string) => Promise<Partial<AgentSpec>>
+  /**
+   * Run the agent once (`POST /v1/agents/:ref/run`) and return the RECORDED run.
+   * The quickstart's third step — proving the thing that was just created actually
+   * answers, which is the only step that can prove it. Absent → the step says so and
+   * points at the endpoint instead of pretending. THIS SPENDS: the backend authorizes
+   * the org's balance before any inference, so an unfunded org is refused rather than
+   * given free compute.
+   */
+  runAgent?: (name: string, input: string) => Promise<AgentRunResult>
+  /**
    * Create the agent from the pruned body (`toCreateBody(spec)`). This is the ONE
    * mutation — it MUST target the unified agent backend (`POST /v1/agents`), which
    * resolves the org from the caller's bearer server-side. Rejects with the backend
    * error (the builder classifies 404 as "not connected" honestly).
    */
   createAgent: (body: AgentCreateBody) => Promise<unknown>
+}
+
+/**
+ * One recorded run, as the quickstart needs it. Deliberately the small half of the
+ * backend's run view: what happened, which model did it, and what came out. A
+ * `status` other than `ok` is a run that REALLY failed — the backend records the
+ * failure as a run rather than hiding it — so `error` is a fact about the execution,
+ * not a transport problem to guess at.
+ */
+export type AgentRunResult = {
+  status: string
+  model?: string
+  output?: string
+  error?: string
+  durationMs?: number
 }
 
 /** The reason a create failed, distinguished so the UI reacts correctly. */

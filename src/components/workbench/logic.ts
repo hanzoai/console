@@ -1,40 +1,9 @@
 /**
- * Workbench logic — the PURE half of the bottom Developers dock (parse a shell
- * command into a safe same-origin `/v1` read; render a response for the terminal).
- * No React/Gui/registry imports so it is node-testable in isolation.
+ * Workbench logic — the PURE half of the bottom Developers dock: where the cloud
+ * shell's socket lives and what goes over it, how a response renders, and how an
+ * id routes to the `/v1` read that explains it. No React/Gui/registry imports, so
+ * every decision here is node-testable on its own.
  */
-
-export type Command = { path: string } | { error: string }
-
-const METHODS = new Set(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'])
-/** Path charset — segments, query string; nothing that can smuggle a scheme/host. */
-const PATH_OK = /^[A-Za-z0-9\-_./?=&%,:+]+$/
-
-/**
- * Parse a workbench shell line into a `/v1`-relative GET path. Accepted forms:
- * `GET /v1/models` · `/v1/models` · `v1/models` · `models` (a bare head). The
- * shell is deliberately READ-ONLY (GET) — a mutation belongs in the product UI,
- * where it gets its confirm/undo affordances — and `/v1`-only (the one API root).
- */
-export function parseCommand(input: string): Command {
-  const words = input.trim().split(/\s+/).filter(Boolean)
-  if (words.length === 0) return { error: 'Enter a path — e.g. GET /v1/models' }
-  let rest = words
-  const head = words[0].toUpperCase()
-  if (METHODS.has(head)) {
-    if (head !== 'GET') return { error: 'The workbench shell is read-only — only GET is supported.' }
-    rest = words.slice(1)
-  }
-  if (rest.length !== 1) return { error: 'One path per command — e.g. GET /v1/models' }
-  if (/^([a-z][a-z0-9+.-]*:)?\/\//i.test(rest[0])) return { error: 'Only a /v1 path is allowed — e.g. /v1/models' }
-  let path = rest[0].replace(/^\/+/, '')
-  if (path === 'v1' || path === 'v1/') return { error: 'Name a resource — e.g. /v1/models' }
-  if (path.startsWith('v1/')) path = path.slice(3)
-  if (!path || !PATH_OK.test(path) || path.includes('..') || path.includes('//')) {
-    return { error: 'Only a /v1 path is allowed — e.g. /v1/models' }
-  }
-  return { path }
-}
 
 /** Pretty-print a shell response, bounded so a huge payload never wedges the DOM. */
 export function renderOutput(value: unknown, maxChars = 20000): string {
@@ -49,6 +18,9 @@ export function renderOutput(value: unknown, maxChars = 20000): string {
 }
 
 // ── Inspector — route an object id to its `/v1` GET ───────────────────────────
+
+/** Path charset — segments and a query string; nothing that can smuggle a scheme/host. */
+const PATH_OK = /^[A-Za-z0-9\-_./?=&%,:+]+$/
 
 /** A resolved inspect target (a same-origin `/v1` GET) or an honest parse error. */
 export type InspectTarget = { path: string; kind: string; label: string } | { error: string }
@@ -110,11 +82,6 @@ export function curlFor(path: string, origin = 'https://api.hanzo.ai'): string {
   return `curl ${origin}/v1/${bareResource(path)} \\\n  -H "Authorization: Bearer $HANZO_API_KEY"`
 }
 
-/** The Hanzo CLI form of the same `/v1` GET. */
-export function hanzoCli(path: string): string {
-  return `hanzo api get /v1/${bareResource(path)}`
-}
-
 // ── Events — project the usage ledger into a platform-event stream ────────────
 
 /** One platform event, projected from a real charged ledger row (never fabricated). */
@@ -151,4 +118,28 @@ export function eventsFrom(records: EventSource[]): PlatformEvent[] {
       }
     })
     .sort((a, b) => (b.at ?? -Infinity) - (a.at ?? -Infinity))
+}
+
+// ── Cloud shell — where the terminal is ──────────────────────────────────────
+
+/**
+ * The terminal's address on the API host.
+ *
+ * Cloud SERVES the terminal — emulator, socket, resize and reconnect, one
+ * self-contained page — so a host that wants a shell frames this rather than
+ * building one. It is the one address in the console that is not same-origin, and
+ * that is forced rather than chosen: the same-origin `/v1` proxy is a Next route
+ * handler, and a route handler forwards requests, not sockets and not frames.
+ * What crosses instead of the session is the single-use ticket the proxy just
+ * fetched, which is the only credential a URL can safely hold.
+ *
+ * `arg` names a tmux session, so reopening the dock reattaches to the shell it
+ * left instead of opening a fresh one over the user's work.
+ */
+export function terminalFor(apiBase: string, id: string, ticket: string, session: string): string {
+  const base = apiBase.trim().replace(/\/+$/, '')
+  return (
+    `${base}/v1/sandboxes/${encodeURIComponent(id)}/terminal` +
+    `?ticket=${encodeURIComponent(ticket)}&arg=${encodeURIComponent(session)}`
+  )
 }

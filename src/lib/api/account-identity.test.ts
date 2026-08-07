@@ -6,6 +6,7 @@ const token = vi.hoisted(() => ({ value: null as string | null }))
 
 vi.mock('~/lib/auth/iam', () => ({
   iamValidAccessToken: async () => token.value,
+  iamHasSession: () => token.value != null,
   iamUserInfo: async () => null,
   iamExpiresInSeconds: () => 3600,
   iamSignOut: () => {},

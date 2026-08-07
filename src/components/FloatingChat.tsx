@@ -15,7 +15,15 @@
  *
  * Docking is a desktop concern (a phone has no room for a permanent column), so on
  * `<lg` the assistant is ALWAYS the floating bubble/sheet regardless of the dock
- * choice; `docked` only reserves the right column at `lg+`.
+ * choice. That fact — the persisted CHOICE against a viewport that can honor it —
+ * meets in exactly one place, `column`, and it is what every shape is chosen by.
+ *
+ * It is not a detail. The sheet is a MODAL dialog, so leaving it open behind a hidden
+ * column put a full-viewport dialog over the page: the column painted, and every click
+ * on it landed on the dialog instead — an assistant you could read and could not type
+ * into. Hiding one of two open surfaces with CSS cannot fix that, because `display:
+ * none` on the dialog's own content does not make the dialog stop being modal. So only
+ * one is ever open, and `column` is the one fact that says which.
  *
  * The assistant has ONE entry point and it lives HERE: `AssistantFab`, a floating
  * control fixed bottom-right over every dashboard page. It used to be two small
@@ -33,7 +41,7 @@
  */
 import { createContext, useCallback, useContext, useState, type ReactNode } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import { Button, Dialog, Text, VisuallyHidden, XStack, YStack } from '@hanzo/gui'
+import { Button, Dialog, Text, VisuallyHidden, XStack, YStack, useMedia } from '@hanzo/gui'
 import { Mic, PanelRight, PanelRightClose, Sparkles, X } from '@hanzogui/lucide-icons-2'
 
 import { ChatConversation } from '~/components/products/chat/ChatConversation'
@@ -47,14 +55,19 @@ type FloatingChatApi = {
   open: () => void
   close: () => void
   toggle: () => void
-  /** True when the assistant is docked as a permanent right column (persisted). */
-  docked: boolean
+  /**
+   * True when the permanent right column IS the assistant right now: the dock choice,
+   * a viewport wide enough to hold it, and a page that is not already a composer.
+   * Every surface reads this rather than the raw choice, so exactly one composer is
+   * on screen at any width.
+   */
+  column: boolean
   setDocked: (v: boolean) => void
   /**
    * Open the assistant with a PRE-FILLED prompt (e.g. "Ask AI about this code" from the
    * Code hub). The composer is seeded and focused; the user reviews and sends (never an
-   * auto-send — no surprise billing), matching the suggested-prompt UX. Opens the floating
-   * sheet when floating; when docked, the permanent column receives the seed.
+   * auto-send — no surprise billing), matching the suggested-prompt UX. The column takes
+   * the seed when it is the assistant; otherwise the sheet opens with it.
    */
   ask: (prompt: string) => void
   /** The current pending seed for the composer (consumed once by the active conversation). */
@@ -123,17 +136,14 @@ function ChatSheet({
   onOpenChange,
   onHistory,
   onDock,
-  docked,
   seed,
   voiceSignal,
 }: {
+  /** Open ONLY when the sheet is the assistant — never alongside the column. */
   open: boolean
   onOpenChange: (o: boolean) => void
   onHistory: () => void
   onDock: () => void
-  /** When docked (desktop), the permanent column is the surface — so the floating
-   *  sheet is suppressed at lg+ (it still serves phones, which have no column). */
-  docked: boolean
   /** Pre-fill seed for the composer (from `useFloatingChat().ask`). */
   seed?: string | null
   /** Voice-start signal forwarded to the conversation ("talk to Hanzo"). */
@@ -145,12 +155,7 @@ function ChatSheet({
   return (
     <Dialog modal open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
-        <Dialog.Overlay
-          key="chat-overlay"
-          className="hz-scrim-in"
-          bg="rgba(0,0,0,0.5)"
-          $lg={{ bg: 'transparent', display: docked ? 'none' : undefined }}
-        />
+        <Dialog.Overlay key="chat-overlay" className="hz-scrim-in" bg="rgba(0,0,0,0.5)" $lg={{ bg: 'transparent' }} />
         <Dialog.Content
           key="chat-content"
           className="hz-paper hz-pop-in"
@@ -167,18 +172,8 @@ function ChatSheet({
           width="100vw"
           height="100dvh"
           rounded="$0"
-          // Desktop (≥lg): a compact popover bottom-right, above the bubble. Docked →
-          // hidden at lg+ (the permanent right column replaces it).
-          $lg={{
-            t: 'auto',
-            l: 'auto',
-            b: 88,
-            r: 24,
-            width: 380,
-            height: 560,
-            rounded: '$6',
-            display: docked ? 'none' : undefined,
-          }}
+          // Desktop (≥lg): a compact popover bottom-right, above the bubble.
+          $lg={{ t: 'auto', l: 'auto', b: 88, r: 24, width: 380, height: 560, rounded: '$6' }}
         >
           <VisuallyHidden>
             <Dialog.Title>Assistant</Dialog.Title>
@@ -221,22 +216,14 @@ function ChatSheet({
  * listening. The mic renders only where the browser can actually listen, so there is
  * never a dead control.
  *
- * It sits ABOVE the Developers dock at `lg+` (that dock's collapsed bar is 44px and
- * exists only there), and it is suppressed exactly where the assistant is already on
- * screen: while the sheet is open, on the pages that ARE a composer (`/chat`,
- * `/playground`), and — at `lg+` only — while the assistant is docked as a column.
- * The `lg+` half of that rule is a CSS media prop rather than a JS branch, so SSR and
- * first paint agree.
+ * It is the assistant's entry point on phones/tablets (`<lg`). At `lg+` the
+ * Developers dock at the foot of the page hosts the same mic + brand-mark, so the
+ * bubble is hidden there (`$lg` display:none) — one launcher per viewport, never two.
+ * Its caller also suppresses it where the assistant is already on screen: while the
+ * sheet is open, on the pages that ARE a composer (`/chat`, `/playground`), and while
+ * the assistant IS the column.
  */
-function AssistantFab({
-  docked,
-  onOpen,
-  onVoice,
-}: {
-  docked: boolean
-  onOpen: () => void
-  onVoice: () => void
-}) {
+function AssistantFab({ onOpen, onVoice }: { onOpen: () => void; onVoice: () => void }) {
   const [voiceOk] = useState(() => voiceSupported())
   return (
     <XStack
@@ -244,7 +231,7 @@ function AssistantFab({
       position="fixed"
       r={20}
       b={20}
-      $lg={{ b: 64, display: docked ? 'none' : 'flex' }}
+      $lg={{ display: 'none' }}
       items="center"
       gap="$2"
       style={{ zIndex: Z.raised }}
@@ -306,30 +293,36 @@ export function Chat({ children }: { children: ReactNode }) {
   const { get, set } = usePreferences()
   const docked = get<boolean>('chatDocked', false)
   const setDocked = useCallback((v: boolean) => set('chatDocked', v), [set])
-  // The bubble is redundant — and OVERLAPS the composer's send control — on the
-  // pages that ARE a full chat/composer surface. Suppress it there (the assistant
-  // is still openable programmatically via `useFloatingChat`); every other page
-  // keeps the one-tap bubble.
+  const media = useMedia()
+  // The pages that ARE a full composer already show the assistant, so no other shape
+  // of it belongs on them — the bubble would overlap the page's own send control, and
+  // the column would be a second composer beside the first.
   const onChatSurface =
     pathname === '/chat' ||
     pathname.startsWith('/chat/') ||
     pathname === '/playground' ||
     pathname.startsWith('/playground/')
+  // Every fact about which shape the assistant takes meets here and nowhere else: the
+  // persisted choice, a viewport wide enough to honor it, and whether this page is
+  // already a composer. A JS fact, not a media prop, because it decides what MOUNTS —
+  // a modal dialog that is merely hidden is still modal, and still eats every click.
+  const column = docked && media.lg && !onChatSurface
   const [isOpen, setIsOpen] = useState(false)
   const open = useCallback(() => setIsOpen(true), [])
   const close = useCallback(() => setIsOpen(false), [])
   const toggle = useCallback(() => setIsOpen((v) => !v), [])
 
   // Seed the composer from anywhere (e.g. the Code hub's "Ask AI about this code").
-  // Open the floating sheet when floating; when docked, the permanent column is already
-  // on screen and receives the seed, so opening the (hidden) sheet is skipped.
+  // The column is already on screen and receives the seed; otherwise open the sheet —
+  // including on a phone whose owner once docked on a laptop, where the choice is
+  // remembered but no column exists to deliver the prompt.
   const [seed, setSeed] = useState<string | null>(null)
   const ask = useCallback(
     (prompt: string) => {
       setSeed(prompt)
-      if (!docked) setIsOpen(true)
+      if (!column) setIsOpen(true)
     },
-    [docked],
+    [column],
   )
 
   const onHistory = useCallback(() => {
@@ -347,10 +340,9 @@ export function Chat({ children }: { children: ReactNode }) {
   // conversation opens the mic on change.
   const [voiceSignal, setVoiceSignal] = useState(0)
 
-  // The topbar brand-H entry: TOGGLE the assistant. Desktop → the docked right
-  // sidebar column; phones (no column) → the full sheet. Setting both in tandem is
-  // correct because at lg+ the sheet is suppressed while docked, and below lg the
-  // dock column is display:none — so one control opens the right surface per viewport.
+  // The topbar brand-H entry: TOGGLE the assistant. Desktop → the right column;
+  // phones (no column) → the full sheet. Both are set because `column` then admits
+  // exactly one of them per viewport.
   const openChat = useCallback(() => {
     const next = !docked
     setDocked(next)
@@ -366,27 +358,23 @@ export function Chat({ children }: { children: ReactNode }) {
   }, [setDocked])
 
   return (
-    <Ctx.Provider value={{ isOpen, open, close, toggle, docked, setDocked, ask, seed, openChat, startVoice, voiceSignal }}>
+    <Ctx.Provider value={{ isOpen, open, close, toggle, column, setDocked, ask, seed, openChat, startVoice, voiceSignal }}>
       {children}
 
       {/* The assistant's ONE entry point — bottom-right, over every page. Hidden
-          while the sheet is open (its own close is the single dismiss) and on the
-          pages that ARE a composer; at lg+ also hidden while docked (the permanent
-          column is the surface). `open`/`toggle`/`ask` still drive the assistant
-          programmatically (e.g. the Code hub's "Ask AI"). */}
-      {isOpen || onChatSurface ? null : (
-        <AssistantFab docked={docked} onOpen={openChat} onVoice={startVoice} />
-      )}
+          while the sheet is open (its own close is the single dismiss), on the pages
+          that ARE a composer, and while the column is the surface. `open`/`toggle`/
+          `ask` still drive the assistant programmatically (e.g. "Ask AI"). */}
+      {isOpen || onChatSurface || column ? null : <AssistantFab onOpen={openChat} onVoice={startVoice} />}
 
-      {/* The floating sheet. Suppressed on the full chat/playground surfaces (the page
-          IS the composer) and, at lg+, while docked (the right column is the surface);
-          on phones it's the assistant even when docked. */}
+      {/* The floating sheet — the assistant wherever the column is not: every width on
+          a phone or tablet, and on a laptop until the user docks it. Never open at the
+          same time as the column, so there is one composer and it takes the click. */}
       <ChatSheet
-        open={isOpen && !onChatSurface}
+        open={isOpen && !onChatSurface && !column}
         onOpenChange={setIsOpen}
         onHistory={onHistory}
         onDock={dock}
-        docked={docked}
         seed={seed}
         voiceSignal={voiceSignal}
       />

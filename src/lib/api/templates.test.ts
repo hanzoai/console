@@ -14,11 +14,6 @@ import {
 } from './templates'
 import { ApiError } from './client'
 
-/** The one API host every `/v1` call resolves against (config's CANONICAL_API_URL).
- *  The page ORIGIN each transport block mocks below is where the SPA is SERVED —
- *  deliberately NOT where the API lives. */
-const API = 'https://api.hanzo.ai'
-
 const template = (over: Partial<Template> = {}): Template => ({
   slug: 'brainwave',
   title: 'Brainwave',
@@ -179,7 +174,7 @@ describe('normalizeForkedProject', () => {
   })
 })
 
-describe('TemplatesApi.fork — POST /v1/projects/fork (canonical API host, no prefix)', () => {
+describe('TemplatesApi.fork — POST /v1/projects/fork (same-origin, no prefix)', () => {
   const ORIGIN = 'https://console.hanzo.ai'
   let calls: { url: string; method?: string; body?: unknown }[]
 
@@ -203,10 +198,10 @@ describe('TemplatesApi.fork — POST /v1/projects/fork (canonical API host, no p
       )
     })
 
-  it('POSTs {slug} to <api>/v1/projects/fork and returns the forked project', async () => {
+  it('POSTs {slug} to <origin>/v1/projects/fork and returns the forked project', async () => {
     stub(201, { slug: 'brainwave', name: 'Brainwave', framework: 'next', status: 'draft' })
     const p = await TemplatesApi.fork('brainwave')
-    expect(calls[0].url).toBe(`${API}/v1/projects/fork`)
+    expect(calls[0].url).toBe(`${ORIGIN}/v1/projects/fork`)
     expect(calls[0].url).not.toContain('/cloud/')
     expect(calls[0].method).toBe('POST')
     expect(calls[0].body).toEqual({ slug: 'brainwave' })
@@ -255,7 +250,7 @@ describe('isLive', () => {
   })
 })
 
-describe('TemplatesApi.deploy / status — projectsvc deploy (canonical API host, no prefix)', () => {
+describe('TemplatesApi.deploy / status — projectsvc deploy (same-origin, no prefix)', () => {
   const ORIGIN = 'https://console.hanzo.ai'
   let calls: { url: string; method?: string; body?: unknown }[]
 
@@ -279,10 +274,10 @@ describe('TemplatesApi.deploy / status — projectsvc deploy (canonical API host
       )
     })
 
-  it('deploy POSTs {source:git} to <api>/v1/projects/{slug}/deploy (never /cloud-prefixed)', async () => {
+  it('deploy POSTs {source:git} to <origin>/v1/projects/{slug}/deploy (never /cloud-prefixed)', async () => {
     stub(202, { status: 'queued' })
     const r = await TemplatesApi.deploy('brainwave')
-    expect(calls[0].url).toBe(`${API}/v1/projects/brainwave/deploy`)
+    expect(calls[0].url).toBe(`${ORIGIN}/v1/projects/brainwave/deploy`)
     expect(calls[0].url).not.toContain('/cloud/')
     expect(calls[0].method).toBe('POST')
     expect(calls[0].body).toEqual({ source: 'git' })
@@ -292,13 +287,13 @@ describe('TemplatesApi.deploy / status — projectsvc deploy (canonical API host
   it('deploy percent-encodes the slug', async () => {
     stub(202, { status: 'queued' })
     await TemplatesApi.deploy('a/b')
-    expect(calls[0].url).toBe(`${API}/v1/projects/a%2Fb/deploy`)
+    expect(calls[0].url).toBe(`${ORIGIN}/v1/projects/a%2Fb/deploy`)
   })
 
-  it('status GETs <api>/v1/projects/{slug} and normalizes to a ForkedProject', async () => {
+  it('status GETs <origin>/v1/projects/{slug} and normalizes to a ForkedProject', async () => {
     stub(200, { slug: 'brainwave', name: 'Brainwave', framework: 'next', status: 'live', liveUrl: 'https://x' })
     const p = await TemplatesApi.status('brainwave')
-    expect(calls[0].url).toBe(`${API}/v1/projects/brainwave`)
+    expect(calls[0].url).toBe(`${ORIGIN}/v1/projects/brainwave`)
     expect(calls[0].method ?? 'GET').toBe('GET')
     expect(p).toMatchObject({ status: 'live', liveUrl: 'https://x' })
   })

@@ -5,9 +5,9 @@
 # TWO artifacts, one bundle. The console is a static SPA export; what differs is
 # only who serves it:
 #
-#   console-embed   DEPRECATED — the bundle alone at /dist, which hanzoai/cloud
-#                   go:embeds via `COPY --from=console /dist/`. Superseded by the
-#                   site release; kept only while cloud consumes it.
+#   console-embed   the bundle alone at /dist. hanzoai/cloud does
+#                   `COPY --from=console /dist/` so a cloud release never rebuilds
+#                   npm+Next. Needed only while cloud go:embeds the console.
 #   console         the bundle behind hanzoai/static, serving itself. This is how
 #                   a console change ships WITHOUT a cloud release: move image.tag
 #                   in a universe values file and cd rolls it.
@@ -16,14 +16,6 @@
 # already doing nothing a file server could not — every host it served sent /v1
 # and /zap to cloud-api at the ingress, so its BFF was never reached — and its own
 # auth routes stopped mattering when identity became a client-held IAM token.
-#
-# A frontend change SHIPS through neither image: it ships as a SITE RELEASE, built
-# and promoted by .hanzo/workflows/site.yml. A push to main uploads the static
-# export to /v1/projects and promotes it on /v1/sites with an IAM bearer, so a CSS
-# fix costs a release of its own instead of a ~22-minute hanzoai/cloud rebuild and
-# 2m15s of api.hanzo.ai — the toll that left the live console 13 commits behind
-# main. Not the hanzoai/ci `site:` lane: that one uploads with `mc mirror` and
-# refuses to publish without static S3 admin keys, a second, non-IAM credential.
 #
 # TAGS: the shared builder publishes `sha-<sha7>-amd64` on every main push AND the
 # bare semver on a cut v* tag. PIN THE SEMVER — it says which console RELEASE a
@@ -49,3 +41,7 @@ images:
     context: .
     dockerfile: Dockerfile
     repo: ghcr.io/hanzoai/console
+    # Fetched from KMS (deploy/PUBLISHABLE_KEY, env prod) and passed as
+    # --build-arg PUBLISHABLE_KEY. Signed-out views need it to be admitted at all;
+    # signed-in ones keep their own bearer. Same name the rest of the estate uses.
+    build_secrets: [PUBLISHABLE_KEY]
