@@ -210,6 +210,7 @@ import { AlertsModule } from '~/components/products/AlertsModule'
 // `MachinesModule` (Compute › Machines, over visor-backed `/v1/machines`).
 import { BotsModule, MachinesModule as AdminMachinesModule, ClustersModule as AdminClustersModule, FunctionsModule as AdminFunctionsModule } from '~/components/products/ComputeModule'
 import { AnalyticsModule } from '~/components/products/AnalyticsModule'
+import { TagsModule, TagDestinations } from '~/components/products/TagsModule'
 import { LogsModule } from '~/components/products/LogsModule'
 import { PipelinesModule } from '~/components/products/PipelinesModule'
 import { ReleasesModule } from '~/components/products/ReleasesModule'
@@ -2531,6 +2532,31 @@ export const catalog: CatalogEntry[] = [
       { path: ':tab', component: AnalyticsModule },
     ],
     subpages: [{ slug: 'llm', label: 'LLM' }],
+  },
+  {
+    // Tags — the org's tag manager. Browser pixels are per SITE (stored on the site's
+    // project, `PATCH /v1/projects/:slug`); server-side conversion destinations are per
+    // ORG (cloud keys a destination by org + platform, with no site column). The two
+    // scopes get their own routes so neither implies the other's reach.
+    //
+    // `destinations` is declared BEFORE `:slug` — routes are tried in order, so the
+    // literal wins over the parameter and the sub-page is reachable.
+    id: 'tags',
+    label: 'Tags',
+    icon: Tags,
+    description: 'Browser pixels per site, server-side conversions per org, and the one-line install.',
+    gcp: 'Google Tag Manager',
+    category: 'Observe',
+    status: 'enabled',
+    repo: 'hanzoai/cloud',
+    kind: 'module',
+    routes: [
+      { path: '', component: TagsModule },
+      { path: 'destinations', component: TagDestinations },
+      { path: ':slug', component: TagsModule },
+    ],
+    subpages: [{ slug: 'destinations', label: 'Destinations' }],
+    indexLabel: 'Sites',
   },
   {
     id: 'dashboards',

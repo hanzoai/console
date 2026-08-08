@@ -391,6 +391,23 @@ export const CLOUD_HEADS: readonly string[] = [
   // agents/prompts. There is no path to another user's document, which is why the
   // head admits no sub-path beyond the one it serves.
   'prefs',
+  // Conversion destinations (cloud clients/destinations): /v1/destinations[/:platform
+  // [/test]]. The org's server-side Conversions API sinks — the same events the browser
+  // pixel sends, forwarded server-to-server with a shared event_id so a platform can
+  // dedupe the pair. The handler resolves the org from the Bearer owner and requires the
+  // org-admin bit to MUTATE, so it routes through /v1 exactly like webhooks/automations.
+  // The single `destinations` head admits the list, one platform's connect/disconnect,
+  // and its test send. A destination's API credential is sealed into KMS server-side and
+  // is never in a response — the head carries connection STATE, never a secret.
+  'destinations',
+  // Browser tag door (cloud apps/projects tagdoor.go): GET /v1/tags?key=<pk->. The
+  // resolved client-side pixel set for one site — which tags the hosted tag will inject,
+  // with their non-secret ids. PUBLIC and fail-safe by design (CORS *, an unresolvable
+  // key is an empty set at 200), because a customer's page fetches it directly; it is
+  // allow-listed only so the console can PREVIEW what a site will inject through the
+  // same one same-origin form as every other read. Read-only — the ids are SET by
+  // PATCH /v1/projects/:slug, on the `projects` head.
+  'tags',
 ]
 
 /** The `<head>` of a `v1/<head>/...` path, or null when it isn't a `v1/` path. */

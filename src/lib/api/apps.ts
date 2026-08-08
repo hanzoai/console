@@ -22,9 +22,19 @@
  *
  * Routes (cloud `clients/projectsvc/projectsvc.go`, all return PLAIN JSON — a bare
  * array / object, NOT the casibase `{status,msg,data}` envelope):
- *   GET /v1/projects                     list (org)       → App[]
- *   GET /v1/projects/:slug               get              → App
- *   GET /v1/projects/:slug/deployments   deploy history   → AppDeployment[]
+ *   GET   /v1/projects                     list (org)       → App[]
+ *   GET   /v1/projects/:slug               get              → App
+ *   GET   /v1/projects/:slug/deployments   deploy history   → AppDeployment[]
+ *   PATCH /v1/projects/:slug               update           → App
+ *   GET   /v1/tags?key=<pk->               resolved tags    → BrowserTag[]
+ *
+ * A site carries its own browser TAG CONFIG (`App.tags`, platform → non-secret pixel
+ * id) and the publishable `key` the hosted tag ships in the page. Both live here
+ * because a project IS a site and cloud serves the public tag door from the process
+ * that owns the project store (`apps/projects/tagdoor.go`) — the client mirrors that
+ * ownership rather than splitting one site's tags across two modules. The API SECRET
+ * of a server-side destination is NEVER here: it is sealed to KMS through
+ * `POST /v1/destinations/:platform` (see `destinations.ts`).
  *
  * The `projectView` nests repo fields under `repo`; a deploy is versioned
  * monotonically (queued→building→uploading→live | error). Payloads are normalized
@@ -33,7 +43,7 @@
  * fields read either the nested HTTP shape or the flat store column. PURE normalizers
  * are unit-tested (apps.test.ts).
  */
-import { restGet, originV1Url } from './client'
+import { restGet, restPatch, originV1Url } from './client'
 
 const BASE = 'projects'
 const enc = encodeURIComponent
@@ -80,9 +90,38 @@ export type App = {
   liveUrl: string
   bucket: string
   currentDeploymentId: string
+  /**
+   * The site's publishable ingest key (`pk-…`). PUBLISHABLE means it belongs in a
+   * page's source — it names a write scope and mints no principal — so cloud returns
+   * it in full and the console shows it in full. It is what `event.js` carries.
+   */
+  key: string
+  /** Browser tag config: platform slug → non-secret pixel id. Never a secret. */
+  tags: Record<string, string>
   createdAt: number
   updatedAt: number
 }
+
+/**
+ * One resolved browser tag from the public door (`GET /v1/tags`) — what the hosted
+ * tag will actually inject. `type` is the injector cloud dispatches on, so it is the
+ * proof a configured id reached the page, not just the stored config echoed back.
+ */
+export type BrowserTag = { platform: string; type: string; id: string }
+
+/**
+ * The platforms with a CLIENT-SIDE pixel — the exact set cloud's tag door injects
+ * (`browserTags` in `apps/projects/tagdoor.go`). A platform outside this set can still
+ * receive conversions server-side (a destination), but nothing is injected into the
+ * page for it, so offering an input here would promise an injection that never
+ * happens. `example` shows the shape of a real id, never a working one.
+ */
+export const BROWSER_PLATFORMS: readonly { platform: string; label: string; example: string }[] = [
+  { platform: 'ga4', label: 'Google Analytics 4', example: 'G-XXXXXXXXXX' },
+  { platform: 'meta', label: 'Meta', example: '1234567890123456' },
+  { platform: 'tiktok', label: 'TikTok', example: 'CXXXXXXXXXXXXXXXXXXX' },
+  { platform: 'x', label: 'X (Twitter)', example: 'oxxxx' },
+]
 
 /** One deploy attempt of a site (projectsvc `deploymentView`, versioned per app). */
 export type AppDeployment = {
@@ -114,6 +153,21 @@ function normalizeRepo(raw: unknown, flat: Record<string, unknown>): AppRepo {
   }
 }
 
+/**
+ * A site's tag config: lower-cased platform keys, trimmed ids, empties dropped —
+ * mirroring cloud's own `sanitizeTags`, so what the console shows is what the door
+ * will serve. `tags` is omitted entirely when a site has none.
+ */
+export function normalizeTags(raw: unknown): Record<string, string> {
+  const out: Record<string, string> = {}
+  for (const [k, v] of Object.entries(asRecord(raw))) {
+    const platform = k.trim().toLowerCase()
+    const id = str(v).trim()
+    if (platform && id) out[platform] = id
+  }
+  return out
+}
+
 export function normalizeApp(raw: unknown): App {
   const r = asRecord(raw)
   return {
@@ -129,10 +183,42 @@ export function normalizeApp(raw: unknown): App {
     bucket: str(r.bucket),
     // HTTP view: `currentDeploymentId`; flat store column: `currentDeploy`.
     currentDeploymentId: str(r.currentDeploymentId) || str(r.currentDeploy),
+    key: str(r.key),
+    tags: normalizeTags(r.tags),
     createdAt: num(r.createdAt),
     updatedAt: num(r.updatedAt),
   }
 }
+
+/**
+ * The tag set to WRITE, given a site's CURRENT tags and a draft of the platforms the
+ * console renders.
+ *
+ * A PATCH REPLACES the whole set, so the write has to carry everything the site should
+ * keep. The stored map is not limited to the four platforms with a browser pixel — it is
+ * also what the server CAPI reads — so building the body from the form alone would
+ * silently delete config the console never showed. Starting from `current` is what
+ * prevents that; only the rendered platforms are overwritten, and clearing one removes
+ * it, which is the whole point of a replacing write.
+ */
+export function mergeTags(
+  current: Record<string, string>,
+  draft: Record<string, string>,
+): Record<string, string> {
+  const out = { ...current }
+  for (const { platform } of BROWSER_PLATFORMS) {
+    const id = (draft[platform] ?? '').trim()
+    if (id) out[platform] = id
+    else delete out[platform]
+  }
+  return out
+}
+
+/** The door answers `{tags:[…]}`; a tag needs a platform and an id to mean anything. */
+export const normalizeBrowserTags = (p: unknown): BrowserTag[] =>
+  arrayUnder(p, ['tags'])
+    .map((t) => ({ platform: str(t.platform), type: str(t.type), id: str(t.id) }))
+    .filter((t) => t.platform && t.id)
 
 export function normalizeDeployment(raw: unknown): AppDeployment {
   const r = asRecord(raw)
@@ -180,6 +266,27 @@ export function builderEditUrl(slug: string, appBase = 'https://hanzo.app'): str
   return url.toString()
 }
 
+// ── Install snippet (pure) ───────────────────────────────────────────────────
+
+/**
+ * The PUBLIC API host a customer's own page fetches the hosted tag from.
+ *
+ * Deliberately NOT `config.cloudUrl`: in the browser that resolves to the console's
+ * own origin, so the snippet would tell a customer to load `event.js` from the host
+ * they happen to be reading the console on. The tag ships in someone else's page and
+ * must name the gated API host every brand's traffic already reaches.
+ */
+const TAG_HOST = 'https://api.hanzo.ai'
+
+/**
+ * The one-line install for a site, keyed by its publishable `pk-`. The tag then
+ * fetches `GET /v1/tags?key=` itself to learn which pixels to inject, so this line
+ * never changes as the site's tags do. `defer` keeps it off the parser's critical
+ * path. Pure + host-defaulted so it is testable, matching `builderEditUrl`.
+ */
+export const installTag = (key: string, host = TAG_HOST): string =>
+  `<script defer src="${host.replace(/\/+$/, '')}/v1/event.js" data-key="${key}"></script>`
+
 // ── Network methods (thin — one per documented route) ────────────────────────
 
 export const AppsApi = {
@@ -192,4 +299,25 @@ export const AppsApi = {
   /** A site's deploy history, newest first (`GET /v1/projects/:slug/deployments`). */
   deployments: (slug: string): Promise<AppDeployment[]> =>
     restGet<unknown>(originV1Url(`${BASE}/${enc(slug)}/deployments`)).then(normalizeDeployments),
+
+  /**
+   * Replace a site's browser tag config (`PATCH /v1/projects/:slug`).
+   *
+   * A present `tags` object REPLACES the whole set — so the caller sends every
+   * platform it wants kept, and `{}` clears them. That is cloud's contract, not a
+   * convenience: a merge would make "remove this pixel" unexpressible. The URL owns
+   * which site is written; a `slug` in the body cannot move the write.
+   */
+  setTags: (slug: string, tags: Record<string, string>): Promise<App> =>
+    restPatch<unknown>(originV1Url(`${BASE}/${enc(slug)}`), { tags }).then(normalizeApp),
+
+  /**
+   * The tags a site's hosted tag will actually inject, straight from the public door
+   * (`GET /v1/tags?key=`). This is the RESOLVED set — cloud drops a platform with no
+   * browser pixel and any empty id — so it answers "what will the page do", which the
+   * stored config alone cannot. Public and fail-safe: an unresolvable key is an empty
+   * set at 200, never an error.
+   */
+  browserTags: (key: string): Promise<BrowserTag[]> =>
+    restGet<unknown>(originV1Url(`tags?key=${enc(key)}`)).then(normalizeBrowserTags),
 }

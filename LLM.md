@@ -3921,3 +3921,86 @@ One placement note that cost a debug cycle: the quickstart branch must return BE
 reading the ones that exist, and the moments you most need the quickstart — no agents
 yet, or the registry not answering — are exactly the ones those early returns swallow
 it in.
+
+## Tags — one page for the two halves of a conversion (v8.5.87)
+
+The org's own tag manager. A site's browser pixels, the org's server-side conversion
+destinations, and the one line that installs both — over API that was already live in
+production with no console surface on it.
+
+**The two halves are the SAME conversion, sent twice.** The hosted tag fires the native
+pixel in the page and posts to `/v1/event` with a shared `event_id`; the server forwards
+that event to the platform's Conversions API carrying the same id, so the platform
+dedupes the pair instead of double-counting it. That is why one page owns both, and why
+"the pixel id is public, the API credential is KMS-sealed" is not an inconsistency: the
+pixel id ships in the page by definition, and the credential never leaves the server.
+
+**Two scopes, and they are not the same scope.** A browser pixel belongs to a SITE —
+cloud stores it on that site's project (`PATCH /v1/projects/:slug`, the `tags` map), and
+hanzo.ai and hanzo.chat carry different ids under one org. A destination belongs to the
+ORG: cloud keys a destination row by `(org, platform)` with no site column. So they get
+separate routes (`/tags` and `/tags/destinations`) and each says which scope it writes.
+Drawing a per-site destination switch would be a lie about where the write lands.
+
+**[BUG I wrote, then caught] A replacing write can delete what the form never showed.**
+`PATCH` REPLACES the whole tag set — that is the contract, and it is the right one,
+because a merge would make "remove this pixel" unexpressible. The first cut built the
+body from the four rendered platforms alone, so a site carrying any other key (the map is
+not limited to the four with a browser pixel — the server CAPI reads it too) would have
+had that key silently dropped the first time an operator touched an unrelated field.
+`mergeTags(current, draft)` starts from the site's own tags and overwrites only what the
+form renders; a cleared id is deleted, which is still how a pixel comes off. It is a pure
+function in `apps.ts` rather than inline in the component precisely so the property can be
+pinned: a test asserts an unrendered `reddit` key survives a save.
+
+**The destination form is the SERVER's spec, not a shape hardcoded here.** Each status
+card carries the platform's own `fields` (key/label/required/example) and its KMS secret
+NAMES, so the console renders inputs from the response — a platform added upstream appears
+with its real inputs and no console change. The secret rides under the camelCase of its
+KMS name, and an EMPTY secret is OMITTED rather than sent blank: cloud reads an omitted
+secret as "keep the sealed one", which is what makes editing a pixel id on a connected
+destination non-destructive when the operator cannot read the token back.
+
+**Transport, unchanged.** Everything is the one same-origin prefix-free form
+(`originV1Url` → `/v1/…`). Two heads added to `CLOUD_HEADS`: `destinations` (the handler
+resolves the org from the Bearer owner and requires the org-admin bit to mutate) and
+`tags` (the PUBLIC door, allow-listed only so the console can PREVIEW through the same
+form as every other read — the ids are SET on the `projects` head).
+
+The preview is deliberately a separate read from the form above it. The door drops a
+platform with no browser pixel and any empty id, so `GET /v1/tags?key=` answers "what the
+page will do", which the stored config alone cannot. And the install snippet names
+`api.hanzo.ai` explicitly, NOT `config.cloudUrl` — in the browser that resolves to the
+console's own origin, so the snippet would have told a customer to load `event.js` from
+whichever host the operator happened to be reading the console on.
+
+Verification: `tsc --noEmit` clean; `vitest` **3387 passed / 8 skipped** (270 files; +47
+across the tag config, the door normalizer, the install snippet, `mergeTags`, and the
+destinations connect-body/secret-omission/state logic); `next build` ✓; `npm run
+build:embed` ✓ (the go:embed gate — this surface reaches console.hanzo.ai only through a
+cloud release embedding `console@main`). RENDER-proven, not mocked-and-asserted:
+`e2e/tags.spec.ts` drives the real UI — opens a site, edits a pixel, and asserts the
+PATCH body carries the whole set with the cleared platform absent and no slug; connects a
+destination and asserts the credential input is a real password field, that the secret
+goes out under its camelCase name, and that it is nowhere in the document afterwards; and
+that neither surface scrolls the body sideways at 390px.
+
+**Two lineages, and only one of them builds.** `github.com/hanzoai/console` (`origin`) and
+`git.hanzo.ai/hanzoai/console` (`forge`) share a merge base at 03ed5663ba (Aug 4) and have
+diverged since — 1558 commits on origin, 1673 on forge. Every console IMAGE in GHCR is
+built from the FORGE lineage: 8.5.86 is `sha-348a215`, which is forge/main's HEAD and is
+NOT a commit in the GitHub repo at all (nor are 8.5.81–8.5.85's). The CI that builds is
+`.hanzo/workflows/cicd.yml` — a FORGE workflow (`.hanzo/`, not `.github/`) calling
+`hanzoai/ci` which reads `/hanzo.yml`. The console carries NO `.github/workflows/`
+whatsoever, so it is not affected by the estate-wide GitHub `docker-build.yml` breakage.
+A push to GitHub alone lands code and produces NO image. Push BOTH; forge is the one CD
+reads. Structurally the two have converged (both dropped the local `src/components/ui`
+fork for `@hanzo/ui/product`, and the files this change touches are byte-identical across
+them except `registry.tsx`, where origin additionally carries a `beta` gate that hides a
+new catalog entry until the org holds the flag — so the same entry is visible by default
+on forge and gated on origin).
+
+Rollout stays a REVIEWED pin: universe `charts/app/values/hanzo/console.yaml` currently
+pins `tag: 8.5.83` while GHCR is already at 8.5.86, and cd.hanzo.ai's selfHeal restores
+that CR from the universe pin on every poll. So building an image does not ship it — the
+pin bump is a separate, deliberate change in hanzoai/universe.
